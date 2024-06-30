@@ -1,5 +1,3 @@
-    let curwait=0;
-     
     //merci à https://medium.com/@danny.pule/export-json-to-csv-file-using-javascript-a0b7bc5b00d2
     function convertToCSV(objArray) {
         var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
@@ -48,21 +46,6 @@
                 document.body.removeChild(link);
             }
         }
-    }
-
-    function showLoader() {        
-        d3.select("#ws-loading").style("display", "inline-block");
-        setTimeout(function(){
-            curwait ++;
-        }, 1000);
-    }
-    function hideLoader(all=false) {
-        if(all)curwait=0;
-        curwait --;
-        if(curwait<1){
-            d3.select("#ws-loading").style("display", "none");
-            curwait=0;
-        }       
     }
 
     function getCellEditor(headers){

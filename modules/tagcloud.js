@@ -4,6 +4,7 @@
  * merci à http://www.jasondavies.com/wordcloud/
  */
 import * as noUiSlider from '../modules/nouislider.min.mjs';
+import {loader} from './loader.js';
 
 export class tagcloud {
     constructor(config={}) {
@@ -27,6 +28,8 @@ export class tagcloud {
 	this.urlJson = config.urlJson;
 	this.div = config.div;
     this.tags = [];
+    this.loader = new loader();
+
 	// From 
 	// Jonathan Feinberg's cue.language, see lib/cue.language/license.txt.
 	// 
@@ -36,15 +39,18 @@ export class tagcloud {
 	this.wordSeparators = /[\s\u3031-\u3035\u309b\u309c\u30a0\u30fc\uff70]+/g;
 	
     let fill = d3.scaleOrdinal(d3.schemeSet3),
+        planW, planH, zoom,
         hpt,
         complete = 0,
         maxLength = 30,
         maxTag = 3000,
-        minmaxFont = [6, 96],
+        minmaxFont = [12, 96],
         statusText, posiTxt,
-        svg, background, vis, tooltip,ext,fontSize,slider,initWords;	    
+        svg, vis, tooltip,ext,fontSize,slider,initWords;	    
 
 	this.init = function() {
+        me.loader.show();
+
             //initialisation des éléments graphiques
             me.cont.selectAll('div').remove();
             me.cont.select('svg').remove();
@@ -74,13 +80,26 @@ export class tagcloud {
                 posiTxt.innerHTML = me.txt;
             }
                             
+            planW=me.w*6, planH=me.h*6;
             svg = me.cont.append("svg")
                 .attr("id", "svg_"+me.idDoc)
+                .attr("viewBox", [0, 0, me.w, me.h])
                 .attr("width", me.w)
-                .attr("height", me.h);
-            background = svg.append("g");
-            vis = svg.append("g")
-                    .attr("transform", "translate(" + [me.w >> 1, me.h >> 1] + ")"); 
+                .attr("height", me.h)
+                .attr("style", "max-width: 100%; height: auto;");
+
+            vis = svg.append("g");
+                    //.attr("transform", "translate(" + [me.w >> 1, me.h >> 1] + ")"); 
+            zoom = d3.zoom()
+                .extent([[0, 0], [planW, planH]])
+                .scaleExtent([0, 10])
+                .on("zoom", zoomed);              
+            svg.call(zoom);
+              
+            function zoomed({transform}) {
+                vis.attr("transform", transform);
+            }
+
 
             tooltip = d3.select("body")
                 .append("div")
@@ -94,7 +113,12 @@ export class tagcloud {
             
             ext = d3.extent(me.data.map(function(x) { return parseInt(x.value); }));
             fontSize =  d3.scaleLog().domain([ext[0],ext[1]]).range(minmaxFont);
-            d3.layout.cloud().size([me.w, me.h])
+            setSlider(s);
+            setTagCloud();
+
+		}
+        function setTagCloud(){
+            d3.layout.cloud().size([planW, planH])
                 .words(me.data)
                 .rotate(0)
                 .spiral("rectangular")
@@ -120,14 +144,10 @@ export class tagcloud {
                 .on("end", draw)
                 .start();
 
-            setSlider(s);
-			
-            if(me.fct.hideLoader)me.fct.hideLoader();
-
-		}
+        }
 		    	
         function setSlider(s){
-            s.append('h3').text('Occurrence intervals');
+            s.append('h3').text('Interval des occurrences');
             slider =s.append('div').attr('id',"tcSlider").node();
                         
             var formatForSlider = {
@@ -156,7 +176,6 @@ export class tagcloud {
             slider.noUiSlider.on('end', function (values, handle, unencoded, tap, positions, noUiSlider) {
                 draw(null,null,values);
              });         
-
         }
 
 
@@ -182,7 +201,7 @@ export class tagcloud {
 		    	    .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
 		        	.text(function(d) { return d.text; })
 		        	.on("click", function(e, d) {
-                        if(me.fct.showLoader)me.fct.showLoader();
+                        me.loader.show();
                         d.select = d.select ? false : true;
                         let t = d3.select(e.target);
                         vis.selectAll("text").style("fill",me.colorTag.init);
@@ -191,29 +210,45 @@ export class tagcloud {
                         if(me.fct.clickTag){
                             me.fct.clickTag(d,vis.selectAll(".textSelect"));
                         }
-                        if(me.fct.hideLoader)me.fct.hideLoader();
+                        me.loader.hide();
 		        	})
 		        	.on("mouseover", function(e, d) { 
                         if(d.select)return;
                         d3.select(this).style("fill", me.colorTag.over);
 		        	})
 		        	.on("mouseout", function(e, d) {
+                        tooltip.style("visibility", "hidden");
                         if(d.select)return; 
 		        		d3.select(e.target).style("fill", me.colorTag.visit);
                     })
 	    	        .on("mousemove", function(e, d){
-                        if(d.select)return;
-                        //TODO:gérer les tooltip
-	    	        	if(me.global) return tooltip
-			        		.style("top", (event.pageY+10)+"px")
-			        		.style("left",(event.pageX+10)+"px")
+                        return tooltip
+			        		.style("top", (e.pageY+10)+"px")
+			        		.style("left",(e.pageX+10)+"px")
+                            .style("visibility", "visible")
 	    	        		.text(d.text);
 	    	        	})
 		        	.attr("cursor", (me.user || me.global || me.verif) ? "pointer" : "none")
 		        	;
+            //replace le tagcloud au centre
+            let bb = vis.node().getBBox(),
+            x0=bb.x,x1=bb.x+bb.width,y0=bb.y,y1=bb.y+bb.height;
+            //vis.attr('transform','scale('+(planW/bb.width)+')translate('+(bb.width/2)+','+(bb.height/2)+')')
+
+            svg.transition().duration(750).call(
+              zoom.transform,
+              d3.zoomIdentity
+                .translate(me.w / 2, me.h / 2)
+                .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / me.w, (y1 - y0) / me.h)))
+                .translate(-(x0 + x1) / 2, -(y0 + y1) / 2)
+            );            
+
+            me.loader.hide(true);
+
 		}
 		function progress(d) {
-			statusText.text(++complete + "/" + me.data.length);
+            complete ++;
+            statusText.text(complete + "/" + me.data.length);
 		}
 				
 		function parseText() {
