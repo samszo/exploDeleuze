@@ -57,7 +57,8 @@ import {loader} from './modules/loader.js';
                 console.log('data seminaire : OK');
                 tc=new tagcloud({
                     'cont':d3.select('#contentMap'),'user':a.omk.user,'data':rs,
-                    'w':wMap, 'h':hMap, 
+                    'w':wMap, 'h':hMap, 'omk':a.omk,
+                    'toolbar':d3.select('#navbarMain'),  
                     fct:{'clickTag':showFrags}
                 }) 
             });                            

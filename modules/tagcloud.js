@@ -17,6 +17,8 @@ export class tagcloud {
 	this.colorTag = config.colorTag ? config.colorTag : {'select':'red','visit':'green','over':'orange','init':'white'}; 
     this.keyTag = config.keyTag ? config.keyTag : 'titleCpt';
     this.fct = config.fct ? config.fct : false;
+    this.omk = config.omk ? config.omk : false;
+    this.toolbar = config.toolbar ? config.toolbar : false;
 	this.sauve = config.sauve; 
 	this.global = config.global;  
 	this.verif = config.verif;  
@@ -46,7 +48,7 @@ export class tagcloud {
         maxTag = 3000,
         minmaxFont = [12, 96],
         statusText, posiTxt,
-        svg, vis, tooltip,ext,fontSize,slider,initWords;	    
+        svg, vis, bbVis, tooltip, ext, fontSize, slider, initWords;	    
 
 	this.init = function() {
         me.loader.show();
@@ -54,17 +56,8 @@ export class tagcloud {
             //initialisation des éléments graphiques
             me.cont.selectAll('div').remove();
             me.cont.select('svg').remove();
-
-            //création des éléments graphiques
-            let s = me.cont.append('div').attr('id',"tools_"+me.idDoc);
-            statusText = me.cont.append('div').attr('id',"status_"+me.idDoc);
-            posiTxt = me.cont.append('div').attr('id',"select_txt_"+me.idDoc);
-
-            if(posiTxt){
-                hpt  = posiTxt.clientHeight;
-                if(hpt>me.h)me.h=hpt;
-            }
-
+            
+            //gestion des données
             if(me.data){
                 if(me.verif)me.verif = me.data;
                 me.data = parseData();
@@ -77,9 +70,11 @@ export class tagcloud {
                 }
                 //colorise le term de la recherche
                 if(me.term)showTerm();
-                posiTxt.innerHTML = me.txt;
             }
+            ext = d3.extent(me.data.map(function(x) { return parseInt(x.value); }));
+            fontSize =  d3.scaleLog().domain([ext[0],ext[1]]).range(minmaxFont);
                             
+            //création de la cartographie
             planW=me.w*6, planH=me.h*6;
             svg = me.cont.append("svg")
                 .attr("id", "svg_"+me.idDoc)
@@ -87,36 +82,100 @@ export class tagcloud {
                 .attr("width", me.w)
                 .attr("height", me.h)
                 .attr("style", "max-width: 100%; height: auto;");
-
             vis = svg.append("g");
                     //.attr("transform", "translate(" + [me.w >> 1, me.h >> 1] + ")"); 
+            //gestion du zoom
             zoom = d3.zoom()
                 .extent([[0, 0], [planW, planH]])
                 .scaleExtent([0, 10])
                 .on("zoom", zoomed);              
             svg.call(zoom);
-              
             function zoomed({transform}) {
                 vis.attr("transform", transform);
             }
 
-
-            tooltip = d3.select("body")
-                .append("div")
-                .attr("class", "term")
-                .style("position", "absolute")
-                .style("z-index", "10")
-                .style("visibility", "hidden")
-                .style("font","32px sans-serif")
-                .style("background-color","white")		    
-                .text("a simple tooltip");
-            
-            ext = d3.extent(me.data.map(function(x) { return parseInt(x.value); }));
-            fontSize =  d3.scaleLog().domain([ext[0],ext[1]]).range(minmaxFont);
-            setSlider(s);
+            //création des éléments graphiques
+            if(me.toolbar)setToolbar();
             setTagCloud();
+            setToolTip();
 
 		}
+
+        function setToolbar(){
+
+            if(!me.toolbar.select("#btnShowParams").size()){
+                me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .append("button").attr('id',"btnShowParams")
+                        .attr('type',"button").attr('class',"btn btn-danger")
+                    .on('click',showParams)
+                    .html(`<i class="fa-solid fa-sliders"></i>`)    
+            }           
+            if(!me.toolbar.select("#btnLoadParams").size()){
+                me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .append("button").attr('id',"btnLoadParams")
+                        .attr('type',"button").attr('class',"btn btn-danger")
+                    .on('click',loadParams)
+                    .html(`<i class="fa-solid fa-upload"></i>`)    
+            }
+            if(!me.toolbar.select("#btnLoadParams").size()){
+                me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .append("button").attr('id',"btnLoadParams")
+                        .attr('type',"button").attr('class',"btn btn-danger")
+                    .on('click',loadParams)
+                    .html(`<i class="fa-solid fa-download"></i>`)    
+            }
+            if(!me.toolbar.select("#inptNbCptTot").size()){
+                me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .html(`<div  class="input-group">
+                    <span class="input-group-text">Nb de concept : total / traité / limite</span>
+                    <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
+                    <input id="inptNbProcess" style="width:100px;" type="number" aria-label="First name" class="form-control">
+                    <input id="inptNbProcessTot" style="width:100px;" type="number" aria-label="Last name" class="form-control">
+                    </div>`)    
+            }
+
+            
+
+            /*
+            let s = me.cont.append('div').attr('id',"tools_"+me.idDoc);
+            statusText = me.cont.append('div').attr('id',"status_"+me.idDoc);
+            posiTxt = me.cont.append('div').attr('id',"select_txt_"+me.idDoc);            
+            if(posiTxt){
+                hpt  = posiTxt.clientHeight;
+                if(hpt>me.h)me.h=hpt;
+            }
+            if(me.toolbar)setToolbar();
+            setSlider(s);
+            */
+            
+        }
+
+        function loadParams(){
+            console.log('loadParams');
+        }
+
+        function showParams(){
+            console.log('showParams');
+        }
+
+        function setToolTip(){
+            let html = `<div class="card text-bg-secondary mb-3" style="width: 18rem;">
+            <div class="card-body">
+              <h5 id="ttTitre" class="card-title">Card title</h5>
+              <h6 id="ttSousTitre" class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+              <p id="ttTexte" class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a id="ttLinkCpt" href="#" target="_blank" class="card-link link-light">Voir le concept</a>
+            </div>
+          </div>`
+          tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .html(html);
+
+
+        }
         function setTagCloud(){
             d3.layout.cloud().size([planW, planH])
                 .words(me.data)
@@ -222,17 +281,26 @@ export class tagcloud {
 		        		d3.select(e.target).style("fill", me.colorTag.visit);
                     })
 	    	        .on("mousemove", function(e, d){
-                        return tooltip
-			        		.style("top", (e.pageY+10)+"px")
-			        		.style("left",(e.pageX+10)+"px")
-                            .style("visibility", "visible")
-	    	        		.text(d.text);
+                        tooltip
+                            .style("visibility", "visible");
+                        tooltip.select('#ttTitre').text(d.text);
+                        tooltip.select('#ttSousTitre').text(d.vals.length+' fragment(s)');
+                        tooltip.select('#ttTexte').remove();
+                        tooltip.select('#ttLinkCpt').remove();
+                        //tooltip.select('#ttLinkCpt').attr('href',me.omk.api.replace("/api/","/admin/item/")+d.vals[0].idCpt);
+                        let bb = tooltip.node().getBoundingClientRect(),
+                            hautbas = e.pageY < (bbVis.height+bbVis.y)/2 ? -10 : -bb.height,
+                            droitegauche = e.pageX < bbVis.width/2 ? 10 : -10-bb.width;
+                        tooltip
+			        		.style("top", (e.pageY+hautbas)+"px")
+			        		.style("left",(e.pageX+droitegauche)+"px")
+
 	    	        	})
-		        	.attr("cursor", (me.user || me.global || me.verif) ? "pointer" : "none")
+		        	.attr("cursor", "pointer")
 		        	;
             //replace le tagcloud au centre
-            let bb = vis.node().getBBox(),
-            x0=bb.x,x1=bb.x+bb.width,y0=bb.y,y1=bb.y+bb.height;
+            bbVis = vis.node().getBBox();
+            let x0=bbVis.x,x1=bbVis.x+bbVis.width,y0=bbVis.y,y1=bbVis.y+bbVis.height;
             //vis.attr('transform','scale('+(planW/bb.width)+')translate('+(bb.width/2)+','+(bb.height/2)+')')
 
             svg.transition().duration(750).call(
@@ -248,7 +316,7 @@ export class tagcloud {
 		}
 		function progress(d) {
             complete ++;
-            statusText.text(complete + "/" + me.data.length);
+            if(statusText)statusText.text(complete + "/" + me.data.length);
 		}
 				
 		function parseText() {
