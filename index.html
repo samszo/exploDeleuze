@@ -47,6 +47,10 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <form class="d-flex" role="search">
+                                <input id="inptSearchAll" class="form-control me-2" type="search" placeholder="Chercher" aria-label="Chercher">
+                                <button id="btnSearchAll" class="btn btn-outline-success" type="button">Trouver</button>
+                            </form>
                             <ul id="navbarMain" class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -57,6 +61,8 @@
                                     <ul id="ddSeminar" class="dropdown-menu">
                                     </ul>
                                 </li>
+                            </ul>
+                            <ul id="navbarConnect" class="navbar-nav me-auto mb-2 mb-lg-0">
                             </ul>
                         </div>
                     </div>
@@ -75,22 +81,6 @@
                             <div class="accordion-item text-white bg-dark">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseThree" aria-expanded="false"
-                                        aria-controls="collapseThree">
-                                        Détails du cours
-                                    </button>
-                                </h2>
-                                <div id="collapseThree" class="accordion-collapse collapse"
-                                    data-bs-parent="#accordionJDC">
-                                    <div class="accordion-body">
-                                        <div id="contentDetails">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="accordion-item text-white bg-dark">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseFour" aria-expanded="false"
                                         aria-controls="collapseFour">
                                         Liste des fragments
@@ -105,6 +95,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="accordion-item text-white bg-dark">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseThree" aria-expanded="false"
+                                        aria-controls="collapseThree">
+                                        Paramètres du crible
+                                    </button>
+                                </h2>
+                                <div id="collapseThree" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionJDC">
+                                    <div class="accordion-body">
+                                        <div id="contentDetails">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="col-8" id="contentMap">

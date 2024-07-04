@@ -125,17 +125,19 @@ export class omk {
             document.body.removeChild(element);            
         }
 
-        this.getAllItems = function (query, cb=false){
+        this.getAllItems = function (query, cb){
             let url = me.api+'items?per_page='+perPage+'&'+query+'&page=', fin=false, rs=[], data, page=1;
-            while (!fin) {
-                data = syncRequest(url+page);
-                //console.log(url+page,data);
-                fin = data.length ? false : true;
-                rs = rs.concat(data);
-                page++;
-            }                
-            if(cb)cb(rs);                    
-            return rs;
+            //pause pourgérer l'affichage du loader
+            setTimeout(function(){
+                while (!fin) {
+                    data = syncRequest(url+page);
+                    //console.log(url+page,data);
+                    fin = data.length ? false : true;
+                    rs = rs.concat(data);
+                    page++;
+                }                
+                cb(rs);                    
+            }, 1000);
         }
 
         this.getAllMedias = function (query, cb=false){

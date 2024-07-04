@@ -13,13 +13,14 @@ import {loader} from './modules/loader.js';
             rectMap = d3.select('#contentMap').node().getBoundingClientRect(),
             hMap = rectFooter.top-rectFooter.height-rectHeader.bottom,
             wMap = rectMap.width,
-            wait = new loader();
+            wait = new loader(),
+            cherche;
             
 
         //dimensionne la carte
         d3.select('#contentMap').style('height',hMap+"px");
         let  rectChart = d3.select('#contentMap').node().getBoundingClientRect(),
-            a = new auth({'navbar':d3.select('#navbarMain'),
+            a = new auth({'navbar':d3.select('#navbarConnect'),
                 mail:'samuel.szoniecky@univ-paris8.fr',
                 apiOmk:'../omk_deleuze/api/',
                 ident: 'lBBNzw1HsXS4UhOwur0xE3nvNgOWapNv',
@@ -34,9 +35,6 @@ import {loader} from './modules/loader.js';
             wait.hide();
         });
         //gestion des event de l'ihm
-        d3.select("#btnNewFragment").on('click',e=>{
-            console.log(e);
-        })        
         
         accordion.addEventListener('shown.bs.collapse', event => {
             /*
@@ -49,7 +47,55 @@ import {loader} from './modules/loader.js';
             */
         })
 
-        //fonctions de l'ihm
+        d3.select("#btnSearchAll").on('click',e=>{
+            cherche = document.getElementById('inptSearchAll').value;
+            if(cherche){
+                wait.show();
+                a.omk.getAllItems('resource-type=item&fulltext_search='+cherche,formatDataCherche);                
+            }
+        })        
+
+        function formatDataCherche(rs){
+            let data=[], concepts=[];
+            //formate les data
+            rs.forEach(r=>{
+                if(r["@type"][1]=="bibo:AudioDocument"){
+                    let posis = r["oa:hasSource"][0].display_title.split(' : ')[2].split('_');
+                    r["curation:data"].forEach(d=>{
+                        let cpt = d["@annotation"]["jdc:hasConcept"][0],
+                         dt = {
+                            idCpt:cpt.value_resource_id,
+                            idFrag:r["oa:hasSource"][0].value_resource_id,
+                            idR:r["o:id"],
+                            idSource:r["ma:isFragmentOf"][0].value_resource_id,
+                            nbCar:cpt.display_title.length,
+                            titleCpt:cpt.display_title,
+                            vEnd:posis[1],
+                            vStart:posis[0],
+                            wEnd:d["@annotation"]["oa:end"][0]["@value"],
+                            wStart:d["@annotation"]["oa:start"][0]["@value"]                            
+                        }
+                        data.push(dt);
+                    })    
+                }
+                if(r["@type"][1]=="skos:Concept"){
+                    concepts.push(r)                
+                }
+            })                
+            console.log('trouve:fragments:'+cherche,rs);
+            console.log('trouve:concepts:'+cherche,concepts);
+            if(data){
+                tc=new tagcloud({
+                    'cont':d3.select('#contentMap'),'user':a.omk.user,'data':data,
+                    'w':wMap, 'h':hMap, 'omk':a.omk,
+                    'contParams':d3.select('#contentDetails'),  
+                    fct:{'clickTag':filtreFrags}
+                })     
+            }
+            showFrags(null,data)
+            wait.hide();
+        }
+
         function showSeminar(e,d){
             wait.show();
             let url = a.omk.api.replace('api/','')+"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept";
@@ -58,10 +104,12 @@ import {loader} from './modules/loader.js';
                 tc=new tagcloud({
                     'cont':d3.select('#contentMap'),'user':a.omk.user,'data':rs,
                     'w':wMap, 'h':hMap, 'omk':a.omk,
-                    'toolbar':d3.select('#navbarMain'),  
+                    'contParams':d3.select('#contentDetails'),  
                     fct:{'clickTag':showFrags}
                 }) 
             });                            
+        }
+        function filtreFrags(d,slt){
         }
 
         function showFrags(d,slt){
@@ -69,20 +117,23 @@ import {loader} from './modules/loader.js';
             //ouvre l'accordion
             d3.select("#collapseFour").attr('class',"accordion-collapse collapse show");           
             //initialisation des contenus
-            let cont = d3.select("#contentResources");
+            let sources=[], cont = d3.select("#contentResources");
             cont.selectAll('div').remove();
-            //regroupe les valeurs par vidéo
-            let vals = d3.merge(slt.data().map(s=>s.vals)),
-                gFrags = Array.from(d3.group(vals,v=>v.idVideo));
-            //ajoute les références omk aux vidéos et à la translation
+            //regroupe les valeurs par média
+            let vals = d ? d3.merge(slt.data().map(s=>s.vals)) : slt,
+                gFrags = Array.from(d3.group(vals,v=>v.idFrag));
+            //ajoute les références omk aux médias et à la translation
             gFrags.forEach(v=>{
                 v.frag = a.omk.getMedia(v[1][0].idFrag);
                 v.trans = a.omk.getItem(v[1][0].idR);
+                if(!sources[v[1][0].idSource])sources[v[1][0].idSource]=a.omk.getItem(v[1][0].idSource);
+                v.source = sources[v[1][0].idSource];
             })
-            //création des vidéos
+            //création des viewer media
             let cards = cont.selectAll('div').data(gFrags).enter().append('div').attr('class','col-12').append('div').attr('class','card');
-            cards.append('video').attr('src',v=>v.frag["o:original_url"]).attr("class","card-img-top").attr("controls",true);
+            cards.append('div').attr("class","card-header").html(d=>d.source['o:title']);
             let cardBody = cards.append('div').attr("class","card-body");
+            cardBody.append('audio').attr('src',v=>v.frag["o:original_url"]).attr("class","card-img-top").attr("controls",true);
             cardBody.append('h5').attr("class","card-title").text(v=>v.frag['o:title']);
             cardBody.append('p').attr("class","card-text").selectAll('span').data(v=>getDataWords(v)).enter()
                 .append('span')

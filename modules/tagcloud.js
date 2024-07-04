@@ -18,6 +18,7 @@ export class tagcloud {
     this.keyTag = config.keyTag ? config.keyTag : 'titleCpt';
     this.fct = config.fct ? config.fct : false;
     this.omk = config.omk ? config.omk : false;
+    this.contParams = config.contParams ? config.contParams : false;
     this.toolbar = config.toolbar ? config.toolbar : false;
 	this.sauve = config.sauve; 
 	this.global = config.global;  
@@ -73,7 +74,7 @@ export class tagcloud {
             }
             ext = d3.extent(me.data.map(function(x) { return parseInt(x.value); }));
             fontSize =  d3.scaleLog().domain([ext[0],ext[1]]).range(minmaxFont);
-                            
+
             //création de la cartographie
             planW=me.w*6, planH=me.h*6;
             svg = me.cont.append("svg")
@@ -95,46 +96,54 @@ export class tagcloud {
             }
 
             //création des éléments graphiques
-            if(me.toolbar)setToolbar();
+            if(me.contParams)showParams();
             setTagCloud();
             setToolTip();
 
 		}
 
-        function setToolbar(){
+        function showParams(){
 
-            if(!me.toolbar.select("#btnShowParams").size()){
-                me.toolbar.append('li').attr('class',"nav-item mx-2")
+        if(!me.contParams.select("nav").size()){
+            me.contParams.append('nav').attr('class',"navbar navbar-expand-lg bg-body-tertiary").html(`<div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tcNavbar" aria-controls="tcNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+                <div class="collapse navbar-collapse" id="tcNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="tcNavbarToolBar">
+                    </ul>
+                </div>
+            </div>`)
+            me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
+            /*
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
                     .append("button").attr('id',"btnShowParams")
                         .attr('type',"button").attr('class',"btn btn-danger")
                     .on('click',showParams)
-                    .html(`<i class="fa-solid fa-sliders"></i>`)    
-            }           
-            if(!me.toolbar.select("#btnLoadParams").size()){
-                me.toolbar.append('li').attr('class',"nav-item mx-2")
-                    .append("button").attr('id',"btnLoadParams")
-                        .attr('type',"button").attr('class',"btn btn-danger")
-                    .on('click',loadParams)
-                    .html(`<i class="fa-solid fa-upload"></i>`)    
-            }
-            if(!me.toolbar.select("#btnLoadParams").size()){
-                me.toolbar.append('li').attr('class',"nav-item mx-2")
-                    .append("button").attr('id',"btnLoadParams")
-                        .attr('type',"button").attr('class',"btn btn-danger")
-                    .on('click',loadParams)
-                    .html(`<i class="fa-solid fa-download"></i>`)    
-            }
-            if(!me.toolbar.select("#inptNbCptTot").size()){
-                me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .html(`<i class="fa-solid fa-sliders"></i>`)
+            */    
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
+                .append("button").attr('id',"btnLoadParams")
+                    .attr('type',"button").attr('class',"btn btn-danger")
+                .on('click',loadParams)
+                .html(`<i class="fa-solid fa-upload"></i>`)    
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
+                .append("button").attr('id',"btnLoadParams")
+                    .attr('type',"button").attr('class',"btn btn-danger")
+                .on('click',loadParams)
+                .html(`<i class="fa-solid fa-download"></i>`)    
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
                     .html(`<div  class="input-group">
-                    <span class="input-group-text">Nb de concept : total / traité / limite</span>
+                    <span class="input-group-text">Nb de concept : total | traité | limite</span>
                     <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
                     <input id="inptNbProcess" style="width:100px;" type="number" aria-label="First name" class="form-control">
                     <input id="inptNbProcessTot" style="width:100px;" type="number" aria-label="Last name" class="form-control">
-                    </div>`)    
-            }
+                    </div>`)
+            let c = me.contParams.append('div').attr('class','container-fluid'); 
+            setSlider(c.append('div').attr('class','row  mx-2 my-2'));
 
-            
+        }   
+        me.toolbar.select("#inptNbCptTot").node().value=me.data.length;                            
 
             /*
             let s = me.cont.append('div').attr('id',"tools_"+me.idDoc);
@@ -152,10 +161,6 @@ export class tagcloud {
 
         function loadParams(){
             console.log('loadParams');
-        }
-
-        function showParams(){
-            console.log('showParams');
         }
 
         function setToolTip(){
@@ -206,7 +211,7 @@ export class tagcloud {
         }
 		    	
         function setSlider(s){
-            s.append('h3').text('Interval des occurrences');
+            s.append('h6').text('Interval des occurrences');
             slider =s.append('div').attr('id',"tcSlider").node();
                         
             var formatForSlider = {
@@ -316,7 +321,10 @@ export class tagcloud {
 		}
 		function progress(d) {
             complete ++;
-            if(statusText)statusText.text(complete + "/" + me.data.length);
+            if(me.toolbar){
+                me.toolbar.select("#inptNbProcessTot").node().value=Math.min(maxTag, me.data.length);                
+                me.toolbar.select("#inptNbProcess").node().value=complete;                
+            }
 		}
 				
 		function parseText() {
@@ -356,7 +364,7 @@ export class tagcloud {
 			var j=0;
 			gTags.forEach((t)=> {
 				if (t.value <= 0) return;
-				if(j>maxTag) return;
+				if(j>=maxTag) return;
 				var word = t.k;
 				var i = word.search(me.elision);
 				if(i>0) word = word.substr(i+1);
