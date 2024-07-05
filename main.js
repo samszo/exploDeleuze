@@ -67,7 +67,7 @@ import {loader} from './modules/loader.js';
                             idCpt:cpt.value_resource_id,
                             idFrag:r["oa:hasSource"][0].value_resource_id,
                             idR:r["o:id"],
-                            idSource:r["ma:isFragmentOf"][0].value_resource_id,
+                            idItemSource:r["ma:isFragmentOf"][0].value_resource_id,
                             nbCar:cpt.display_title.length,
                             titleCpt:cpt.display_title,
                             vEnd:posis[1],
@@ -98,18 +98,23 @@ import {loader} from './modules/loader.js';
 
         function showSeminar(e,d){
             wait.show();
-            let url = a.omk.api.replace('api/','')+"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept";
+            let url = a.omk.api.replace('api/','')
+                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept&id="+d['o:id'];
             d3.json(url).then(function(rs) {
                 console.log('data seminaire : OK');
                 tc=new tagcloud({
                     'cont':d3.select('#contentMap'),'user':a.omk.user,'data':rs,
                     'w':wMap, 'h':hMap, 'omk':a.omk,
                     'contParams':d3.select('#contentDetails'),  
-                    fct:{'clickTag':showFrags}
+                    fct:{'clickTag':showFrags,'drawEnd':showAllFrags}
                 }) 
             });                            
         }
         function filtreFrags(d,slt){
+        }
+
+        function showAllFrags(slt){
+            showFrags(true,slt);
         }
 
         function showFrags(d,slt){
@@ -126,12 +131,19 @@ import {loader} from './modules/loader.js';
             gFrags.forEach(v=>{
                 v.frag = a.omk.getMedia(v[1][0].idFrag);
                 v.trans = a.omk.getItem(v[1][0].idR);
-                if(!sources[v[1][0].idSource])sources[v[1][0].idSource]=a.omk.getItem(v[1][0].idSource);
-                v.source = sources[v[1][0].idSource];
+                if(!sources[v[1][0].idItemSource])sources[v[1][0].idItemSource]=a.omk.getItem(v[1][0].idItemSource);
+                v.source = sources[v[1][0].idItemSource];
             })
+            //ordonne les fragments chronologiquement
+            gFrags.sort((a, b) => parseInt(a.frag["oa:start"][0]["@value"]) - parseInt(b.frag["oa:start"][0]["@value"]));            
             //création des viewer media
             let cards = cont.selectAll('div').data(gFrags).enter().append('div').attr('class','col-12').append('div').attr('class','card');
-            cards.append('div').attr("class","card-header").html(d=>d.source['o:title']);
+            cards.append('div').attr("class","card-header")
+                .html(d=>d.source['o:title'])
+                .append('a').attr('href',d=>d.source["dcterms:source"][0]["@id"]).attr('target',"_blank")
+                .append('img').attr('src','assets/img/Logo_BnFblanc.svg')
+                    .attr('class','mx-2')
+                    .style("height","20px");
             let cardBody = cards.append('div').attr("class","card-body");
             cardBody.append('audio').attr('src',v=>v.frag["o:original_url"]).attr("class","card-img-top").attr("controls",true);
             cardBody.append('h5').attr("class","card-title").text(v=>v.frag['o:title']);

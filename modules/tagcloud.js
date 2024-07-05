@@ -43,13 +43,14 @@ export class tagcloud {
 	
     let fill = d3.scaleOrdinal(d3.schemeSet3),
         planW, planH, zoom,
-        hpt,
+        hpt, gTags,
         complete = 0,
         maxLength = 30,
+        minLength = 2,
         maxTag = 3000,
         minmaxFont = [12, 96],
         statusText, posiTxt,
-        svg, vis, bbVis, tooltip, ext, fontSize, slider, initWords;	    
+        svg, vis, bbVis, tooltip, ext, fontSize, initWords;	    
 
 	this.init = function() {
         me.loader.show();
@@ -115,13 +116,6 @@ export class tagcloud {
                 </div>
             </div>`)
             me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
-            /*
-            me.toolbar.append('li').attr('class',"nav-item mx-2")
-                    .append("button").attr('id',"btnShowParams")
-                        .attr('type',"button").attr('class',"btn btn-danger")
-                    .on('click',showParams)
-                    .html(`<i class="fa-solid fa-sliders"></i>`)
-            */    
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .append("button").attr('id',"btnLoadParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
@@ -134,16 +128,50 @@ export class tagcloud {
                 .html(`<i class="fa-solid fa-download"></i>`)    
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                     .html(`<div  class="input-group">
-                    <span class="input-group-text">Nb de concept : total | traité | limite</span>
+                    <span class="input-group-text">Nb de concept</span>
                     <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
-                    <input id="inptNbProcess" style="width:100px;" type="number" aria-label="First name" class="form-control">
-                    <input id="inptNbProcessTot" style="width:100px;" type="number" aria-label="Last name" class="form-control">
                     </div>`)
+            //ajoutre les paramètres
             let c = me.contParams.append('div').attr('class','container-fluid'); 
-            setSlider(c.append('div').attr('class','row  mx-2 my-2'));
-
+            setSlider({
+                'cont':c.append('div').attr('class','row px-2 py-2'),
+                'titre':'Nombre de tag maximum',
+                'id':"tcSliderNbTagMax",
+                'ext':[1,10000],
+                'start':3000,
+                'format':'unique'         
+            });
+            setSlider({
+                'cont':c.append('div').attr('class','row px-2 py-2'),
+                'titre':'Interval de la taille des tags',
+                'id':"tcSliderIntTailleTag",
+                'ext':[0,100],         
+                'start':[2,30]         
+            });
+            setSlider({
+                'cont':c.append('div').attr('class','row px-2 py-2'),
+                'titre':'Interval des occurrences',
+                'id':"tcSliderIntOcc",
+                'ext':ext,         
+                'start':ext         
+            });
+            setSlider({
+                'cont':c.append('div').attr('class','row px-2 py-2'),
+                'titre':'Interval des tailles de police',
+                'id':"tcSliderIntTaillePolice",
+                'ext':[1,100],         
+                'start':[12,96]         
+            });
+            c.append('div').attr('class','row px-2 py-2')
+                .html(`<div class="mb-3">
+                    <label for="tcStopWords" class="form-label">Mots exclus</label>
+                    <textarea class="form-control" id="tcStopWords" rows="3">${me.stopWords}</textarea>
+                  </div>`)
+            
+        }else{
+            me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
         }   
-        me.toolbar.select("#inptNbCptTot").node().value=me.data.length;                            
+        me.toolbar.select("#inptNbCptTot").node().value=gTags.length;                            
 
             /*
             let s = me.cont.append('div').attr('id',"tools_"+me.idDoc);
@@ -158,6 +186,39 @@ export class tagcloud {
             */
             
         }
+
+        function setSlider(params){
+            params.cont.append('h6').text(params.titre);
+            let slider =params.cont.append('div').attr('id',params.id).node();
+                        
+            var formatForSlider = params.format=='unique' ? null : {
+                from: function (formattedValue) {
+                    return parseInt(formattedValue);
+                },
+                to: function(numericValue) {
+                    return parseInt(numericValue);
+                }
+            };
+            noUiSlider.create(slider, {
+                start: params.start,
+                connect: true,
+                range: {
+                    'min': params.ext[0],
+                    'max': params.ext[1]
+                }        ,
+                format: formatForSlider,
+                tooltips: {
+                    // tooltips are output only, so only a "to" is needed
+                    to: function(numericValue) {
+                        return parseInt(numericValue);
+                    }
+                }            
+            });   
+            slider.noUiSlider.on('end', function (values, handle, unencoded, tap, positions, noUiSlider) {
+                draw(null,null,values,params);
+             });         
+        }
+
 
         function loadParams(){
             console.log('loadParams');
@@ -210,46 +271,16 @@ export class tagcloud {
 
         }
 		    	
-        function setSlider(s){
-            s.append('h6').text('Interval des occurrences');
-            slider =s.append('div').attr('id',"tcSlider").node();
-                        
-            var formatForSlider = {
-                from: function (formattedValue) {
-                    return parseInt(formattedValue);
-                },
-                to: function(numericValue) {
-                    return parseInt(numericValue);
-                }
-            };
-            noUiSlider.create(slider, {
-                start: ext,
-                connect: true,
-                range: {
-                    'min': ext[0],
-                    'max': ext[1]
-                },
-                format: formatForSlider,
-                tooltips: {
-                    // tooltips are output only, so only a "to" is needed
-                    to: function(numericValue) {
-                        return parseInt(numericValue);
-                    }
-                }            
-            });   
-            slider.noUiSlider.on('end', function (values, handle, unencoded, tap, positions, noUiSlider) {
-                draw(null,null,values);
-             });         
-        }
 
 
-		function draw(words,wordExt,slideExt=false) {
-            if(!slideExt){
+
+		function draw(words,wordExt,values=false,param=false) {
+            if(!values){
                 ext = d3.extent(words.map(function(x) { return parseInt(x.value); }));
                 initWords = words;
             }else{
                 vis.selectAll("text").remove();
-                words = initWords.filter(w=>w.value>=slideExt[0] && w.value<=slideExt[1]);
+                words = initWords.filter(w=>w.value>=values[0] && w.value<=values[1]);
             }
 			var text = vis.selectAll("text")
 		        .data(words)
@@ -316,14 +347,18 @@ export class tagcloud {
                 .translate(-(x0 + x1) / 2, -(y0 + y1) / 2)
             );            
 
+            if(me.fct.drawEnd){
+                me.fct.drawEnd(vis.selectAll("text"));
+            }
+
             me.loader.hide(true);
 
 		}
 		function progress(d) {
             complete ++;
             if(me.toolbar){
-                me.toolbar.select("#inptNbProcessTot").node().value=Math.min(maxTag, me.data.length);                
-                me.toolbar.select("#inptNbProcess").node().value=complete;                
+                //me.toolbar.select("#inptNbProcessTot").node().value=Math.min(maxTag, me.data.length);                
+                //me.toolbar.select("#inptNbProcess").node().value=complete;                
             }
 		}
 				
@@ -341,7 +376,7 @@ export class tagcloud {
 				if(i>0)word = word.substr(i+1);
 				word = word.replace(me.punctuation, "");
 				if (me.stopWords.test(word.toLowerCase())) return;
-				if (word.length <= 2) return;
+				if (word.length <= minLength) return;
 		    	if(me.user){
 		    		var uw = inUtiWords(word);
 		    		if(uw.value<0) return;
@@ -357,7 +392,7 @@ export class tagcloud {
 
 		function parseData() {
 
-            const gTags = Array.from(d3.group(me.data, (d) => d[me.keyTag])).map(d=>{ return {'value': d[1].length,'k':d[0],'vals':d[1]};}).sort(function (a, b) {
+            gTags = Array.from(d3.group(me.data, (d) => d[me.keyTag])).map(d=>{ return {'value': d[1].length,'k':d[0],'vals':d[1]};}).sort(function (a, b) {
                 return b.value - a.value;
               });
 			me.tags = [];
@@ -371,7 +406,7 @@ export class tagcloud {
 				word = word.replace(me.punctuation, "");
 				var wlc = word.toLowerCase();
 				if (me.stopWords.test(wlc)) return;
-				if (word.length <= 2) return;
+				if (word.length <= minLength) return;
 				word = word.substr(0, maxLength);
                 me.tags.push({'key':word,'vals':t.vals,'value':t.value});
 				j++;
