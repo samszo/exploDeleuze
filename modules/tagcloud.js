@@ -131,6 +131,13 @@ export class tagcloud {
                     <span class="input-group-text">Nb de concept</span>
                     <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
                     </div>`)
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
+                .append("button").attr('id',"btnLoadParams")
+                    .attr('type',"button").attr('class',"btn btn-danger")
+                .on('click',redrawTagCloud)
+                .html(`<i class="fa-regular fa-cloud-word"></i>`)    
+    
+
             //ajoutre les paramètres
             let c = me.contParams.append('div').attr('class','container-fluid'); 
             setSlider({
@@ -185,6 +192,10 @@ export class tagcloud {
             setSlider(s);
             */
             
+        }
+
+        function redrawTagCloud(){
+
         }
 
         function setSlider(params){
