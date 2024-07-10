@@ -146,45 +146,40 @@ import {loader} from './modules/loader.js';
             gFrags.sort((a, b) => parseInt(a.frag["oa:start"][0]["@value"]) - parseInt(b.frag["oa:start"][0]["@value"]));            
             //création des transcriptions
             let cards = cont.selectAll('div').data(gFrags).enter().append('div').attr('class','col-12').append('div').attr('class','card'),
-            header = cards.append('div').attr("class","card-header")
-                .html(d=>d.source['o:title']);
-            header.append('a').attr('href',d=>a.omk.getItemAdminLink(d.source)).attr('target',"_blank").attr('class','link-danger mx-2')
-                .html('<i class="fa-solid fa-pen-to-square"></i>');
+            header = cards.append('div').attr("class","card-header");                
             header.append('a').attr('href',d=>d.source["dcterms:source"][0]["@id"]).attr('target',"_blank")
                 .append('img').attr('src','assets/img/Logo_BnFblanc.svg')
                     .attr('class','mx-2')
                     .style("height","20px");
+            header.append('span').html(d=>d.source['o:title']);
+            header.append('a').attr('href',d=>a.omk.getItemAdminLink(d.source)).attr('target',"_blank").attr('class','link-danger mx-2')
+                .html('<i class="fa-solid fa-pen-to-square"></i>');
             let cardBody = cards.append('div').attr("class","card-body");
 
             //création des viewer media
-            let toolBar = cardBody.html(`<div class="btn-toolbar mb-3" role="toolbar" aria-label="Gestion des médias">`),
-            tbGauche =  toolBar.append('div').attr('class',"btn-group me-2").attr('role',"group");
-            tbGauche.append('div').attr('class',"btn-group me-2").attr('role',"group")
-                .append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-fast"></i></button>')
+            let toolBar = cardBody.append('div').attr('class',"btn-toolbar mb-2 justify-content-between").attr('role',"toolbar").attr('aria-label',"Gestion des médias");
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-fast"></i></button>')
                     .on('click',showFirstFragment);
-            tbGauche.append('div').attr('class',"btn-group me-2").attr('role',"group")
-                .append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-step"></i></button>')
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-step"></i></button>')
                     .on('click',showPrevFragment);
-            let audioView = toolBar.append('div').attr('class',"input-group").attr('id',"viewAudio"),
-            tbDroite =  toolBar.append('div').attr('class',"btn-group me-2").attr('role',"group")
-                .append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-step"></i></button>')
-                    .on('click',showNextFragment);
-            /*
-            tbDroite.append('ul').attr('id',"ulFragListe").attr("class","dropdown-menu").selectAll('li').data(d=>{
-                return getListeFragments(d.source["o:id"])
-            }).enter().append('li').append('a').attr('class',"dropdown-item").text(d=>d['o:title']);            
-            */
-            audioView.append('audio').attr('src',v=>v.frag["o:original_url"])
+            toolBar.append('audio').attr('src',v=>v.frag["o:original_url"])
                 .attr("class","mx-2").attr("controls",true)
-                .style("height", "24px").style("width", "256px");
+                .style("height", "24px");//.style("width", "256px");
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-step"></i></button>')
+                    .on('click',showNextFragment);
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-fast"></i></button>')
+                    .on('click',showLastFragment);
+                                
             cardBody.append('h5').attr("class","card-title").text(v=>v.frag['o:title'])
                 .append('a').attr('href',d=>a.omk.getItemAdminLink(d.trans)).attr('target',"_blank").attr('class','link-danger mx-2')
                 .html('<i class="fa-solid fa-pen-to-square"></i>');
             cardBody.append('p').attr("class","card-text").selectAll('span').data(v=>getDataWords(v)).enter()
                 .append('span')
                 .attr('class','spanTag')
-                .style('color',d=>d.select?'red':'white')    
-                .style('font-size',d=>d.select?'large':'small')    
+                .style('color',d=>{
+                    return d.t==cherche ? 'red':'white'
+                })    
+                .style('font-size',d=>d.t==cherche ? 'large':'small')    
                 .text(d=>d.t)
                 .on('click',showTagTools);
             cardBody.append('div').attr("class","card-footer text-body-secondary")
@@ -200,7 +195,10 @@ import {loader} from './modules/loader.js';
         function showNextFragment(e,d){
             console.log(d);
         }
-
+        function showLastFragment(e,d){
+            console.log(d);
+        }
+        
         async function getListeFragments(id){
             return await a.omk.getAllItems('sort_order=id&property[0][joiner]=and&property[0][property]=451&property[0][type]=res&property[0][text]='+id);
         }

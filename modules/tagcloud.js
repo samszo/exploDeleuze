@@ -111,13 +111,13 @@ export class tagcloud {
             <span class="navbar-toggler-icon"></span>
             </button>
                 <div class="collapse navbar-collapse" id="tcNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="tcNavbarToolBar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 justify-content-center" id="tcNavbarToolBar">
                     </ul>
                 </div>
             </div>`)
             me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
             me.toolbar.append('li').attr('class',"nav-item mx-2")
-                .append("button").attr('id',"btnLoadParams")
+                .append("button").attr('id',"btnSaveParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
                 .on('click',loadParams)
                 .html(`<i class="fa-solid fa-upload"></i>`)    
@@ -132,10 +132,10 @@ export class tagcloud {
                     <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
                     </div>`)
             me.toolbar.append('li').attr('class',"nav-item mx-2")
-                .append("button").attr('id',"btnLoadParams")
+                .append("button").attr('id',"btnRedrawCloud")
                     .attr('type',"button").attr('class',"btn btn-danger")
                 .on('click',redrawTagCloud)
-                .html(`<i class="fa-regular fa-cloud-word"></i>`)    
+                .html(`<i class="fa-solid fa-cloud"></i>`)    
     
 
             //ajoutre les paramètres
@@ -146,28 +146,32 @@ export class tagcloud {
                 'id':"tcSliderNbTagMax",
                 'ext':[1,10000],
                 'start':3000,
-                'format':'unique'         
+                'format':'unique',         
+                'fct':[{'e':'end','f':changeParams}]         
             });
             setSlider({
                 'cont':c.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval de la taille des tags',
                 'id':"tcSliderIntTailleTag",
                 'ext':[0,100],         
-                'start':[2,30]         
+                'start':[2,30],         
+                'fct':[{'e':'end','f':changeParams}]         
             });
             setSlider({
                 'cont':c.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval des occurrences',
                 'id':"tcSliderIntOcc",
                 'ext':ext,         
-                'start':ext         
+                'start':ext,         
+                'fct':[{'e':'end','f':changeParams}]         
             });
             setSlider({
                 'cont':c.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval des tailles de police',
                 'id':"tcSliderIntTaillePolice",
-                'ext':[1,100],         
-                'start':[12,96]         
+                'ext':[1,200],         
+                'start':[12,96],
+                'fct':[{'e':'end','f':changeParams}]         
             });
             c.append('div').attr('class','row px-2 py-2')
                 .html(`<div class="mb-3">
@@ -194,7 +198,15 @@ export class tagcloud {
             
         }
 
+        function changeParams(vals,params){
+            d3.select("#btnRedrawCloud").attr('class',"btn btn-success")
+                .html(`<i class="fa-solid fa-cloud fa-beat-fade"></i>`)    
+
+        }
+
         function redrawTagCloud(){
+            d3.select("#btnRedrawCloud").attr('class',"btn btn-danger")
+                .html(`<i class="fa-solid fa-cloud"></i>`)    
 
         }
 
@@ -224,10 +236,12 @@ export class tagcloud {
                         return parseInt(numericValue);
                     }
                 }            
-            });   
-            slider.noUiSlider.on('end', function (values, handle, unencoded, tap, positions, noUiSlider) {
-                draw(null,null,values,params);
-             });         
+            });
+            params.fct.forEach(fct=>{
+                slider.noUiSlider.on(fct.e, function (values, handle, unencoded, tap, positions, noUiSlider) {
+                    fct.f(values,params);
+                 })
+            });         
         }
 
 
