@@ -66,14 +66,14 @@ import {loader} from './modules/loader.js';
                          dt = {
                             idCpt:cpt.value_resource_id,
                             idFrag:r["oa:hasSource"][0].value_resource_id,
-                            idR:r["o:id"],
-                            idItemSource:r["ma:isFragmentOf"][0].value_resource_id,
+                            idTrans:r["o:id"],
+                            idConf:r["ma:isFragmentOf"][0].value_resource_id,
                             nbCar:cpt.display_title.length,
                             titleCpt:cpt.display_title,
-                            vEnd:posis[1],
-                            vStart:posis[0],
-                            wEnd:d["@annotation"]["oa:end"][0]["@value"],
-                            wStart:d["@annotation"]["oa:start"][0]["@value"]                            
+                            endFrag:posis[1],
+                            startFrag:posis[0],
+                            endCpt:d["@annotation"]["oa:end"][0]["@value"],
+                            startCpt:d["@annotation"]["oa:start"][0]["@value"]                            
                         }
                         data.push(dt);
                     })    
@@ -92,14 +92,15 @@ import {loader} from './modules/loader.js';
                     fct:{'clickTag':filtreFrags}
                 })     
             }
-            showFrags(null,data)
+            //showFrags(null,data)
             wait.hide();
         }
 
         function showSeminar(e,d){
             wait.show();
             let url = a.omk.api.replace('api/','')
-                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept&id="+d['o:id'];
+                //+"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept&id="+d['o:id'];
+                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=timelineConcept&idConf="+d['o:id'];                               
             d3.json(url).then(function(rs) {
                 console.log('data seminaire : OK');
                 tc=new tagcloud({
@@ -130,9 +131,9 @@ import {loader} from './modules/loader.js';
             //ajoute les références omk aux médias et à la translation
             gFrags.forEach(v=>{
                 v.frag = a.omk.getMedia(v[1][0].idFrag);
-                v.trans = a.omk.getItem(v[1][0].idR);
-                if(!sources[v[1][0].idItemSource])sources[v[1][0].idItemSource]=a.omk.getItem(v[1][0].idItemSource);
-                v.source = sources[v[1][0].idItemSource];
+                v.trans = a.omk.getItem(v[1][0].idTrans);
+                if(!sources[v[1][0].idConf])sources[v[1][0].idConf]=a.omk.getItem(v[1][0].idConf);
+                v.source = sources[v[1][0].idConf];
             })
             //ordonne les fragments chronologiquement
             gFrags.sort((a, b) => parseInt(a.frag["oa:start"][0]["@value"]) - parseInt(b.frag["oa:start"][0]["@value"]));            
