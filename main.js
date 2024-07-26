@@ -3,8 +3,7 @@ import {auth} from './modules/auth.js';
 import {tagcloud} from './modules/tagcloud.js';
 import {loader} from './modules/loader.js';
 
-        let m=new modal({'size':'modal-lg'}), 
-            tc, 
+        let tc, 
             hotRes, 
             accordion = document.getElementById('accordionJDC'),
             rectAccordion = accordion.getBoundingClientRect(),
@@ -56,6 +55,15 @@ import {loader} from './modules/loader.js';
         })        
 
         function formatDataCherche(rs){
+            if(!rs.length){                
+                wait.hide();
+                let m=new modal({'size':'modal-sm','class':' text-bg-secondary',
+                    'titre':'Aucun élément<i class="fa-solid fa-empty-set"></i><i class="fa-light fa-face-pensive"></i>',
+                    'body':'<div>Merci de faire une nouvelle recherche !</div><div class="my-2"><i class="fa-sharp fa-light fa-face-relieved fa-2xl"></i></div>'
+                });
+                m.show();
+                return
+            }
             let data=[], concepts=[];
             //formate les data
             rs.forEach(r=>{
@@ -137,26 +145,63 @@ import {loader} from './modules/loader.js';
             })
             //ordonne les fragments chronologiquement
             gFrags.sort((a, b) => parseInt(a.frag["oa:start"][0]["@value"]) - parseInt(b.frag["oa:start"][0]["@value"]));            
-            //création des viewer media
-            let cards = cont.selectAll('div').data(gFrags).enter().append('div').attr('class','col-12').append('div').attr('class','card');
-            cards.append('div').attr("class","card-header")
-                .html(d=>d.source['o:title'])
-                .append('a').attr('href',d=>d.source["dcterms:source"][0]["@id"]).attr('target',"_blank")
+            //création des transcriptions
+            let cards = cont.selectAll('div').data(gFrags).enter().append('div').attr('class','col-12').append('div').attr('class','card'),
+            header = cards.append('div').attr("class","card-header");                
+            header.append('a').attr('href',d=>d.source["dcterms:source"][0]["@id"]).attr('target',"_blank")
                 .append('img').attr('src','assets/img/Logo_BnFblanc.svg')
                     .attr('class','mx-2')
                     .style("height","20px");
+            header.append('span').html(d=>d.source['o:title']);
+            header.append('a').attr('href',d=>a.omk.getItemAdminLink(d.source)).attr('target',"_blank").attr('class','link-danger mx-2')
+                .html('<i class="fa-solid fa-pen-to-square"></i>');
             let cardBody = cards.append('div').attr("class","card-body");
-            cardBody.append('audio').attr('src',v=>v.frag["o:original_url"]).attr("class","card-img-top").attr("controls",true);
-            cardBody.append('h5').attr("class","card-title").text(v=>v.frag['o:title']);
+
+            //création des viewer media
+            let toolBar = cardBody.append('div').attr('class',"btn-toolbar mb-2 justify-content-between").attr('role',"toolbar").attr('aria-label',"Gestion des médias");
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-fast"></i></button>')
+                    .on('click',showFirstFragment);
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-backward-step"></i></button>')
+                    .on('click',showPrevFragment);
+            toolBar.append('audio').attr('src',v=>v.frag["o:original_url"])
+                .attr("class","mx-2").attr("controls",true)
+                .style("height", "24px");//.style("width", "256px");
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-step"></i></button>')
+                    .on('click',showNextFragment);
+            toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-fast"></i></button>')
+                    .on('click',showLastFragment);
+                                
+            cardBody.append('h5').attr("class","card-title").text(v=>v.frag['o:title'])
+                .append('a').attr('href',d=>a.omk.getItemAdminLink(d.trans)).attr('target',"_blank").attr('class','link-danger mx-2')
+                .html('<i class="fa-solid fa-pen-to-square"></i>');
             cardBody.append('p').attr("class","card-text").selectAll('span').data(v=>getDataWords(v)).enter()
                 .append('span')
                 .attr('class','spanTag')
-                .style('color',d=>d.select?'red':'white')    
-                .style('font-size',d=>d.select?'large':'small')    
+                .style('color',d=>{
+                    return d.t==cherche ? 'red':'white'
+                })    
+                .style('font-size',d=>d.t==cherche ? 'large':'small')    
                 .text(d=>d.t)
                 .on('click',showTagTools);
             cardBody.append('div').attr("class","card-footer text-body-secondary")
                 .append("a").attr("href",v=>v.trans['@id']);
+        }
+
+        function showFirstFragment(e,d){
+            console.log(d);
+        }
+        function showPrevFragment(e,d){
+            console.log(d);
+        }
+        function showNextFragment(e,d){
+            console.log(d);
+        }
+        function showLastFragment(e,d){
+            console.log(d);
+        }
+        
+        async function getListeFragments(id){
+            return await a.omk.getAllItems('sort_order=id&property[0][joiner]=and&property[0][property]=451&property[0][type]=res&property[0][text]='+id);
         }
 
         function showTagTools(e,d){

@@ -127,7 +127,7 @@ export class omk {
 
         this.getAllItems = function (query, cb){
             let url = me.api+'items?per_page='+perPage+'&'+query+'&page=', fin=false, rs=[], data, page=1;
-            //pause pourgérer l'affichage du loader
+            //pause pour gérer l'affichage du loader
             setTimeout(function(){
                 while (!fin) {
                     data = syncRequest(url+page);
@@ -136,7 +136,7 @@ export class omk {
                     rs = rs.concat(data);
                     page++;
                 }                
-                cb(rs);                    
+                return cb ? cb(rs) : rs;                    
             }, 1000);
         }
 
