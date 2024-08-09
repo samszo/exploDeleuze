@@ -73,97 +73,80 @@ export class modal {
         this.init();
     }
 }
-//ajoute la modal pour changer le concept d'un crible
-export let modalChangeConcept = `
+//ajoute la modal pour modifier une notebox 
+export let modalNodeBox = `
     <div class="modal-dialog ">
     <div class="modal-content">
         <div class="modal-header text-bg-warning">
-        <h5 id="choixConceptTitre" class="modal-title">Changer le concept :</h5>
+        <h5 class="modal-title">Modifier la note</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body text-bg-dark">                            
+        <div class="modal-body text-bg-dark">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Ajouter</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nbNodeBox" aria-controls="nbNodeBox" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="nbNodeBox">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <button id="btnAddPerson" type="button" class="btn btn-warning"><i class="fa-solid fa-person"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddBook" type="button" class="btn btn-warning"><i class="fa-solid fa-book"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddMovie" type="button" class="btn btn-warning"><i class="fa-solid fa-film"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddMusic" type="button" class="btn btn-warning"><i class="fa-solid fa-music"></i></button>
+                        </li>                        
+                        <li class="nav-item">
+                            <button id="btnAddLink" type="button" class="btn btn-warning"><i class="fa-solid fa-link"></i></button>                
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddConcept" type="button" class="btn btn-warning"><i class="fa-solid fa-diagram-project"></i></button>                
+                        </li>                        
+                    </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="mb-3">
+                <label for="inptTitreNote" class="form-label">Titre</label>
+                <input type="text" class="form-control" id="inptTitreNote" >
+            </div>
+            <div class="mb-3">
+                <label for="inptDescNote" class="form-label">Description</label>
+                <textarea class="form-control" id="inptDescNote" rows="3"></textarea>
+            </div>  
             <div class="input-group mb-3">
-                <label for="choixConcept" class="form-label px-2">Choisir un concept : </label>
-                <div id="choixConcept" class="form-control">
-                    <input class="typeahead" type="text" placeholder="Saisir le nom du concept">
-                </div>                
-            </div>            
+                <span class="input-group-text">Début & fin</span>
+                <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
+                <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
+            </div>
+            <h5>Personne(s) associée(s)</5>    
+            <div id="lstNodeBoxPerson" class="list-group">
+            </div> 
+            <h5>Document(s) associé(s)</5>    
+            <div id="lstNodeBoxDoc" class="list-group">
+            </div> 
+            <h5>Films(s) associé(s)</5>    
+            <div id="lstNodeBoxFilm" class="list-group">
+            </div> 
+            <h5>Musique(s) associée(s)</5>    
+            <div id="lstNodeBoxMusique" class="list-group">
+            </div> 
+            <h5>Liens associée(s)</5>    
+            <div id="lstNodeBoxLink" class="list-group">
+            </div> 
+            <h5>Concepts associé(s)</5>    
+            <div id="lstNodeBoxConcept" class="list-group">
+            </div> 
+
         </div>                          
         <div class="modal-footer text-bg-warning">
         </div>
     </div>
-    </div>
-`;
-//ajoute la modal pour ajouter un crible
-export let modalAddCrible = `
-    <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-        <div class="modal-header text-bg-danger">
-        <h5 id="choixCribleTitre" class="modal-title">Changer le concept :</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-bg-dark">                            
-            <div class="input-group mb-3">
-                <label for="choixCrible" class="form-label px-2">Choisir un concept : </label>
-                <div id="choixCrible" class="form-control">
-                    <input class="typeahead" type="text" placeholder="Saisir le nom du concept">
-                </div>                
-            </div>
-            <div class="input-group">
-                <label for="treeselect" class="form-label">Choisir la relation : </label>
-            </div>                          
-            <div id="treeselect"></div>                        
-        <div class="modal-footer text-bg-danger">
-        </div>
-    </div>
-    </div>
-`;
-
-//ajoute la modal pour afficher les infos node stream
-export let modalStreamNode = `
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header text-bg-warning">
-                <h5 id="streamNodeTitre" class="modal-title">Changer le concept :</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-bg-dark">                            
-
-
-                <ul class="nav nav-tabs" id="streamNodeTab" role="tablist">
-                </ul>
-                <div class="tab-content" id="streamNodeTabContent">
-                </div>            
-
-
-            </div>
-            <div class="modal-footer text-bg-warning">
-            </div>
-        </div>
-    </div>
-`;
-
-//ajoute la modal pour paramétrer le stream
-export let modalStreamParams = `
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header text-bg-warning">
-                <h5 class="modal-title">Stream Words Parameters</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-bg-dark">                            
-                <div class="row">
-                    <div class="col-2">
-                        <label class="form-label">Heigth = </label>
-                        <label id="value-H" class="form-label"></label>
-                    </div>
-                    <div class="col-10">
-                        <div id="slider-H"></div>
-                    </div>
-                </div>                                        
-            </div>
-            <div class="modal-footer text-bg-warning">
-            </div>
-        </div>
     </div>
 `;

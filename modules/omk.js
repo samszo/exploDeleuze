@@ -12,8 +12,10 @@ export class omk {
         this.user = false;
         this.props = [];
         this.class = [];
+        this.medias = [];
+        this.items = [];
         this.rts
-        let perPage = 1000, types={'items':'o:item','media':'o:media'};
+        let perPage = 100, types={'items':'o:item','media':'o:media'};
                 
         this.init = function () {
             //récupères les propriétés
@@ -93,21 +95,27 @@ export class omk {
         }
 
         this.getItem = function (id, cb=false){
+            if(me.items[id])return me.items[id];
             let url = me.api+'items/'+id,
                 rs = syncRequest(url);
+            me.items[id]=rs;
             if(cb)cb(rs);                    
             return rs;
         }
 
         this.getMedia = function (id, cb=false){
+            if(me.medias[id])return me.medias[id];
             let url = me.api+'media/'+id,
                 rs = syncRequest(url);
+            me.medias[id]=rs;
             if(cb)cb(rs);                    
             return rs;
         }        
 
-        this.getItemAdminLink = function(item){
-            return me.api.replace("/api/","/admin/item/")+item['o:id'];
+        this.getAdminLink = function(r){
+            return r['@type'][0]=="o:Item" ?
+                me.api.replace("/api/","/admin/item/")+r['o:id']
+                : me.api.replace("/api/","/admin/media/")+r['o:id'];
         }
 
         //merci à https://stackoverflow.com/questions/33780271/export-a-json-object-to-a-text-file/52297652#52297652
@@ -137,7 +145,7 @@ export class omk {
                     page++;
                 }                
                 return cb ? cb(rs) : rs;                    
-            }, 1000);
+            }, 100);
         }
 
         this.getAllMedias = function (query, cb=false){
@@ -155,14 +163,15 @@ export class omk {
 
         this.searchItems = function (query, cb=false, sync=true){
             let url = me.api+'items?'+query,rs; 
-            if(sync){
-                rs = syncRequest(url);
-                if(cb)cb(rs);                    
-            }
-            else
-                request(url,cb);
-            return rs;
-            //console.log(url+page,data);                
+            setTimeout(function(){
+                if(sync){
+                    rs = syncRequest(url);
+                    if(cb)cb(rs);                    
+                }
+                else
+                    request(url,cb);
+                return rs;
+            }, 100);
         }
 
         this.getUser = function (cb=false){

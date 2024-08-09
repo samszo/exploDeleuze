@@ -3,8 +3,8 @@
  * 
  * merci à http://www.jasondavies.com/wordcloud/
  */
-import * as noUiSlider from '../modules/nouislider.min.mjs';
 import {loader} from './loader.js';
+import {slider} from './slider.js';
 
 export class tagcloud {
     constructor(config={}) {
@@ -50,7 +50,8 @@ export class tagcloud {
         maxTag = 3000,
         minmaxFont = [12, 96],
         statusText, posiTxt,
-        svg, vis, bbVis, tooltip, ext, fontSize, initWords;	    
+        svg, vis, bbVis, tooltip, ext, fontSize, initWords,
+        contParamsDetails;	    
 
 	this.init = function() {
         me.loader.show();
@@ -114,23 +115,33 @@ export class tagcloud {
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 justify-content-center" id="tcNavbarToolBar">
                     </ul>
                 </div>
-            </div>`)
+            </div>`);
             me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .append("button").attr('id',"btnSaveParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
                 .on('click',loadParams)
-                .html(`<i class="fa-solid fa-upload"></i>`)    
+                .html(`<i class="fa-solid fa-upload"></i>`);    
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .append("button").attr('id',"btnLoadParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
                 .on('click',loadParams)
-                .html(`<i class="fa-solid fa-download"></i>`)    
+                .html(`<i class="fa-solid fa-download"></i>`);    
             me.toolbar.append('li').attr('class',"nav-item mx-2")
-                    .html(`<div  class="input-group">
+                .html(`<div  class="input-group">
                     <span class="input-group-text">Nb de concept</span>
                     <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
-                    </div>`)
+                    </div>`);
+
+            me.toolbar.append('li').attr('class',"nav-item mx-2")
+                .append("button").attr('id',"btnShowParamsDetails")
+                    .attr('type',"button").attr('class',"btn btn-danger")
+                    .attr('data-bs-toggle',"collapse")
+                    .attr('data-bs-target',"#contParamsDetails")
+                    .attr('aria-expanded',"false")
+                .on('click',showParamsDetails)
+                .html(`<i class="fa-solid fa-screwdriver-wrench"></i>`);    
+                      
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .append("button").attr('id',"btnRedrawCloud")
                     .attr('type',"button").attr('class',"btn btn-danger")
@@ -139,9 +150,11 @@ export class tagcloud {
     
 
             //ajoutre les paramètres
-            let c = me.contParams.append('div').attr('class','container-fluid'); 
-            setSlider({
-                'cont':c.append('div').attr('class','row px-2 py-2'),
+            contParamsDetails = me.contParams.append('div')
+                .attr('class','container-fluid collapse')
+                .attr('id','contParamsDetails'); 
+            new slider({
+                'cont':contParamsDetails.append('div').attr('class','row px-2 py-2'),
                 'titre':'Nombre de tag maximum',
                 'id':"tcSliderNbTagMax",
                 'ext':[1,10000],
@@ -149,31 +162,31 @@ export class tagcloud {
                 'format':'unique',         
                 'fct':[{'e':'end','f':changeParams}]         
             });
-            setSlider({
-                'cont':c.append('div').attr('class','row px-2 py-2'),
+            new slider({
+                'cont':contParamsDetails.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval de la taille des tags',
                 'id':"tcSliderIntTailleTag",
                 'ext':[0,100],         
                 'start':[2,30],         
                 'fct':[{'e':'end','f':changeParams}]         
             });
-            setSlider({
-                'cont':c.append('div').attr('class','row px-2 py-2'),
+            new slider({
+                'cont':contParamsDetails.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval des occurrences',
                 'id':"tcSliderIntOcc",
                 'ext':ext,         
                 'start':ext,         
                 'fct':[{'e':'end','f':changeParams}]         
             });
-            setSlider({
-                'cont':c.append('div').attr('class','row px-2 py-2'),
+            new slider({
+                'cont':contParamsDetails.append('div').attr('class','row px-2 py-2'),
                 'titre':'Interval des tailles de police',
                 'id':"tcSliderIntTaillePolice",
                 'ext':[1,200],         
                 'start':[12,96],
                 'fct':[{'e':'end','f':changeParams}]         
             });
-            c.append('div').attr('class','row px-2 py-2')
+            contParamsDetails.append('div').attr('class','row px-2 py-2')
                 .html(`<div class="mb-3">
                     <label for="tcStopWords" class="form-label">Mots exclus</label>
                     <textarea class="form-control" id="tcStopWords" rows="3">${me.stopWords}</textarea>
@@ -198,6 +211,14 @@ export class tagcloud {
             
         }
 
+        function showParamsDetails(){
+            let cls = me.toolbar.select("#btnShowParamsDetails").attr('class');
+            if(cls=="btn btn-success" || cls=="btn btn-success collapsed"){
+                me.toolbar.select("#btnShowParamsDetails").attr('class',"btn btn-danger")                
+            }else{
+                me.toolbar.select("#btnShowParamsDetails").attr('class',"btn btn-success")                
+            }
+        }
         function changeParams(vals,params){
             d3.select("#btnRedrawCloud").attr('class',"btn btn-success")
                 .html(`<i class="fa-solid fa-cloud fa-beat-fade"></i>`)    
@@ -209,41 +230,6 @@ export class tagcloud {
                 .html(`<i class="fa-solid fa-cloud"></i>`)    
 
         }
-
-        function setSlider(params){
-            params.cont.append('h6').text(params.titre);
-            let slider =params.cont.append('div').attr('id',params.id).node();
-                        
-            var formatForSlider = params.format=='unique' ? null : {
-                from: function (formattedValue) {
-                    return parseInt(formattedValue);
-                },
-                to: function(numericValue) {
-                    return parseInt(numericValue);
-                }
-            };
-            noUiSlider.create(slider, {
-                start: params.start,
-                connect: true,
-                range: {
-                    'min': params.ext[0],
-                    'max': params.ext[1]
-                }        ,
-                format: formatForSlider,
-                tooltips: {
-                    // tooltips are output only, so only a "to" is needed
-                    to: function(numericValue) {
-                        return parseInt(numericValue);
-                    }
-                }            
-            });
-            params.fct.forEach(fct=>{
-                slider.noUiSlider.on(fct.e, function (values, handle, unencoded, tap, positions, noUiSlider) {
-                    fct.f(values,params);
-                 })
-            });         
-        }
-
 
         function loadParams(){
             console.log('loadParams');

@@ -76,15 +76,27 @@ export class tree {
             // Use the required curve
             if (typeof curve !== "function") throw new Error(`Unsupported curve`);
         
-            const svg = me.cont.append("svg")
+            let svg = me.cont.append("svg")
                 .attr("viewBox", [-dy * padding / 2, x0 - dx, width, height])
                 .attr("width", width)
                 .attr("height", height)
                 .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 10);
-        
-            svg.append("g")
+                .attr("font-size", 10),
+            vis = svg.append("g"),
+                //.attr("transform", "translate(" + [me.w >> 1, me.h >> 1] + ")"); 
+            //gestion du zoom
+            planW=width*6, planH=height*6,
+            zoom = d3.zoom()
+                .extent([[0, 0], [planW, planH]])
+                .scaleExtent([0, 10])
+                .on("zoom", zoomed);              
+            svg.call(zoom);
+            function zoomed({transform}) {
+                vis.attr("transform", transform);
+            }
+            
+            vis.append("g")
                 .attr("fill", "none")
                 .attr("stroke", stroke)
                 .attr("stroke-opacity", strokeOpacity)
@@ -98,7 +110,7 @@ export class tree {
                     .x(d => d.y)
                     .y(d => d.x));
         
-            const node = svg.append("g")
+            const node = vis.append("g")
                 .attr('id','treeTextLinks')
                 .selectAll("a")
                 .data(root.descendants())
@@ -132,7 +144,7 @@ export class tree {
                 .on('click',selectText);        
 
             //ajuste le viewbox
-            let bbLinks = d3.select('#treeTextLinks').node().getBBox();            
+            let bbLinks = svg.select('#treeTextLinks').node().getBBox();            
             svg.attr("viewBox", [bbLinks.x, bbLinks.y, bbLinks.width, bbLinks.height]);                
 
         }
