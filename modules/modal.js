@@ -123,7 +123,11 @@ export let modalNodeBox = `
             <div class="input-group mb-3">
                 <span class="input-group-text">Début & fin</span>
                 <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
+                <input type="hidden" id="inptNoteDebVal" value="" />
                 <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
+                <input type="hidden" id="inptNoteFinVal" value="" />
+                <input type="hidden" id="inptIdFrag" value="" />
+                <input type="hidden" id="inptIdTrans" value="" />
             </div>
             <h5>Personne(s) associée(s)</5>    
             <div id="lstNodeBoxPerson" class="list-group">
@@ -146,6 +150,8 @@ export let modalNodeBox = `
 
         </div>                          
         <div class="modal-footer text-bg-warning">
+            <button id="btnNodeBoxDelete" type="button" class="btn btn-danger">Supprimer</button>        
+            <button id="btnNodeBoxSave" type="button" class="btn btn-success">Enregistrer</button>        
         </div>
     </div>
     </div>

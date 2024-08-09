@@ -21,9 +21,20 @@ export class transcription {
             me.cont.selectAll('*').remove();
             rectContRess = me.cont.node().getBoundingClientRect();
             selectConceptsPosis=[];
-            const m=new modal({'size':'modal-lg'});             
+            let m=new modal({'size':'modal-lg'}),
+                arrNoteButtons = [
+                    {'id':'btnNodeBoxDelete','fct':deleteNoteBox},
+                    {'id':'btnNodeBoxSave','fct':saveNoteBox},
+                    {'id':'btnAddPerson','fct':addNoteBoxRef},
+                    {'id':'btnAddBook','fct':addNoteBoxRef},
+                    {'id':'btnAddMovie','fct':addNoteBoxRef},
+                    {'id':'btnAddMusic','fct':addNoteBoxRef},
+                    {'id':'btnAddLink','fct':addNoteBoxRef},
+                    {'id':'btnAddConcept','fct':addNoteBoxRef},
+                ];             
             mNote = m.add('modalNodeBox');
-            mNote.s.selectAll('button').on('click',clickNoteBox);
+            arrNoteButtons.forEach(b=>mNote.s.select('#'+b.id).on('click',b.fct))
+
 
             //regroupe les valeurs par conférence et par track
             me.vals.sort((a,b)=>{
@@ -163,17 +174,51 @@ export class transcription {
                     .on('click',showNoteBox);
         }
         function showNoteBox(e,d){
+            e.stopImmediatePropagation();
             mNote.m.show();
-            mNoeud.s.select('#streamNodeTabContent')
-
+            let start = d.scaleTime.invert(e.offsetX),
+                end = d.scaleTime.invert(e.offsetX+e.currentTarget.width.baseVal.value);            
+            mNote.s.select('#inptNoteDeb').node().value = d3.timeFormat("%M:%S.%L")(start);
+            mNote.s.select('#inptNoteDebVal').node().value = start;
+            mNote.s.select('#inptNoteFin').node().value = d3.timeFormat("%M:%S.%L")(end);
+            mNote.s.select('#inptNoteFinVal').node().value = end;
+            mNote.s.select('#inptTitreNote').node().value = 
+                'Note '+(noteBox.length+1)+' pour le fragment '+d.idFrag+' et la transcription '+d.idTrans;            
+            mNote.s.select('#inptIdFrag').node().value = d.idFrag;
+            mNote.s.select('#inptIdTrans').node().value = d.idTrans;            
             addBrush(e,d);
         }
-        function clickNoteBox(e,d){
-            
+        function saveNoteBox(e,d){
+            //récupère les données
+            let start = mNote.s.select('#inptNoteDebVal').node().value,
+                end = mNote.s.select('#inptNoteFinVal').node().value,
+                titre = mNote.s.select('#inptTitreNote').node().value,
+                desc = mNote.s.select('#inptDescNote').node().value,
+                idFrag = mNote.s.select('#inptIdFrag').node().value,
+                idTrans = mNote.s.select('#inptIdTrans').node().value; 
+            //enregistre dans omk
+            me.a.omk.createItem({
+                'o:resource_class':'bibo:Note',
+                "dcterms:title":titre, 
+                "dcterms:description":desc,
+                "ma:hasFragment":{'rid':idFrag},
+                "oa:hasSource":{'rid':idTrans},
+                "oa:start":start,
+                "oa:end":end,
+            },i=>{
+                console.log(i);
+            });
+        }
+
+        function deleteNoteBox(e,d){
+            console.log(d);
+        }
+
+        function addNoteBoxRef(e,d){
+            console.log(d);
         }
 
         function addBrush(e,d){
-            e.stopPropagation();
             me.cont.selectAll('.meBrush').remove();
             let t = d3.select(e.currentTarget), bb = t.node().getBBox(), 
             sltBrush = [bb.x, bb.x+bb.width],

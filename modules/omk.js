@@ -7,7 +7,7 @@ export class omk {
         this.ident = params.ident ? params.ident : false;
         this.mail = params.mail ? params.mail : false;
         this.api = params.api ? params.api : false;
-        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','genstory'];
+        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','ma','oa','jdc','bibo'];
         this.loader = new loader();
         this.user = false;
         this.props = [];
@@ -188,7 +188,6 @@ export class omk {
             postData({'u':url,'m':'POST'}, formatData(data)).then((rs) => {
                 if(cb)cb(rs);
             });
-
         }
 
         function formatData(data){
