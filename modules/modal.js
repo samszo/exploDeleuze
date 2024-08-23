@@ -73,7 +73,7 @@ export class modal {
         this.init();
     }
 }
-//ajoute la modal pour modifier une notebox 
+//modal pour modifier une notebox 
 export let modalNodeBox = `
     <div class="modal-dialog ">
     <div class="modal-content">
@@ -114,44 +114,94 @@ export let modalNodeBox = `
             </nav>
             <div class="mb-3">
                 <label for="inptTitreNote" class="form-label">Titre</label>
-                <input type="text" class="form-control" id="inptTitreNote" >
+                <input type="text" disabled class="form-control" id="inptTitreNote" >
             </div>
             <div class="mb-3">
                 <label for="inptDescNote" class="form-label">Description</label>
                 <textarea class="form-control" id="inptDescNote" rows="3"></textarea>
             </div>  
-            <div class="input-group mb-3">
-                <span class="input-group-text">Début & fin</span>
-                <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
-                <input type="hidden" id="inptNoteDebVal" value="" />
-                <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
-                <input type="hidden" id="inptNoteFinVal" value="" />
-                <input type="hidden" id="inptIdFrag" value="" />
-                <input type="hidden" id="inptIdTrans" value="" />
-            </div>
-            <h5>Personne(s) associée(s)</5>    
+            <div class="row">
+                <div class="col-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Couleur</span>
+                        <input type="color" class="form-control form-control-color" id="inptNoteColor" value="#ffc00870" title="Choisir une couleur">
+                    </div>              
+                </div>              
+                <div class="col-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Début & fin</span>
+                        <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
+                        <input type="hidden" id="inptNoteDebVal" value="" />
+                        <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
+                        <input type="hidden" id="inptNoteFinVal" value="" />
+                        <input type="hidden" id="inptIdFrag" value="" />
+                        <input type="hidden" id="inptIdTrans" value="" />
+                        <input type="hidden" id="inptIdNote" value="" />                
+                    </div>
+                </div>              
+            </div>              
+            <h4>Référence(s) associée(s)</5>    
+            <h5>Personne(s)</5>    
             <div id="lstNodeBoxPerson" class="list-group">
             </div> 
-            <h5>Document(s) associé(s)</5>    
+            <h5>Document(s)</5>    
             <div id="lstNodeBoxDoc" class="list-group">
             </div> 
-            <h5>Films(s) associé(s)</5>    
+            <h5>Films(s)</5>    
             <div id="lstNodeBoxFilm" class="list-group">
             </div> 
-            <h5>Musique(s) associée(s)</5>    
+            <h5>Musique(s)</5>    
             <div id="lstNodeBoxMusique" class="list-group">
             </div> 
-            <h5>Liens associée(s)</5>    
+            <h5>Liens</5>    
             <div id="lstNodeBoxLink" class="list-group">
             </div> 
-            <h5>Concepts associé(s)</5>    
+            <h5>Concepts</5>    
             <div id="lstNodeBoxConcept" class="list-group">
             </div> 
 
         </div>                          
         <div class="modal-footer text-bg-warning">
+            <button id="btnNodeBoxClose" type="button" class="btn btn-secondary">Fermer</button>        
             <button id="btnNodeBoxDelete" type="button" class="btn btn-danger">Supprimer</button>        
             <button id="btnNodeBoxSave" type="button" class="btn btn-success">Enregistrer</button>        
+        </div>
+    </div>
+    </div>
+`;
+//modal pour ajouter une référence
+export let modalAddRef = `
+    <div class="modal-dialog ">
+    <div class="modal-content">
+        <div class="modal-header text-bg-warning">
+        <h5 id="modalAddRefTitre" class="modal-title">Ajouter une personne</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-bg-dark">
+            <div class="mb-3">
+                <label id="inptChercheLabel" for="inptCherche" class="form-label">Nom de la personne</label>
+                <input type="text" class="form-control" id="inptCherche" >
+            </div>
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Rechercher</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nbAddRefFind" aria-controls="nbAddRefFind" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="nbAddRefFind">
+                <div class="navbar-nav">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                <button id="btnFindRefBNF" type="submit" class="btn"><img src="assets/img/Logo_BnF.svg"  height="32px" /></button>
+                <button id="btnFindRefWikidata" type="submit" class="btn"><img src="assets/img/Wikidata-logo.svg.png" height="40px" /></button>
+                    </div>                
+                </div>
+            </div>
+            </nav>
+            <div id='hstRefFind' />
+        </div>                          
+        <div class="modal-footer text-bg-warning">
+            <button id="btnAddRefClose" type="button" class="btn btn-secondary">Fermer</button>        
+            <button id="btnAddRefSave" type="button" class="btn btn-success">Enregistrer</button>        
         </div>
     </div>
     </div>

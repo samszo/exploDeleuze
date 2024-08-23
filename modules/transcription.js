@@ -1,5 +1,6 @@
 import {slider} from './slider.js';
 import {modal} from './modal.js';
+import {bnf} from './bnf.js';
 
 export class transcription {
     constructor(config={}) {
@@ -15,14 +16,18 @@ export class transcription {
             pixelParMilliseconde = 0.5,
             colorBox = '#ffc00870',
             selectConceptsPosis=[], 
-            mNote, noteBox=[];
+            mNote, noteBox=[], 
+            //en milliseconde
+            margeBox = 100,
+            oBnf = new bnf(), hotResult, hotResultHeight=400;
         this.init = function () {
             //initialisation des contenus
             me.cont.selectAll('*').remove();
             rectContRess = me.cont.node().getBoundingClientRect();
             selectConceptsPosis=[];
             let m=new modal({'size':'modal-lg'}),
-                arrNoteButtons = [
+                arrNoteButtons = [                    
+                    {'id':'btnNodeBoxClose','fct':e=>mNote.m.hide()},
                     {'id':'btnNodeBoxDelete','fct':deleteNoteBox},
                     {'id':'btnNodeBoxSave','fct':saveNoteBox},
                     {'id':'btnAddPerson','fct':addNoteBoxRef},
@@ -33,8 +38,7 @@ export class transcription {
                     {'id':'btnAddConcept','fct':addNoteBoxRef},
                 ];             
             mNote = m.add('modalNodeBox');
-            arrNoteButtons.forEach(b=>mNote.s.select('#'+b.id).on('click',b.fct))
-
+            arrNoteButtons.forEach(b=>mNote.s.select('#'+b.id).on('click',b.fct));
 
             //regroupe les valeurs par conférence et par track
             me.vals.sort((a,b)=>{
@@ -151,42 +155,108 @@ export class transcription {
             let curTime = me.cont.select('#audio'+d.id).node().currentTime*1000;
             me.cont.select('#'+d.id).selectAll('svg').call(s=>addNoteBox(s,curTime));
         }
+        function addNoteBoxSave(svg,d){
+            let boxes = svg.selectAll('.noteBoxSave').data(t=>t.notes)
+                .enter().append('g').attr('id',nb=>{
+                    nb.start = Number.parseFloat(nb.omk["oa:start"][0]["@value"]);
+                    nb.end = Number.parseFloat(nb.omk["oa:end"][0]["@value"]);
+                    return 'note'+nb.omk['o:id'];
+                })
+                .attr('class','noteBoxSave')
+                .call(createNoteBox);    
+        }        
         function addNoteBox(svg,t){
-            let margeBox = 20,
-                boxes = svg.append('g').attr('id','box'+noteBox.length)
-                    .attr('class','noteBox')
-                    /*ajouter une box par bande
-                    .selectAll('rect').data(d=>Array.apply(null, Array(nbLine)).map((x, i)=>{
-                        return {'line':i,'trans':d};
-                    })).enter().append('rect')
-                    .attr('x',d=>{
-                        return d.trans.scaleTime(d.trans.start+t);
-                    })
-                    */
-                   //ajouter une boxe
-                    .append('rect')
-                    .attr('x',d=>d.scaleTime(d.start+t))
-                    .attr('y',0)
-                    .attr('height',heightLine)
-                    .attr('width',margeBox)
-                    .attr('fill',colorBox)
-                    .style('cursor','zoom-in')                
-                    .on('click',showNoteBox);
+            svg.selectAll(".noteBoxAdd")
+            .data(d=>{
+                let db={'omk':false,'id':'trans'+d.idTrans+'_box'+noteBox.length,
+                    'trans':d
+                };
+                noteBox.push(db);
+                return noteBox.filter(nb=>nb.trans.idTrans==d.idTrans)
+            })
+            .join(
+              enter => {
+                enter.append('g').attr('id',d=>{
+                    d.start=d.trans.start+t;
+                    d.end=d.trans.start+t+margeBox;
+                    return d.id
+                })
+                .attr('class','noteBoxAdd')
+                .call(createNoteBox);
+              }
+            )
         }
-        function showNoteBox(e,d){
+        function createNoteBox(boxes){
+            //ajouter une boxe
+            boxes.append('rect')
+                .attr('id',nb=>{
+                    return 'noteRect'+(nb.omk ? nb.omk['o:id'] : nb.id)
+                })
+                .attr('x',nb=>{
+                    nb.x = nb.trans.scaleTime(nb.start);
+                    return nb.x;                    
+                })
+                .attr('y',0)
+                .attr('height',heightLine-20)
+                .attr('width',nb=>{
+                    nb.width = nb.trans.scaleTime(nb.end)-nb.trans.scaleTime(nb.start);
+                    return nb.width;
+                })
+                .attr('fill',nb=>{
+                    nb.color = nb.omk ? nb.omk['jdc:degradColors'][0]['@value'] : colorBox;
+                    return nb.color;
+                })
+                .style('cursor','zoom-in')                
+                .on('click',showNoteBox);
+            //ajoute les boutons de déplacement
+            boxes.append('rect')
+                .attr('id',nb=>'noteMoveRect'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('x',nb=>nb.x)
+                .attr('y',heightLine-20)
+                .attr('height',20)
+                .attr('width',nb=>nb.width)
+                .attr('fill',"white")
+                .style('cursor','col-resize')                
+                .on('click',addBrush);    
+            boxes.append('image')
+                .attr('id',nb=>'noteArrowLeft'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('x',nb=>nb.x)
+                .attr('y',heightLine-20)
+                .attr('height',20)
+                .attr('width',20)
+                .attr('xlink:href',"assets/img/left-arrow.svg")
+                .style('cursor','col-resize')                
+                .on('click',addBrush);    
+            boxes.append('image')
+                .attr('id',nb=>'noteArrowRight'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('x',nb=>nb.x+nb.width-20)
+                .attr('y',heightLine-20)
+                .attr('height',20)
+                .attr('width',20)
+                .attr('xlink:href',"assets/img/right-arrow.svg")
+                .style('cursor','col-resize')                
+                .on('click',addBrush);
+        }
+        function showNoteBox(e,note){
             e.stopImmediatePropagation();
             mNote.m.show();
-            let start = d.scaleTime.invert(e.offsetX),
-                end = d.scaleTime.invert(e.offsetX+e.currentTarget.width.baseVal.value);            
-            mNote.s.select('#inptNoteDeb').node().value = d3.timeFormat("%M:%S.%L")(start);
-            mNote.s.select('#inptNoteDebVal').node().value = start;
-            mNote.s.select('#inptNoteFin').node().value = d3.timeFormat("%M:%S.%L")(end);
-            mNote.s.select('#inptNoteFinVal').node().value = end;
+
+            mNote.s.select('#inptNoteDeb').node().value = d3.timeFormat("%M:%S.%L")(note.start);
+            mNote.s.select('#inptNoteDebVal').node().value = note.start;
+            mNote.s.select('#inptNoteFin').node().value = d3.timeFormat("%M:%S.%L")(note.end);
+            mNote.s.select('#inptNoteFinVal').node().value = note.end;
+            mNote.s.select('#inptNoteColor').node().value = d3.color(note.color).formatHex();                
+            mNote.s.select('#inptIdNote').node().value = note.omk ? note.omk['o:id'] : "";
+            //on met à jour le titre à chaque fois
+            //l'utilisateur peut juste changer la description
             mNote.s.select('#inptTitreNote').node().value = 
-                'Note '+(noteBox.length+1)+' pour le fragment '+d.idFrag+' et la transcription '+d.idTrans;            
-            mNote.s.select('#inptIdFrag').node().value = d.idFrag;
-            mNote.s.select('#inptIdTrans').node().value = d.idTrans;            
-            addBrush(e,d);
+                'Note '+note.trans.idFrag
+                    +'-'+note.trans.idTrans           
+                    +' : '+d3.timeFormat("%M:%S.%L")(note.start)+' -> '+d3.timeFormat("%M:%S.%L")(note.end);            
+            if(note.omk && note.omk["dcterms:description"])
+                mNote.s.select('#inptDescNote').node().value = note.omk["dcterms:description"][0]["@value"];
+            mNote.s.select('#inptIdFrag').node().value = note.trans.idFrag;
+            mNote.s.select('#inptIdTrans').node().value = note.trans.idTrans;            
         }
         function saveNoteBox(e,d){
             //récupère les données
@@ -195,19 +265,34 @@ export class transcription {
                 titre = mNote.s.select('#inptTitreNote').node().value,
                 desc = mNote.s.select('#inptDescNote').node().value,
                 idFrag = mNote.s.select('#inptIdFrag').node().value,
-                idTrans = mNote.s.select('#inptIdTrans').node().value; 
-            //enregistre dans omk
-            me.a.omk.createItem({
-                'o:resource_class':'bibo:Note',
-                "dcterms:title":titre, 
-                "dcterms:description":desc,
-                "ma:hasFragment":{'rid':idFrag},
-                "oa:hasSource":{'rid':idTrans},
-                "oa:start":start,
-                "oa:end":end,
-            },i=>{
-                console.log(i);
-            });
+                idTrans = mNote.s.select('#inptIdTrans').node().value,
+                idNote = mNote.s.select('#inptIdNote').node().value, 
+                color = d3.color(mNote.s.select('#inptNoteColor').node().value)
+                        .copy({opacity: 0.32}).formatHex8(),
+                data = {
+                    'o:resource_template':'Note transcription',
+                    "dcterms:title":titre, 
+                    "dcterms:description":desc,
+                    "dcterms:isReferencedBy":idFrag+":"+idTrans+":"+start+":"+end,
+                    "ma:hasFragment":{'rid':idFrag},
+                    "oa:hasSource":{'rid':idTrans},
+                    "oa:start":start,
+                    "oa:end":end,
+                    'jdc:degradColors':color
+                };
+            if(idNote){                
+                //mise à jour dans omk
+                me.a.omk.updateRessource(idNote, data,'items',null,"PATCH",i=>{
+                    console.log(i);
+                    redrawTranscription();
+                });
+            }else{
+                //enregistre dans omk
+                me.a.omk.createItem(data,i=>{
+                    console.log(i);
+                    redrawTranscription();
+                });
+            }
         }
 
         function deleteNoteBox(e,d){
@@ -215,29 +300,127 @@ export class transcription {
         }
 
         function addNoteBoxRef(e,d){
-            console.log(d);
+
+            let m=new modal({'size':'modal-lg'}),
+                mRef = m.add('modalAddRef'), rs, cherche;
+            setTableFindRef([{'cherche':'rien'}]);            
+            mRef.s.select('#modalAddRefTitre').html("Ajouter des personnes");
+            mRef.s.select('#inptChercheLabel').html("Nom de la personne");                        
+            mRef.s.select('#inptCherche').node().value = "";
+            d3.select("#btnAddRefClose").on('click',(e,d)=>mRef.m.hide());        
+            d3.select("#btnAddRefSave").on('click',(e,d)=>{
+                let refSelect = hotResult.getData().filter(r=>r[0]),
+                liste = mNote.s.select('#lstNodeBoxPerson').selectAll('li').data(refSelect).enter()
+                    .append('li').attr('class',"list-group-item list-group-item-warning d-flex justify-content-between align-items-start"),
+                listeBody = liste.append('div').attr('class',"ms-2 me-auto"),
+                listeBtn = liste.append('div').attr('class',"d-flex align-items-center");
+                listeBody.append('div').attr('class',"fw-bold")                    
+                    .text(d=>{
+                        return d[1];
+                    });
+                listeBody.append('p').html(d=>{
+                        return `<i class="fa-solid fa-cake-candles"></i> ${d[2]}
+                            <i class="fa-solid fa-skull"></i> ${d[3]}`;
+                    });
+                listeBtn.append('button').attr('class',"btn btn-danger badge rounded-pill")
+                    .html('<i class="fa-solid fa-trash-can"></i>');
+                listeBtn.append('a').attr('class',"badge text-bg-success rounded-pill  ms-2")
+                    .attr('target',"_blank")
+                    .attr('href',d=>d[4])
+                    .html('<i class="fa-solid fa-link"></i>');
+                listeBtn.append('a').attr('class',"badge rounded-pill")
+                    .attr('target',"_blank")
+                    .attr('href',d=>d[4])
+                    .html('<img height="32px" src="assets/img/OmekaS.png"></img>');
+                mRef.m.hide();
+                mNote.m.show();
+            });        
+
+            //TODO:gérer les validations https://getbootstrap.com/docs/5.3/forms/validation/
+            d3.select("#btnFindRefBNF").on('click',(e,d)=>{
+                cherche = mRef.s.select('#inptCherche').node().value;
+                if(cherche){
+                    oBnf.findAuthor(cherche).then(rs => {
+                        setTableFindRef(rs);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });                         
+                }
+            })
+            d3.select("#btnFindRefWikidata").on('click',(e,d)=>{
+                cherche = mRef.s.select('#inptCherche').node().value;
+                if(cherche)rs = oBnf.findAuthor(cherche);
+            })
+            mNote.m.hide();
+            mRef.m.show();
+            console.log(rs);
         }
 
+        function setTableFindRef(data){
+            let headers = Object.keys(data[0]);
+            //ajoute la colonne de choix 
+            headers.unshift('choisir');
+            hotResult = new Handsontable(d3.select('#hstRefFind').node(), {
+                className: 'htDark',
+                afterGetColHeader: function(col, TH){
+                    TH.className = 'darkTH'
+                },
+                colHeaders: true,
+                rowHeaders: true,
+                data:data.map(d=>{
+                    let r = {};
+                    headers.forEach(h => r[h]= h=='choisir' ? false : d[h].value);
+                    return r;
+                }),
+                colHeaders: headers,
+                height: hotResultHeight+'px',
+                width: '100%',
+                licenseKey: 'non-commercial-and-evaluation',
+                customBorders: true,
+                dropdownMenu: true,
+                multiColumnSorting: true,
+                filters: true,
+                columns: getCellEditor(headers),
+                allowInsertColumn: false,
+                copyPaste: false,
+                search: true,                        
+            });
+        }        
+
         function addBrush(e,d){
+            e.stopImmediatePropagation();
             me.cont.selectAll('.meBrush').remove();
-            let t = d3.select(e.currentTarget), bb = t.node().getBBox(), 
+            let t = e.currentTarget.nodeName == "image" ?
+                d3.select(e.currentTarget.parentNode) : d3.select(e.currentTarget), 
+            bb = t.node().getBBox(), 
             sltBrush = [bb.x, bb.x+bb.width],
             brush = d3.brushX()
                 /*ajuster à la bande
                 .extent([[0, lineBand(d.line)], [d.trans.widthLine, lineBand(d.line)+lineBand.bandwidth()]])
                 */
-                .extent([[0, 0], [d.widthLine, heightLine]])
+                .extent([[0, 0], [d.trans ? d.trans.widthLine : d.widthLine, heightLine]])
                 .on("brush", s=>{
                     if (s) {
                         //console.log(s.selection);
-                        t.attr('x',s.selection[0]);
-                        t.attr('width',s.selection[1] > s.selection[0] ? s.selection[1] - s.selection[0] : s.selection[0] - s.selection[1]);
+                        let x = s.selection[0],
+                            y = s.selection[1],
+                            w = y > x ? y - x : x - y,
+                            id = d.omk ? d.omk['o:id'] : d.id;
+                            d.start=d.trans.scaleTime.invert(x);
+                            d.end=d.trans.scaleTime.invert(y);
+                        d3.select('#noteArrowLeft'+id).attr('x',x);
+                        d3.select('#noteArrowRight'+id).attr('x',x+w-20);                        
+                        d3.select('#noteMoveRect'+id).attr('x',x).attr('width',w);
+                        d3.select('#noteRect'+id).attr('x',x).attr('width',w);
+                        t.attr('x',x).attr('width',w);
                     }        
                 })
                 .on("end", s=>{
                     if (!s) {
                         gb.call(brush.move, sltBrush);
                     }else if(s.sourceEvent){
+                        showNoteBox(e,d);
                         me.cont.select('.meBrush').remove();
                     }
             });    
@@ -296,18 +479,20 @@ export class transcription {
                 .append('div').attr('class',"row justify-content-center")
                 .attr("class","transConceptLine")
                         .html(d=>{
-                            return '<h6>'+d[0]+'</h6>';
+                            return `<h6>${d[0]}
+                            <a href="${me.a.omk.getAdminLink(null,d[1][0].idTrans)}" target="_blank">
+                            <img src="assets/img/OmekaS.png" class="mx-2" height="20px" /></a></h6>`;
                         }).call(addConceptLine);
         }
         function addConceptLine(e){
             e.selectAll('div').remove();
             lineBand = d3.scaleBand(
                 Array.apply(null, Array(nbLine)).map((x, i)=>i), 
-                [0, heightLine-20]).paddingInner(0.2).paddingOuter(0);
+                [0, heightLine-40]).paddingInner(0.2).paddingOuter(0);
             let bands = Array.apply(null, Array(nbLine*2)).map((x, i)=>i%nbLine).map((x, i)=>i>=nbLine ? x+"text" : x+'line').sort(),
             yBand = d3.scaleBand(
                 bands, 
-                [0, heightLine]).paddingInner(0.2).paddingOuter(0.2),
+                [0, heightLine-20]).paddingInner(0.2).paddingOuter(0.2),
             fontSize = yBand.bandwidth()*2,
             divSvg = e.append('div')
                 .attr('id',t=>'scrollTrans'+t[1][0].idTrans)
@@ -316,10 +501,6 @@ export class transcription {
             svg = divSvg.append('svg')
                 .attr('id',t=>{
                     t.omk = me.a.omk.getItem(t[1][0].idTrans);
-                    return 'trans'+t[1][0].idTrans
-                })
-                //.attr("viewBox", [0, 0, bb.width, heightLine])
-                .attr("width", t=>{
                     t.start = Number.parseFloat(t[1][0].startFrag)*1000;
                     t.end = Number.parseFloat(t[1][0].endFrag)*1000;
                     t.dur = t.end-t.start;
@@ -330,11 +511,21 @@ export class transcription {
                         [t.start, t.end],
                         [0, t.widthLine] 
                     );
-                    return t.widthLine;
+                    //récupère les notes
+                    t.notes=[];
+                    if(t.omk["@reverse"] && t.omk["@reverse"]["oa:hasSource"]){
+                        t.omk["@reverse"]["oa:hasSource"].forEach(r=>{                            
+                            t.notes.push({'trans':t,'omk':me.a.omk.getResource(r["@id"])});
+                        })
+                    }
+                    return 'trans'+t[1][0].idTrans
                 })
+                //.attr("viewBox", [0, 0, bb.width, heightLine])
+                .attr("width", t=>t.widthLine)
                 .attr("height", heightLine)
                 .style('cursor','pointer')
                 .on('click',clickTransCpt),
+            //ajoute les concepts
             transCpt = svg.selectAll('g').data(t=>{
                     let data = [];
                     for (let i = 0; i < t.omk["curation:data"].length; i++) {
@@ -355,7 +546,7 @@ export class transcription {
                     }
                     return t.omk["curation:data"];
             }).enter().append('g');
-            //ajoute des concepts          
+            //ajoute le texte des concepts          
             transCpt.append('text')
                 .attr("x", d=> d.x1)
             	.attr("y",d => d.yText)
@@ -388,7 +579,7 @@ export class transcription {
                 .attr("id", t=>{
                     return 'transAxe'+t[1][0].idTrans;
                 })
-                .attr("transform", `translate(0,${heightLine - 20})`)
+                .attr("transform", `translate(0,${heightLine - 40})`)
                 .each(t=>{
                     svg.select('#transAxe'+t[1][0].idTrans).call(d3.axisBottom(t.scaleTime)
                         .ticks(pixelParMilliseconde*1000)
@@ -410,6 +601,9 @@ export class transcription {
                     .attr('d', (d,i)=> d3.line()([[0, 0], [0, heightLine]]))
                     .attr('stroke', 'green')
                     .attr('stroke-width',4); 
+            //ajoute les notes enregistrées
+            svg.call(addNoteBoxSave);            
+
             //place le focus sur le premier concept de chaque svg
             if(selectConceptsPosis.length){
                 let grpSCP = Array.from(d3.group(selectConceptsPosis,d => d.idTrans), ([n, v]) => ({ n, v })); 

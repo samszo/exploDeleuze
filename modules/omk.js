@@ -14,6 +14,7 @@ export class omk {
         this.class = [];
         this.medias = [];
         this.items = [];
+        this.resources = [];
         this.rts
         let perPage = 100, types={'items':'o:item','media':'o:media'};
                 
@@ -94,6 +95,52 @@ export class omk {
             })
         }
 
+        this.getResource = function (url, cb=false){
+            if(me.resources[url])return me.resources[url];
+            let rs = syncRequest(url);
+            me.resources[url]=rs;
+            if(cb)cb(rs);                    
+            return rs;
+        }
+        this.getResourceType = function (id, type, cb=false){
+            let url = me.api+type+'/'+id;
+            if(me.resources[url])return me.resources[url];
+            let rs = syncRequest(url);
+            me.resources[url]=rs;
+            if(cb)cb(rs);                    
+            return rs;
+        }
+
+
+        this.updateRessource = function (id, data, type='items', fd=null, m='PUT',cb=false, dataOri=false){
+            let oriData, newData, url = me.api+type+'/'+id+'?key_identity='+me.ident+'&key_credential='+me.key;
+            if(data){
+                //récupère les données originales
+                oriData = dataOri ? dataOri : me.getResourceType(id,type), 
+                newData = me.formatData(data,types[type]);
+                //met à jour les données
+                for (const p in newData) {
+                    if(p!='@type'){
+                        //vérifie si la propriété est dans les données originales                        
+                        if(oriData[p]){
+                            //m=="PUT" : on ajoute les nouvelles valeurs
+                            if(m=="PUT")oriData[p]=oriData[p].concat(newData[p]);
+                            //m=="PATCH" : on modifie les valeurs
+                            if(m=="PATCH")oriData[p]=newData[p];          
+                        }else{
+                            //ajoute la nouvelle propriété dans les données
+                            oriData[p]=newData[p];
+                        }     
+                    }
+                }
+            }
+            postData({'u':url,'m':m}, fd ? fd : oriData).then((rs) => {
+                me.items[rs['o:id']]=rs;
+                if(cb)cb(rs);
+            });
+
+        }        
+
         this.getItem = function (id, cb=false){
             if(me.items[id])return me.items[id];
             let url = me.api+'items/'+id,
@@ -112,8 +159,9 @@ export class omk {
             return rs;
         }        
 
-        this.getAdminLink = function(r){
-            return r['@type'][0]=="o:Item" ?
+        this.getAdminLink = function(r,id=false){
+            return id ? me.api.replace("/api/","/admin/item/")+id
+                : r['@type'][0]=="o:Item" ?
                 me.api.replace("/api/","/admin/item/")+r['o:id']
                 : me.api.replace("/api/","/admin/media/")+r['o:id'];
         }
@@ -185,22 +233,34 @@ export class omk {
 
         this.createItem = function (data, cb=false){
             let url = me.api+'items?key_identity='+me.ident+'&key_credential='+me.key;
-            postData({'u':url,'m':'POST'}, formatData(data)).then((rs) => {
+            postData({'u':url,'m':'POST'}, me.formatData(data)).then((rs) => {
+                me.items[rs['o:id']]=rs;
                 if(cb)cb(rs);
             });
         }
 
-        function formatData(data){
-            let fd = {"@type" : "o:Item"},p;
-            for (const [k, v] of Object.entries(data)) {
+
+        this.formatData = function (data,type="o:Item"){
+            let fd = {"@type" : type},p;
+            for (let [k, v] of Object.entries(data)) {
                 switch (k) {
+                    case 'o:item_set':
+                        fd[k]=[{'o:id':v}];
+                        break;
                     case 'o:resource_class':
                         p = me.class.filter(prp=>prp['o:term']==v)[0];                        
+                        fd[k]={'o:id':p['o:id']};            
+                        break;
+                    case 'o:resource_template':
+                        p = me.rts.filter(rt=>rt['o:label']==v)[0];                        
                         fd[k]={'o:id':p['o:id']};            
                         break;
                     case 'o:media':
                         if(!fd[k])fd[k]=[];
                         fd[k].push({"o:ingester": "url", "ingest_url":v});                                
+                        break;
+                    case 'file':
+                        fd['o:media']=[{"o:ingester": "upload","file_index": "1"}];
                         break;
                     case 'labels':
                         v.forEach(d=>{
@@ -211,8 +271,11 @@ export class omk {
                         break;                    
                     default:
                         if(!fd[k])fd[k]=[];
-                        p = me.props.filter(prp=>prp['o:term']==k)[0];                        
-                        fd[k].push(formatValue(p,v));    
+                        p = me.props.filter(prp=>prp['o:term']==k)[0];
+                        if(Array.isArray(v)){
+                            fd[k] = v.map(val=>formatValue(p,val));
+                        }else                        
+                            fd[k].push(formatValue(p,v));    
                         break;
                 }
             }                         
@@ -223,32 +286,40 @@ export class omk {
                 return {"property_id": p['o:id'], "value_resource_id" : v.rid, "type" : "resource" };    
             else if(typeof v === 'object' && v.u)
                 return {"property_id": p['o:id'], "@id" : v.u, "o:label":v.l, "type" : "uri" };    
+            else if(typeof v === 'object')
+                return {"property_id": p['o:id'], "@value" : JSON.stringify(v), "type" : "literal" };    
             else
                 return {"property_id": p['o:id'], "@value" : v, "type" : "literal" };    
         }
-
-        async function postData(url, data = {}) {
+        
+        async function postData(url, data = {},file) {
             // Default options are marked with *
-            let h = new Headers({
-                'Content-Type': 'application/json',
-                //"Content-Type":"text/plain",
-                //"Content-Type":"multipart/form-data",
-                "OpenAI-Organization":me.orga,
-                "Authorization":"Bearer "+me.key
-              }), v = h.get("Content-Type");           
-            const response = await fetch(url.u, {
-              method: url.m, // *GET, POST, PUT, DELETE, etc.
-              mode: "same-origin", // no-cors, *cors, same-origin
-              cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-              //credentials: "include",//"same-origin", // include, *same-origin, omit
-              headers: h,
-              redirect: "follow", // manual, *follow, error
-              referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-              body: url.m=='POST'?JSON.stringify(data):null, // body data type must match "Content-Type" header
-            });
+            let bodyData, 
+            options ={
+                method: url.m, // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            };
             
+            if(url.m=='POST' || url.m=='PUT' || url.m=='PATCH'){
+                if(file){
+                    bodyData = new FormData();
+                    bodyData.append('data', JSON.stringify(data));
+                    bodyData.append('file[1]', file);                     
+                }else{
+                    bodyData=JSON.stringify(data);
+                    options.headers= {
+                        "Content-Type":"application/json"
+                        };
+                }
+                options.body=bodyData;
+            }
+            const response = await fetch(url.u, options);
+            me.loader.hide(true);
             return response.json(); // parses JSON response into native JavaScript objects
-        }
+        }        
 
         function syncRequest(q){
             me.loader.show();

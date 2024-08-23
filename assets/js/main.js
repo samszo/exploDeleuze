@@ -52,14 +52,16 @@
         let editors = [];
         headers.forEach(h=>{
             switch (h) {
-              default:
+            case 'choisir':
+                editors.push({data:h, type: 'checkbox'})                          
+                break;
+            default:
                 editors.push({data:h, type: 'text'})                  
                 break;
             }
           })
         return editors;
     }
-
     function setMenu(s,data,lbl,fct){
         d3.select(s).selectAll('li').data(data).enter().append('li')
                 .append('a').attr('class',"dropdown-item")
