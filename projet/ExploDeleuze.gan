@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2025-01-01" view-index="0" gantt-divider-location="582" resource-divider-location="300" version="3.3.3309" locale="fr_FR">
+    <description/>
+    <view zooming-state="default:9" id="gantt-chart">
+        <field id="tpd3" name="Nom" width="364" order="0"/>
+        <field id="tpd4" name="Date de début" width="103" order="1"/>
+        <field id="tpd5" name="Date de fin" width="114" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <timeline><![CDATA[0]]></timeline>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Nom" width="210" order="0"/>
+        <field id="1" name="Rôle par défaut" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars base-id="fr">
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="1fefd4430b2d403c8725b6c2faec822c" name="Réunions de suivi" color="#000000" meeting="false" start="2025-01-27" duration="256" complete="0" expand="false" cost-manual-value="0" cost-calculated="false">
+            <task id="1" uid="9c8fb85e45594a51816dabf4f851dea6" name="réunion 1" color="#8cb6ce" meeting="false" start="2025-01-27" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+                <depend id="56" type="1" difference="0" hardness="Strong"/>
+            </task>
+            <task id="2" uid="23a4cd5cb91c430ba4f4a8319dcfd87f" name="réunion 2" color="#8cb6ce" meeting="false" start="2025-02-03" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+                <depend id="58" type="1" difference="0" hardness="Strong"/>
+                <depend id="60" type="1" difference="0" hardness="Strong"/>
+            </task>
+            <task id="3" uid="da4735d6c8c941ebae00f708ef40ed09" name="réunion 3" color="#8cb6ce" meeting="false" start="2025-02-10" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="4" uid="cfb57b002e26438eb81eee94c449edbf" name="réunion 4" color="#8cb6ce" meeting="false" start="2025-02-17" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="5" uid="f5dd4f7283f54478b252dabe6dabe421" name="réunion 5" color="#8cb6ce" meeting="false" start="2025-02-24" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="6" uid="da442052d52747239fc11ad93012f7e4" name="réunion 6" color="#8cb6ce" meeting="false" start="2025-03-03" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="7" uid="a7105032ce01406e9f7104fb1ee46720" name="réunion 7" color="#8cb6ce" meeting="false" start="2025-03-10" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="8" uid="6fdfe80413e44c74b9ab7254fba78505" name="réunion 8" color="#8cb6ce" meeting="false" start="2025-03-17" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="9" uid="49fe4222da0e447f852a0927999b2dd0" name="réunion 9" color="#8cb6ce" meeting="false" start="2025-03-24" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="10" uid="7aa3e3e58c3a4af0a30a158a31672fb6" name="réunion 10" color="#8cb6ce" meeting="false" start="2025-03-31" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="11" uid="a4e5397602c545d8983b02d43f24a2a6" name="réunion 11" color="#8cb6ce" meeting="false" start="2025-04-07" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="12" uid="7b5391c8e6404ba4903ff451330e2425" name="réunion 12" color="#8cb6ce" meeting="false" start="2025-04-14" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="13" uid="629b603986bf4ffc9b968aa199b350d5" name="réunion 13" color="#8cb6ce" meeting="false" start="2025-04-21" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="14" uid="5c51f96e776f4a788df25ce26c810c59" name="réunion 14" color="#8cb6ce" meeting="false" start="2025-04-28" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="15" uid="5dbdabfd791646b3a2728ca0dffc185d" name="réunion 15" color="#8cb6ce" meeting="false" start="2025-05-05" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="16" uid="725bd91f874a472ab83ce2fe9c0479d3" name="réunion 16" color="#8cb6ce" meeting="false" start="2025-05-12" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="17" uid="e1642838ae424d36bfbd9a02669bbf20" name="réunion 17" color="#8cb6ce" meeting="false" start="2025-05-19" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="18" uid="84ff4a441b094ac7958b68f1ae7b2805" name="réunion 18" color="#8cb6ce" meeting="false" start="2025-05-26" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="19" uid="f834097d988a4ee2ae77002b122bfc44" name="réunion 19" color="#8cb6ce" meeting="false" start="2025-06-02" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="20" uid="344a465c4b2a43a6bbcf2dca1e8853d4" name="réunion 20" color="#8cb6ce" meeting="false" start="2025-06-09" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="21" uid="d20ae0b4df354d7baedd617bad1f2030" name="réunion 21" color="#8cb6ce" meeting="false" start="2025-06-16" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="22" uid="e606b3ca6fcf424ea52d8d7a15a6c10d" name="réunion 22" color="#8cb6ce" meeting="false" start="2025-06-23" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="23" uid="cc34dc8aa41e4c558b080cc0b0076c64" name="réunion 23" color="#8cb6ce" meeting="false" start="2025-06-30" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="24" uid="679f7e6b092f4e6c80a57fccbc1623d4" name="réunion 24" color="#8cb6ce" meeting="false" start="2025-07-07" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="25" uid="5647c68827f24178be32f13711175b4f" name="réunion 25" color="#8cb6ce" meeting="false" start="2025-07-14" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="26" uid="2f8679c0effc4402ab8ed87732af338d" name="réunion 26" color="#8cb6ce" meeting="false" start="2025-07-21" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="27" uid="9dc60abb5e22400ab7e1051280c6aa20" name="réunion 27" color="#8cb6ce" meeting="false" start="2025-07-28" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="28" uid="93526eb7e64a45bf9396a5fe71480ac5" name="réunion 28" color="#8cb6ce" meeting="false" start="2025-08-04" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="29" uid="f696b61a119a4216b435e963289c4b56" name="réunion 29" color="#8cb6ce" meeting="false" start="2025-08-11" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="30" uid="4eb86ed482d04afdaf880156e46c7404" name="réunion 30" color="#8cb6ce" meeting="false" start="2025-08-18" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="31" uid="96eee9e7ce2d4b569007b6819d71c90a" name="réunion 31" color="#8cb6ce" meeting="false" start="2025-08-25" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="32" uid="e265f6ff38bf457881be697faca3214f" name="réunion 32" color="#8cb6ce" meeting="false" start="2025-09-01" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="33" uid="434bffa343354668b260fa105fd37a61" name="réunion 33" color="#8cb6ce" meeting="false" start="2025-09-08" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="34" uid="e706ea5584e547399bab54991bb8eece" name="réunion 34" color="#8cb6ce" meeting="false" start="2025-09-15" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="35" uid="6fb78545435141319717a89ea28e309f" name="réunion 35" color="#8cb6ce" meeting="false" start="2025-09-22" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="36" uid="555ad0b4eee640ad9a01034e98565670" name="réunion 36" color="#8cb6ce" meeting="false" start="2025-09-29" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="37" uid="e8e21d3419fd47cfac5af3ec91ea9de9" name="réunion 37" color="#8cb6ce" meeting="false" start="2025-10-06" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="38" uid="5b88c6c9f7a14d0e93114e1632e9a093" name="réunion 38" color="#8cb6ce" meeting="false" start="2025-10-13" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="39" uid="2ec1fb0d7cfd4c8db7b3edd1eb7f15d1" name="réunion 39" color="#8cb6ce" meeting="false" start="2025-10-20" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="40" uid="6719bb5adb6646d0940f10fe6c11906c" name="réunion 40" color="#8cb6ce" meeting="false" start="2025-10-27" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="41" uid="a21e5c8089294ffa9eb26bfb1c55e278" name="réunion 41" color="#8cb6ce" meeting="false" start="2025-11-03" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="42" uid="073d1c22cfac42669a8bddd015cab36d" name="réunion 42" color="#8cb6ce" meeting="false" start="2025-11-10" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="43" uid="7cf94a9ec9f94cd3b21f25a929123b2c" name="réunion 43" color="#8cb6ce" meeting="false" start="2025-11-17" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="44" uid="72755b6336104545b94f1c7585cea428" name="réunion 44" color="#8cb6ce" meeting="false" start="2025-11-24" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="45" uid="43274428b0364190a99cfd8f228715d7" name="réunion 45" color="#8cb6ce" meeting="false" start="2025-12-01" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="46" uid="30b5414d82434b118829018b9fec597a" name="réunion 46" color="#8cb6ce" meeting="false" start="2025-12-08" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="47" uid="0d87ee7f94cd4225939167f23a93d866" name="réunion 47" color="#8cb6ce" meeting="false" start="2025-12-15" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="48" uid="5ef22c721f6b4e34a7746f7bfc8ea240" name="réunion 48" color="#8cb6ce" meeting="false" start="2025-12-22" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="49" uid="4070d04b207d4e75af7a9399b87074a0" name="réunion 49" color="#8cb6ce" meeting="false" start="2025-12-29" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="50" uid="c9d411e9aaf245ecb4b835cf97942644" name="réunion 50" color="#8cb6ce" meeting="false" start="2026-01-05" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="51" uid="12bf8f2061d249e799ca2b99b67404a0" name="réunion 51" color="#8cb6ce" meeting="false" start="2026-01-12" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+            <task id="52" uid="d1fd8481f34149be8f179522625097e2" name="réunion 52" color="#8cb6ce" meeting="false" start="2026-01-19" duration="1" complete="0" expand="true" cost-manual-value="0" cost-calculated="false"/>
+        </task>
+        <task id="57" uid="b2b1b9b925d7450fbee383c952ecbe16" name="Sujet des réunions" meeting="false" start="2025-01-27" duration="6" complete="0" expand="true">
+            <task id="56" uid="907060ae11d74adaa2b24084e1c009c8" name="Présentation des équipes" meeting="false" start="2025-01-27" duration="1" complete="0" expand="true"/>
+            <task id="58" uid="99b9b985c22c4e93893f21214efcc230" name="Présentation du prototype" meeting="false" start="2025-02-03" duration="1" complete="0" expand="true"/>
+            <task id="60" uid="c5fb922471dd4560a63d2962184d3486" name="Présentation de l'écosystème BnF - Huma-Num" meeting="false" start="2025-02-03" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="59" uid="35b4d12f3b694024afd867017a774f6e" name="Spécification de l'écosystème" meeting="false" start="2025-01-01" duration="1" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
