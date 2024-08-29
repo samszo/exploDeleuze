@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Explorer les cours de Deleuze avec l’IA" company="Laboratoire Paragraphe, BnF DataLab, Huma-Num" webLink="http://" view-date="2024-12-01" view-index="0" gantt-divider-location="620" resource-divider-location="300" version="3.3.3309" locale="fr_FR">
+<?xml version="1.0" encoding="UTF-8"?><project name="Explorer les cours de Deleuze avec l’IA" company="Laboratoire Paragraphe, BnF DataLab, Huma-Num" webLink="https://samszo.github.io/exploDeleuze/projet/ExploDeleuze.html" view-date="2025-01-01" view-index="0" gantt-divider-location="536" resource-divider-location="300" version="3.3.3309" locale="fr_FR">
     <description/>
-    <view zooming-state="default:9" id="gantt-chart">
-        <field id="tpd3" name="Nom" width="302" order="0"/>
-        <field id="tpd4" name="Date de début" width="144" order="1"/>
-        <field id="tpd5" name="Date de fin" width="158" order="2"/>
+    <view zooming-state="default:10" id="gantt-chart">
+        <field id="tpd3" name="Nom" width="339" order="0"/>
+        <field id="tpd4" name="Date de début" width="91" order="1"/>
+        <field id="tpd5" name="Date de fin" width="89" order="2"/>
         <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
@@ -12,8 +12,8 @@
         <timeline><![CDATA[0]]></timeline>
     </view>
     <view id="resource-table">
-        <field id="0" name="Nom" width="205" order="0"/>
-        <field id="1" name="Rôle par défaut" width="89" order="1"/>
+        <field id="0" name="Nom" width="198" order="0"/>
+        <field id="1" name="Rôle par défaut" width="81" order="1"/>
     </view>
     <!-- -->
     <calendars base-id="fr">
