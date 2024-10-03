@@ -52,12 +52,15 @@
         let editors = [];
         headers.forEach(h=>{
             switch (h) {
-            case 'choisir':
-                editors.push({data:h, type: 'checkbox'})                          
-                break;
-            default:
-                editors.push({data:h, type: 'text'})                  
-                break;
+                case 'choix':
+                    editors.push({data:h, type: 'checkbox'})                          
+                    break;
+                case 'date':
+                    editors.push({data:h, type:'date'})                  
+                    break;                    
+                default:
+                    editors.push({data:h, type: 'text'})                  
+                    break;
             }
           })
         return editors;

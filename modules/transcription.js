@@ -20,6 +20,7 @@ export class transcription {
             //en milliseconde
             margeBox = 100,
             oBnf = new bnf(), hotResult, hotResultHeight=400;
+
         this.init = function () {
             //initialisation des contenus
             me.cont.selectAll('*').remove();
@@ -42,8 +43,8 @@ export class transcription {
 
             //regroupe les valeurs par conférence et par track
             me.vals.sort((a,b)=>{
-                let av = a.idConf+a.trackMediaConf+Number.parseFloat(a.startFrag),
-                bv = b.idConf+b.trackMediaConf+Number.parseFloat(b.startFrag);
+                let av = a.idConf+a.mediaConfTrack+a.mediaConfTrackNum+Number.parseFloat(a.startFrag),
+                bv = b.idConf+b.mediaConfTrack+b.mediaConfTrackNum+Number.parseFloat(b.startFrag);
                 return av-bv;
             })
             let hFrags = d3.hierarchy(d3.group(me.vals, 
@@ -107,7 +108,7 @@ export class transcription {
             //ajoute la barre des paramètres
             if(me.contParams)showParams();            
         }
-        
+
         function addLinkReference(e){
             e.append('a').attr('href',d=>{
                     return d.omk["dcterms:source"] ? d.omk["dcterms:source"][0]["@id"] : '';
@@ -151,6 +152,7 @@ export class transcription {
                     .call(addTranscription);
                                    
         }
+        
         function addLinkTime(e,d){
             let curTime = me.cont.select('#audio'+d.id).node().currentTime*1000;
             me.cont.select('#'+d.id).selectAll('svg').call(s=>addNoteBox(s,curTime));
@@ -280,6 +282,11 @@ export class transcription {
                     "oa:end":end,
                     'jdc:degradColors':color
                 };
+            //récupère les nouvelles références
+            d3.select("#lstNodeBoxPerson").selectAll('li').data().forEach(r=>{
+                console.log(r);
+                //let ref = await getOmkRef(r);
+            });
             if(idNote){                
                 //mise à jour dans omk
                 me.a.omk.updateRessource(idNote, data,'items',null,"PATCH",i=>{
@@ -295,8 +302,64 @@ export class transcription {
             }
         }
 
+        function getOmkRef(rs){
+
+            for (let index = 0; index < array.length; index++) {
+                const element = array[index];
+                let query = "property[0][joiner]=and&property[0][property]=35"
+                +"&property[0][type]=eq&property[0][text]="+r[4]
+                +"&resource_class_id[]=94&resource_template_id[]=7",
+                rs = me.a.omk.searchItems(query); 
+                if(!rs.length){
+                    //enregistre dans omk
+                    let data = {
+                        'o:resource_template':'ref Personne',
+                        "dcterms:title":r[0], 
+                        "dcterms:isReferencedBy":{'u':r[3],'l':'dataBnF'},
+                        "bio:birth":r[1],
+                        "bio:death":r[2],
+                        "foaf:familyName":r[4],
+                        "foaf:givenName":r[5]
+                    }    
+                    me.a.omk.createItem(data,i=>{
+                        return i; 
+                    });    
+                }else{
+                    return rs;   
+                }  
+            }
+        }
+
         function deleteNoteBox(e,d){
             console.log(d);
+        }
+
+        function setNoteBoxRef(e,d){
+            let omkRefs = getOmkRef(hotResult.getData().filter(r=>r[0])),
+            liste = mNote.s.select('#lstNodeBoxPerson').selectAll('li').data(omkRefs).enter()
+                .append('li').attr('class',"list-group-item list-group-item-warning d-flex justify-content-between align-items-start"),
+            listeBody = liste.append('div').attr('class',"ms-2 me-auto"),
+            listeBtn = liste.append('div').attr('class',"d-flex align-items-center");
+            listeBody.append('div').attr('class',"fw-bold")                    
+                .text(d=>{
+                    return d[1];
+                });
+            listeBody.append('p').html(d=>{
+                    return `<i class="fa-solid fa-cake-candles"></i> ${d[2]}
+                        <i class="fa-solid fa-skull"></i> ${d[3]}`;
+                });
+            listeBtn.append('button').attr('class',"btn btn-danger badge rounded-pill")
+                .html('<i class="fa-solid fa-trash-can"></i>');
+            listeBtn.append('a').attr('class',"badge text-bg-success rounded-pill  ms-2")
+                .attr('target',"_blank")
+                .attr('href',d=>d[4])
+                .html('<i class="fa-solid fa-link"></i>');
+            listeBtn.append('a').attr('class',"badge rounded-pill")
+                .attr('target',"_blank")
+                .attr('href',d=>d[4])
+                .html('<img height="32px" src="assets/img/OmekaS.png"></img>');
+            mRef.m.hide();
+            mNote.m.show();            
         }
 
         function addNoteBoxRef(e,d){
@@ -308,33 +371,7 @@ export class transcription {
             mRef.s.select('#inptChercheLabel').html("Nom de la personne");                        
             mRef.s.select('#inptCherche').node().value = "";
             d3.select("#btnAddRefClose").on('click',(e,d)=>mRef.m.hide());        
-            d3.select("#btnAddRefSave").on('click',(e,d)=>{
-                let refSelect = hotResult.getData().filter(r=>r[0]),
-                liste = mNote.s.select('#lstNodeBoxPerson').selectAll('li').data(refSelect).enter()
-                    .append('li').attr('class',"list-group-item list-group-item-warning d-flex justify-content-between align-items-start"),
-                listeBody = liste.append('div').attr('class',"ms-2 me-auto"),
-                listeBtn = liste.append('div').attr('class',"d-flex align-items-center");
-                listeBody.append('div').attr('class',"fw-bold")                    
-                    .text(d=>{
-                        return d[1];
-                    });
-                listeBody.append('p').html(d=>{
-                        return `<i class="fa-solid fa-cake-candles"></i> ${d[2]}
-                            <i class="fa-solid fa-skull"></i> ${d[3]}`;
-                    });
-                listeBtn.append('button').attr('class',"btn btn-danger badge rounded-pill")
-                    .html('<i class="fa-solid fa-trash-can"></i>');
-                listeBtn.append('a').attr('class',"badge text-bg-success rounded-pill  ms-2")
-                    .attr('target',"_blank")
-                    .attr('href',d=>d[4])
-                    .html('<i class="fa-solid fa-link"></i>');
-                listeBtn.append('a').attr('class',"badge rounded-pill")
-                    .attr('target',"_blank")
-                    .attr('href',d=>d[4])
-                    .html('<img height="32px" src="assets/img/OmekaS.png"></img>');
-                mRef.m.hide();
-                mNote.m.show();
-            });        
+            d3.select("#btnAddRefSave").on('click',setNoteBoxRef);        
 
             //TODO:gérer les validations https://getbootstrap.com/docs/5.3/forms/validation/
             d3.select("#btnFindRefBNF").on('click',(e,d)=>{
@@ -396,9 +433,9 @@ export class transcription {
             bb = t.node().getBBox(), 
             sltBrush = [bb.x, bb.x+bb.width],
             brush = d3.brushX()
-                /*ajuster à la bande
-                .extent([[0, lineBand(d.line)], [d.trans.widthLine, lineBand(d.line)+lineBand.bandwidth()]])
-                */
+                //ajuster à la bande
+                //.extent([[0, lineBand(d.line)], [d.trans.widthLine, lineBand(d.line)+lineBand.bandwidth()]])
+                //
                 .extent([[0, 0], [d.trans ? d.trans.widthLine : d.widthLine, heightLine]])
                 .on("brush", s=>{
                     if (s) {
@@ -430,7 +467,7 @@ export class transcription {
                 .call(brush.move, sltBrush);
         }
         function audioPlay(e,d){
-
+            console.log(d);
         }
         function audioProgress(e,d){
             let curTime = e.currentTarget.currentTime*1000; 
@@ -484,6 +521,7 @@ export class transcription {
                             <img src="assets/img/OmekaS.png" class="mx-2" height="20px" /></a></h6>`;
                         }).call(addConceptLine);
         }
+
         function addConceptLine(e){
             e.selectAll('div').remove();
             lineBand = d3.scaleBand(
@@ -545,7 +583,10 @@ export class transcription {
                         d.label = d["@annotation"]["jdc:hasConcept"][0].display_title
                     }
                     return t.omk["curation:data"];
-            }).enter().append('g');
+            }).enter().append('g')
+                .style('cursor','zoom-in')
+                .on('click',showConcept);
+            
             //ajoute le texte des concepts          
             transCpt.append('text')
                 .attr("x", d=> d.x1)
@@ -665,6 +706,7 @@ export class transcription {
         }; 
         
         function showConcept(e,d){
+            e.stopImmediatePropagation();
             console.log(d.x1+' '+d.x2
                 +' '+d.start+' '+d.end+' '+d.label
                 +' '+d3.timeFormat("%M:%S.%L")(d.start)
@@ -773,6 +815,7 @@ export class transcription {
 
             
         }
+
         function loadParams(){
             console.log('loadParams');
         }
@@ -797,6 +840,8 @@ export class transcription {
                 .html(`<i class="fa-solid fa-comment-dots  fa-beat-fade"></i>`)    
 
         }
+
+
 
         this.init();
     }

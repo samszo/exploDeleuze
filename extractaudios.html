@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Audios</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="assets/js/bootstrap5.3.bundle.min.js"></script>
+    <link href="assets/css/bootstrap5.3.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <div id="navbarMain"></div>
+    <table id="result" border="1">
+    </table>
+    <script type="module">
+        import {bnf} from './modules/bnf.js';
+        import {auth} from './modules/auth.js';
+
+        //connexion à omk
+        let a = new auth({
+                mail:'samuel.szoniecky@univ-paris8.fr',
+                apiOmk:'../omk_deleuze/api/',
+                ident: 'lBBNzw1HsXS4UhOwur0xE3nvNgOWapNv',
+                key: 'NUHcMUVsolp4PSFfZYGGh5Z01eLClbML'
+            });
+        //log l'utilisateur
+        a.getUser(u=>{
+            console.log(u);
+        });
+
+        // Path to your CSV file
+        let csvFilePath = 'assets/data/deleuzeEnregistrementsSonores.csv',
+            oBnf = new bnf(),
+            cont = d3.select("#result"),
+            rsNotice=[];
+
+        // Load the CSV file
+        d3.csv(csvFilePath).then(data => {
+            let arrDoublons=[];
+            data.forEach((d,i) => {
+                if(!arrDoublons[d.Identifiant]){
+                    arrDoublons[d.Identifiant]=d.Identifiant;
+                    rsNotice.push(d);
+                }
+            });
+            getGallica(0);
+            //getGallicaInfos(0);
+            //getGallicaInfos(0,'http://rdvocab.info/Elements/note');
+        })
+        /*
+        .catch(error => {
+            console.error('Error loading the CSV file:', error);
+        })
+        */
+    function getGallica(numNotice){
+        let d= rsNotice[numNotice],
+            urlGallica,
+            idArk = d.Identifiant.substr(24),
+            sujets = d.Sujet.split(" | "),
+            nbDisque = parseInt(d.Format.substr(0,1));
+        //récupère le lien vers Gallica    
+        oBnf.findGallica(idArk).then(g=>{
+            let concepts = [], dblCpt = [];
+            //enregistre les sujets
+            sujets.forEach(s=>{
+                if(s){
+                    s.split(' -- ').forEach(ss=>{
+                        ss.split('. ').forEach(sss=>{
+                            if(!dblCpt[sss])concepts.push(a.omk.getConcept(sss));
+                            dblCpt[sss]=true;
+                        });
+                    });
+                }
+            })
+            Promise.all(concepts)
+                .then(rs => {     
+                    //ajoute le cours dans omk
+                    let data = {
+                        'o:resource_template':'Cours',
+                        'o:resource_class':'bibo:Conference',
+                        "dcterms:title":d.Titre, 
+                        "dcterms:date":d.Date,
+                        "dcterms:isReferencedBy":idArk,
+                        "dcterms:source":d.Identifiant,
+                        "dcterms:subject":rs.map(r=>{
+                            return {'rid':r['o:id']}
+                        })
+                    },
+                    verfifDoublons = "property[0][joiner]=and&property[0][property]="
+                        +a.omk.getPropId('dcterms:isReferencedBy')
+                        +"&property[0][type]=eq&property[0][text]="+idArk
+                        +"&resource_class_id[]="+a.omk.getClassByTerm('bibo:Conference')['o:id'];            
+                    a.omk.createItem(data,item=>{
+                        console.log(item);
+                        //construction des urls pour le curl
+                        for (let j = 0; j < nbDisque; j++) {                                    
+                            let trR = cont.append('tr').attr("id","r"+numNotice+"a"+j);                            
+                            trR.append("td").text(item['o:id']);
+                            trR.append("td").text(d.Identifiant);
+                            trR.append("td").text(g[0].URLGallica.value);
+                            trR.append("td").text(g[0].URLGallica.value+"/f"+(j+1)+".audio");
+                            trR.append("td").text(idArk.substr(11)+(j+1)+".mp3");
+                        }
+                        if(numNotice<rsNotice.length)getGallica(numNotice+1);
+                    },verfifDoublons)                        
+                })
+            .catch(error => {
+                console.error(error);
+            });
+        })
+    }
+    function getGallicaInfos(numNotice,p=false){
+        let d= rsNotice[numNotice],
+            urlGallica,
+            idArk = d.Identifiant.substr(24),
+            sujets = d.Sujet.split(" | "),
+            nbDisque = parseInt(d.Format.substr(0,1));
+        //récupère le lien vers Gallica    
+        oBnf.getArkInfo(idArk).then((g,j)=>{
+            let searchArk = "property[0][joiner]=and&property[0][property]="
+                        +a.omk.getPropId('dcterms:isReferencedBy')
+                        +"&property[0][type]=eq&property[0][text]="+idArk
+                        +"&resource_class_id[]="+a.omk.getClassByTerm('bibo:Conference')['o:id'],           
+            rsOmk = a.omk.searchItems(searchArk);
+            if(p){
+                let trR = cont.append('tr');
+                if(numNotice==0){
+                    trR.append("th").text('num');
+                    trR.append("th").text('numOmk');
+                    trR.append("th").text('idOmk');
+                    trR.append("th").text('idArk');
+                    trR.append("th").text(p);
+                    trR = cont.append('tr');
+                }
+                g.forEach((c,i)=>{
+                    if(c.p.value==p){
+                        trR.append("td").text(numNotice);
+                        trR.append("td").text(rsOmk.length);
+                        trR.append("td").text(rsOmk[0]['o:id']);
+                        trR.append("td").text(idArk);
+                        trR.append("td").text(c.o.value);                        
+                    }
+                })                            
+            }else{
+                let trR = cont.append('tr').attr("id","r"+numNotice+"c"+j);
+                trR.append("td").text(numNotice+'c');
+                g.forEach((c,i)=>{
+                    trR.append("td").text(i);
+                })                            
+                trR = cont.append('tr').attr("id","r"+numNotice+"o"+j);
+                trR.append("td").text(numNotice+'o');
+                g.forEach(c=>{
+                    trR.append("td").text(c.o.value);
+                })                            
+                trR = cont.append('tr').attr("id","r"+numNotice+"p"+j);
+                trR.append("td").text(numNotice+'p');
+                g.forEach(c=>{
+                    trR.append("td").text(c.p.value);
+                })   
+            }                         
+            if(numNotice<rsNotice.length)getGallicaInfos(numNotice+1,p);            
+        });
+    }
+    </script>
+</body>
+</html>

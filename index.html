@@ -47,21 +47,33 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <form class="d-flex" role="search">
-                                <input id="inptSearchAll" class="form-control me-2" type="search" placeholder="Chercher" aria-label="Chercher">
-                                <button id="btnSearchAll" class="btn btn-outline-danger" type="button">Trouver</button>
-                            </form>
-                            <ul id="navbarMain" class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <div class="dropdown navbar-nav">
+                                <button type="button" class="btn  btn-outline-danger dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                    <i class="fa-solid fa-file-export"></i>
+                                    <span id="selectSeminar">Choisir les cours</span>
+                                </button>
+                                <form class="dropdown-menu" >
+                                  <div id="sheetCours" style="height:300px;width:600px">
+                                  </div>
+                                </form>
+                            </div>                            
+
+                            <ul id="navbarMain" style="display: none;" class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                         aria-expanded="false">
                                         <i class="fa-solid fa-file-export"></i>
-                                        <span id="selectSeminar">Choisir un cours</span>
+                                        <span id="selectSeminar">Choisir les cours</span>
                                     </a>
                                     <ul id="ddSeminar" class="dropdown-menu">
                                     </ul>
                                 </li>
                             </ul>
+                            <form class="d-flex" role="search">
+                                <input id="inptSearchAll" class="form-control me-2" type="search" placeholder="Chercher" aria-label="Chercher">
+                                <button id="btnSearchAll" class="btn btn-outline-danger" type="button">Trouver</button>
+                            </form>                            
+
                             <ul id="navbarConnect" class="navbar-nav me-auto mb-2 mb-lg-0">
                             </ul>
                         </div>

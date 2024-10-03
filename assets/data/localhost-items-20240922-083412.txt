@@ -1,0 +1,6996 @@
+﻿Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72915
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72914
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72913
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72912
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72911
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72910
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72909
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72908
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72907
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72906
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72905
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72904
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72903
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72902
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72901
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72900
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72899
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72898
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72897
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72896
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72895
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72894
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72893
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72892
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72891
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72890
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72889
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72888
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72887
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72886
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72885
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72884
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72883
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72882
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72881
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72880
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72879
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72878
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72877
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72876
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72875
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72874
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72873
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72872
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72871
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72870
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72869
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72868
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72867
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72866
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72865
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72864
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72863
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72862
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72861
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72860
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72859
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72858
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72857
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72856
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72855
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72854
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72853
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72852
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72851
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72850
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72849
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72848
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72847
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72846
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72845
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72844
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72843
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72842
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72841
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72840
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72839
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72838
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72837
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72836
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72835
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72834
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72833
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72832
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72831
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72830
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72829
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72828
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72827
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72826
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72825
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72824
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72823
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72822
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72821
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72820
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72819
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72818
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72817
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72816
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72815
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72814
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72813
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72812
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72811
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72810
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72809
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72808
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72807
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72806
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72805
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72804
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72803
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72802
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72801
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72800
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72799
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72798
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72797
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72796
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72795
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72794
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72793
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72792
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72791
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72790
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72789
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72788
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72787
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72786
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72785
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72784
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72783
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72782
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72781
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72780
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72779
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72778
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72777
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72776
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72775
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72774
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72773
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72772
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72771
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72770
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72769
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72768
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72767
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72766
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72765
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72764
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72763
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72762
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72761
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72760
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72759
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72758
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72757
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72756
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72755
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72754
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72753
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72752
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72751
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72750
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72749
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72748
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72747
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72746
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72745
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72744
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72743
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72742
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72741
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72740
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72739
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72738
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72737
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72736
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72735
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72734
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72733
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72732
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72731
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72730
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72729
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72728
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72727
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72726
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72725
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72724
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72723
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72722
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72721
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72720
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72719
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72718
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72717
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72716
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72715
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72714
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72713
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72712
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72711
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72710
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72709
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72708
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72707
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72706
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72705
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72704
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72703
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72702
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72701
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72700
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72699
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72698
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72697
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72696
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72695
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72694
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72693
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72692
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72691
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72690
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72689
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72688
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72687
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72686
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72685
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72684
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72683
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72682
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72681
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72680
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72679
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72678
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72677
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72676
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72675
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72674
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72673
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72672
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72671
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72670
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72669
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72668
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72667
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72666
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72665
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72664
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72663
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72662
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72661
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72660
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72659
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72658
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72657
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72656
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72655
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72654
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72653
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72652
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72651
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72650
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72649
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72648
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72647
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72646
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72645
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72644
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72643
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72642
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72641
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72640
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72639
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72638
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72637
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72636
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72635
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72634
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72633
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72632
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72631
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72630
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72629
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72628
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72627
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72626
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72625
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72624
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72623
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72622
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72621
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72620
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72619
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72618
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72617
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72616
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72615
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72614
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72613
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72612
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72611
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72610
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72609
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72608
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72607
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72606
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72605
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72604
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72603
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72602
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72601
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72600
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72599
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72598
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72597
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72596
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72595
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72594
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72593
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72592
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72591
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72590
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72589
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72588
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72587
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72586
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72585
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72584
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72583
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72582
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72581
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72580
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72579
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72578
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72577
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72576
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72575
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72574
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72573
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72572
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72571
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72570
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72569
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72568
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72567
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72566
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72565
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72564
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72563
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72562
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72561
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72560
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72559
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72558
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72557
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72556
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72555
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72554
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72553
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72552
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72526
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72425
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72424
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72423
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72422
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72421
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72420
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72419
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72418
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72265
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72264
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72263
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72262
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72261
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72260
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72259
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72258
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72257
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72256
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72255
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72081
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72080
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72079
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/72078
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71920
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71919
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71918
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71917
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71916
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71915
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71914
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71913
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71912
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71786
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71785
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71784
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71783
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71782
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71781
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71780
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71638
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71637
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71636
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71635
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71634
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71633
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71632
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71631
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71630
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71629
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71530
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71529
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71357
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71356
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71355
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71354
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71353
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71352
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71351
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71196
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71195
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71194
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71193
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71192
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71191
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71190
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71060
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71059
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71058
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/71057
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70931
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70930
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70929
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70810
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70809
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70808
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70807
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70806
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70664
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70663
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70662
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70661
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70660
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70659
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70658
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70657
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70527
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70526
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70525
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70524
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70523
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70401
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70400
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70399
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70398
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70397
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70245
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70244
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70243
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70242
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70241
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70240
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70133
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70132
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70131
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70130
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/70129
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69998
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69997
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69996
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69995
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69994
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69886
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69885
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69884
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69746
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69745
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69744
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69743
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69742
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69741
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69605
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69604
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69603
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69602
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69601
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69600
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69599
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69598
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69462
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69461
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69460
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69459
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69458
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69457
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69456
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69355
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69354
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69353
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69352
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69351
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69350
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69349
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69348
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69347
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69198
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69197
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69196
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69195
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69194
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69193
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69192
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69191
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69054
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69053
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/69052
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68925
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68924
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68923
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68922
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68921
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68920
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68830
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68829
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68828
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68827
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68826
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68825
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68758
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68757
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68756
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68755
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68754
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68674
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68673
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68672
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68546
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68545
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68544
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68543
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68542
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68435
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68434
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68433
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68432
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68431
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68430
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68301
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68300
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68299
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68298
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68297
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68296
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68152
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68151
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68150
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68149
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68148
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68147
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68146
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68145
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68144
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68143
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68142
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68141
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68140
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68002
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68001
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68000
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67999
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67998
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67875
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67874
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67873
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67872
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67871
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67870
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67723
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67722
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67721
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67720
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67719
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67718
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67717
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67649
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67648
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67647
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67646
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67645
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67644
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67643
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67526
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67525
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67524
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67523
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67522
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67418
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67417
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67319
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67318
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67317
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67316
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67315
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67188
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67187
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67186
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67185
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67184
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67183
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67059
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67058
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67057
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/67056
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66910
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66909
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66908
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66907
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66906
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66905
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66904
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66743
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66742
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66741
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66740
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66739
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66738
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66737
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66736
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66735
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66734
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66733
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66609
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66608
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66607
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66606
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66605
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66604
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66603
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66602
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66601
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66496
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66495
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66494
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66493
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66492
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66491
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66364
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66363
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66362
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66361
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66360
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66359
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66228
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66227
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66226
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66225
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66224
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66060
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66059
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66058
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66057
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66056
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/66055
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65967
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65966
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65965
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65964
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65963
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65962
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65856
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65855
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65854
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65712
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65711
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65710
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65709
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65708
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65707
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65706
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65705
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65704
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65532
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65531
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65530
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65529
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65528
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65527
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65526
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65525
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65524
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65523
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65370
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65369
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65368
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65367
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65366
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65365
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65364
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65363
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65362
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65361
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65360
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65359
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65358
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65235
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65234
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65233
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65232
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65231
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65230
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65229
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65228
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65227
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65107
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65106
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65105
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65104
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65103
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65102
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65002
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65001
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/65000
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64999
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64998
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64997
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64996
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64995
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64994
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64908
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64907
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64906
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64802
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64801
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64800
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64799
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64798
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64797
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64796
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64656
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64655
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64654
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64653
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64652
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64651
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64513
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64512
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64511
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64360
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64359
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64358
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64357
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64356
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64355
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64354
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64228
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64227
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64226
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64225
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64224
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64223
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64222
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64221
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64126
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64125
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64124
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64123
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64122
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64121
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64120
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64119
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64051
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64050
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64049
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64048
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64047
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/64046
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63931
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63930
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63929
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63792
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63791
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63790
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63789
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63788
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63787
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63786
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63785
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63784
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63783
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63661
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63660
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63659
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63658
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63657
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63656
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63493
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63492
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63491
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63490
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63489
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63488
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63487
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63486
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63485
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63334
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63333
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63332
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63331
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63330
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63329
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63328
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63327
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63189
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63188
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63187
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63186
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63185
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63184
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63183
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63182
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63181
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63093
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63018
+Resource class
+	bibo:Conference
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62784
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62778
+Resource class
+	bibo:Note
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62771
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62669
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62579
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62578
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62577
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62426
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62425
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62424
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62292
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62291
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62290
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62289
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62183
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62182
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62181
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62180
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62179
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62178
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62177
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62176
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62058
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62057
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62056
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62020
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/62019
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61964
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61916
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61868
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61812
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61811
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61810
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61715
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61714
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61713
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61712
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61711
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61569
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61568
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61435
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61434
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61433
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61432
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61431
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61335
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61334
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61333
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61332
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61331
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61232
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61231
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61230
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61229
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61142
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61141
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61140
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61139
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61034
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61033
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61032
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/61031
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60876
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60875
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60770
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60769
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60671
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60670
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60581
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60580
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60579
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60578
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60456
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60455
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60454
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60453
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60293
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60292
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60291
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60290
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60289
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60180
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60179
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60100
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60099
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60098
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/60097
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59971
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59970
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59850
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59849
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59848
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59847
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59846
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59845
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59844
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59843
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59711
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59710
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59709
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59708
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59622
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59621
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59482
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59481
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59480
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59428
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59427
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59349
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59348
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59347
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59346
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59345
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59240
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59239
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59163
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59162
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59161
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59082
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/59081
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58961
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58960
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58869
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58795
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58794
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58793
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58718
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58717
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58662
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58538
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58537
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58536
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58535
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58534
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58533
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58532
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58420
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58294
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58183
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58182
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58181
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58098
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58097
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/58096
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57983
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57982
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57981
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57980
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57867
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57866
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57865
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57864
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57863
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57726
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57725
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57724
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57723
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57722
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57721
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57611
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57610
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57609
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57534
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57533
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57532
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57531
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57530
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57529
+Resource class
+	jdc:Transcription
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57376
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57375
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57374
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57373
+Resource class
+	skos:Concept
+
+--
+
+Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/57372
+Resource class
+	skos:Concept
+
+--
+

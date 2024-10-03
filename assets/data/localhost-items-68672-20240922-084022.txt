@@ -1,0 +1,7 @@
+﻿Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/68672
+Resource class
+	jdc:Transcription
+
+--
+

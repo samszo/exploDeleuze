@@ -7,7 +7,7 @@ export class omk {
         this.ident = params.ident ? params.ident : false;
         this.mail = params.mail ? params.mail : false;
         this.api = params.api ? params.api : false;
-        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','ma','oa','jdc','bibo'];
+        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','ma','oa','jdc','bibo','skos'];
         this.loader = new loader();
         this.user = false;
         this.props = [];
@@ -16,6 +16,7 @@ export class omk {
         this.items = [];
         this.resources = [];
         this.rts
+        this.queries = [];
         let perPage = 100, types={'items':'o:item','media':'o:media'};
                 
         this.init = function () {
@@ -211,15 +212,13 @@ export class omk {
 
         this.searchItems = function (query, cb=false, sync=true){
             let url = me.api+'items?'+query,rs; 
-            setTimeout(function(){
-                if(sync){
-                    rs = syncRequest(url);
-                    if(cb)cb(rs);                    
-                }
-                else
-                    request(url,cb);
-                return rs;
-            }, 100);
+            if(sync){
+                rs = syncRequest(url);
+                if(cb)cb(rs);                    
+            }
+            else
+                request(url,cb);
+            return rs;
         }
 
         this.getUser = function (cb=false){
@@ -231,7 +230,14 @@ export class omk {
 
         }
 
-        this.createItem = function (data, cb=false){
+        this.createItem = function (data, cb=false, verifDoublons){
+            if(verifDoublons){
+                let items = me.searchItems(verifDoublons);
+                if(items.length){
+                    if(cb)cb(items[0]);
+                    return items[0];
+                }
+            }
             let url = me.api+'items?key_identity='+me.ident+'&key_credential='+me.key;
             postData({'u':url,'m':'POST'}, me.formatData(data)).then((rs) => {
                 me.items[rs['o:id']]=rs;
@@ -239,6 +245,22 @@ export class omk {
             });
         }
 
+        this.getConcept = async function (concept){
+            //vérifie l'existence du concept
+            let query = "property[0][joiner]=and&property[0][property]="
+                +me.getPropId('dcterms:title')
+                +"&property[0][type]=eq&property[0][text]="+concept
+                +"&resource_class_id[]="+me.getClassByTerm('skos:Concept')['o:id'],            
+            items = me.searchItems(query);
+            if(items.length)return items[0];
+            let url = me.api+'items?key_identity='+me.ident+'&key_credential='+me.key,
+                data = {
+                    'o:resource_class':'skos:Concept',
+                    "dcterms:title":concept, 
+                    "skos:prefLabel":concept,
+                };
+            return await postData({'u':url,'m':'POST'}, me.formatData(data));
+        }
 
         this.formatData = function (data,type="o:Item"){
             let fd = {"@type" : type},p;
@@ -248,7 +270,7 @@ export class omk {
                         fd[k]=[{'o:id':v}];
                         break;
                     case 'o:resource_class':
-                        p = me.class.filter(prp=>prp['o:term']==v)[0];                        
+                        p = me.getClassByTerm(v);                        
                         fd[k]={'o:id':p['o:id']};            
                         break;
                     case 'o:resource_template':

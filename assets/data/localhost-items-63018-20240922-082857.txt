@@ -1,0 +1,7 @@
+﻿Url
+	http://localhost/omk_deleuze/s/cours-bnf/item/63018
+Resource class
+	bibo:Conference
+
+--
+

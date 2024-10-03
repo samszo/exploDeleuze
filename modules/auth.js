@@ -6,7 +6,7 @@ export class auth {
         var me = this;
         this.modal;
         this.m;
-        this.navbar = params.navbar ? params.navbar : 'navbarMain';
+        this.navbar = params.navbar ? params.navbar : d3.select('#navbarMain');
         this.apiOmk = params.apiOmk ? params.apiOmk : false; 
         this.mail = params.mail ? params.mail : false;
         this.ident = params.ident ? params.ident : false;

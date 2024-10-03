@@ -31,10 +31,11 @@ import {transcription} from './modules/transcription.js';
         //log l'utilisateur
         a.getUser(u=>{
             console.log(u);
-            a.omk.searchItems('resource_class_id=47',
+            a.omk.getAllItems('resource_class_id=47',
                 data=>{
                     //listSeminar.slice(0, {'o:title':'All','o:id':0});
                     setMenu('#ddSeminar', data,'o:title',showSeminar);
+                    setSheetCours(data);
                     wait.hide();
                 },false
             );
@@ -113,7 +114,8 @@ import {transcription} from './modules/transcription.js';
                 'cont':d3.select("#contentResources"),
                 'contParams':d3.select('#contentResourcesParams'),  
                 'vals':d3.merge(slt.data().map(s=>s.vals)),
-                'selectConcepts': d ? [d.key] : cherche.split(' ')
+                'selectConcepts': d ? [d.key] : 
+                    cherche ? cherche.split(' ') : []
             });
         }
                
@@ -132,4 +134,33 @@ import {transcription} from './modules/transcription.js';
             });
         }
 
+        function setSheetCours(data){
+            let dataSheet = data.map(d=>{
+                return {'choix':true,'date':d["dcterms:date"][0]["@value"],'titre':d["o:title"]}
+            })
+            let headers = Object.keys(dataSheet[0]);
+            let hotCours = new Handsontable(d3.select('#sheetCours').node(), {
+                className: 'htDark',
+                afterGetColHeader: function(col, TH){
+                    TH.className = 'darkTH'
+                },
+                colHeaders: true,
+                rowHeaders: true,
+                data:dataSheet,
+                colHeaders: headers,
+                height: 600,
+                width: 800,
+                colWidths: [60, 104, 400],
+                stretchH: 'last',
+                licenseKey: 'non-commercial-and-evaluation',
+                customBorders: true,
+                dropdownMenu: true,
+                multiColumnSorting: true,
+                filters: true,
+                columns: getCellEditor(headers),
+                allowInsertColumn: false,
+                copyPaste: false,
+                search: true,                        
+            });            
+        }
         

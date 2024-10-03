@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnythingLLM Query</title>
+    <script>
+        async function queryAnythingLLM() {
+            const message = document.getElementById('message').value;
+            const apiAction = 'http://localhost:3001/api/v1/workspace/explodeleuze/chat'
+            const response = await fetch(apiAction, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer VQY9PG5-7MT4YRD-N1BAJQT-YY6K0TJ'
+                },
+                body: JSON.stringify({ 
+                    "message": message,
+                    "mode": "chat",
+                    //"sessionId": "identifier-to-partition-chats-by-external-id"
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</head>
+<body>
+    <h1>Query AnythingLLM</h1>
+    <input type="text" id="message" placeholder="Enter your message">
+    <button onclick="queryAnythingLLM()">Submit</button>
+    <pre id="response"></pre>
+</body>
+</html>
