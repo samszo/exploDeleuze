@@ -1,6 +1,7 @@
 import {slider} from './slider.js';
 import {modal} from './modal.js';
 import {bnf} from './bnf.js';
+import {loader} from './loader.js';
 
 export class transcription {
     constructor(config={}) {
@@ -11,6 +12,7 @@ export class transcription {
         this.vals = config.vals ? config.vals : [];  
         this.selectConcepts = config.selectConcepts ? config.selectConcepts : [];  
         this.a = config.a ? config.a : [];  
+        this.loader = new loader();
         let rectContRess, 
             heightLine = 200, nbLine = 3, lineBand, 
             pixelParMilliseconde = 0.5,
@@ -106,7 +108,9 @@ export class transcription {
             //suprime les dimensions inutiles
             me.cont.selectAll('.depth4').remove();
             //ajoute la barre des paramètres
-            if(me.contParams)showParams();            
+            if(me.contParams)showParams();   
+            
+            me.loader.hide(true);
         }
 
         function addLinkReference(e){

@@ -4,6 +4,7 @@ import {tagcloud} from './modules/tagcloud.js';
 import {loader} from './modules/loader.js';
 import {tree} from './modules/tree.js';
 import {transcription} from './modules/transcription.js';
+import {anythingLLM} from './modules/anythingLLM.js';
 
         let tc, 
             hotRes, 
@@ -17,12 +18,15 @@ import {transcription} from './modules/transcription.js';
         let rectFooter = d3.select('footer').node().getBoundingClientRect(),
         rectHeader = d3.select('header').node().getBoundingClientRect(),
         hMap = rectFooter.top-rectFooter.height-rectHeader.bottom;
-        d3.select('#contentMap').style('height',hMap+"px");
+        d3.select('#contentMap')
+            .style('height',hMap+"px")
+            .style('overflow-y','scroll');
         d3.select('#contentResources').style('height',hMap+"px");
         let  rectMap = d3.select('#contentMap').node().getBoundingClientRect(),
-            wMap = rectMap.width;
-        //initialisation des connexions
-        let a = new auth({'navbar':d3.select('#navbarConnect'),
+            wMap = rectMap.width,
+            aLLM,
+            //initialisation des connexions
+            a = new auth({'navbar':d3.select('#navbarConnect'),
                 mail:'samuel.szoniecky@univ-paris8.fr',
                 apiOmk:'../omk_deleuze/api/',
                 ident: 'lBBNzw1HsXS4UhOwur0xE3nvNgOWapNv',
@@ -39,6 +43,13 @@ import {transcription} from './modules/transcription.js';
                     wait.hide();
                 },false
             );
+            aLLM = new anythingLLM({'apikey':'2GBSFDS-P19M2CS-J96ZK2Z-CR2K7RK',
+                'workspace':'cours-de-gilles-deleuze',//'explodeleuze'
+                'a':a,
+                'omk':a.omk,
+                'cont':d3.select('#contentMap'),
+                'contParams':d3.select('#contentParams')
+            })
         });
         //gestion des event de l'ihm
         

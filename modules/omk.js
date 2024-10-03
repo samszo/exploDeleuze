@@ -225,6 +225,8 @@ export class omk {
             let url = me.api+'users?email='+me.mail+'&key_identity='+me.ident+'&key_credential='+me.key;                
             d3.json(url).then((data) => {
                 me.user = data.length ? data[0] : false;
+                //TODO: mieux gérer anythingLLM Login
+                me.user.anythingLLM = syncRequest('http://localhost/omk_deleuze/s/cours-bnf/page/ajax?json=1&helper=anythingLLMlogin');
                 if(cb)cb(me.user);
             });
 
