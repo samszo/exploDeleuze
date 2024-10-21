@@ -19,9 +19,12 @@ export class transcription {
             colorBox = '#ffc00870',
             selectConceptsPosis=[], 
             mNote, noteBox=[], 
+            mRef=new modal({'size':'modal-lg'}).add('modalAddRef'),
             //en milliseconde
             margeBox = 100,
-            oBnf = new bnf(), hotResult, hotResultHeight=400;
+            oBnf = new bnf(), hotResult, hotResultHeight=400,
+            typeRef = ['jdc:hasPerson','jdc:hasGeo','jdc:hasEpoque','jdc:hasBook','jdc:hasMovie','jdc:hasMusic','jdc:hasLink','jdc:hasConcept'],
+            continuousPlaying;
 
         this.init = function () {
             //initialisation des contenus
@@ -34,6 +37,8 @@ export class transcription {
                     {'id':'btnNodeBoxDelete','fct':deleteNoteBox},
                     {'id':'btnNodeBoxSave','fct':saveNoteBox},
                     {'id':'btnAddPerson','fct':addNoteBoxRef},
+                    {'id':'btnAddGeo','fct':addNoteBoxRef},                    
+                    {'id':'btnAddEpoque','fct':addNoteBoxRef},                    
                     {'id':'btnAddBook','fct':addNoteBoxRef},
                     {'id':'btnAddMovie','fct':addNoteBoxRef},
                     {'id':'btnAddMusic','fct':addNoteBoxRef},
@@ -45,12 +50,14 @@ export class transcription {
 
             //regroupe les valeurs par conférence et par track
             me.vals.sort((a,b)=>{
-                let av = a.idConf+a.mediaConfTrack+a.mediaConfTrackNum+Number.parseFloat(a.startFrag),
-                bv = b.idConf+b.mediaConfTrack+b.mediaConfTrackNum+Number.parseFloat(b.startFrag);
+                let av = a.idConf+'_'+a.face+'_'+a.plage+'_'+Number.parseFloat(a.startFrag),
+                bv = b.idConf+'_'+b.face+'_'+b.plage+'_'+Number.parseFloat(b.startFrag);
                 return av-bv;
             })
             let hFrags = d3.hierarchy(d3.group(me.vals, 
-                    d => d.titleConf, d => d.trackMediaConf, d => d.idFrag, 
+                    d => d.idConf, 
+                    d => 'Face '+d.face+' - plage '+d.plage, 
+                    d => d.idFrag, 
                     //d => d.creator, d => d.startCpt+'->'+d.endCpt
                     )),
             labels = hFrags.descendants().map(d => {
@@ -58,31 +65,45 @@ export class transcription {
                 let dt = d.leaves()[0].data;
                 switch (d.depth) {
                     case 0:
-                        d.label = 'Cours'
-                        d.id = 'Cours'
+                        d.label = 'Cours';
+                        d.class = 'cour_';
+                        d.id = 'Cours';
                         break;       
                     case 1:
-                        d.label = d.data[0];
-                        d.id = 'omk'+dt.idConf;
-                        d.omk = me.a.omk.getItem(dt.idConf);
+                        d.label = dt.titleConf+' - cours '+dt.num+' : '+dt.created;
+                        d.id = dt.idConf;
+                        d.class = 'conf_';
+                        d.type = "o:Item";
+                        d.bnf = true;
+                        //trop gourmand d.omk = me.a.omk.getItem(dt.idConf);
+                        d.source = dt['source'+d.depth];
                         break;       
                     case 2:
                         d.label = d.data[0];
-                        d.id = 'omk'+dt.idMediaConf;
-                        d.omk = me.a.omk.getMedia(dt.idMediaConf);
+                        d.class = 'mediaConf_';
+                        d.id = dt.idMediaConf;
+                        d.type = "o:Media";
+                        d.bnf = true;
+                        //trop gourmand d.omk = me.a.omk.getMedia(dt.idMediaConf);
+                        d.source = dt['source'+d.depth];
                         break;       
                     case 3:
                         d.label = 'Fragment '
                             +d3.timeFormat("%M:%S")(Number.parseFloat(dt.startFrag)*1000)
                             +' -> '
                             +d3.timeFormat("%M:%S")(Number.parseFloat(dt.endFrag)*1000);
-                        d.id = 'omk'+d.data[0];
-                        d.omk = me.a.omk.getMedia(d.data[0]);
+                        d.source = dt['source'+d.depth];
+                        d.id = d.data[0];
+                        d.class = 'frag_';
+                        d.type = "o:Media";
                         break;       
                     case 4:
                         d.label = d.data[0];
-                        d.id = 'omk'+dt.idTrans;
-                        d.omk = me.a.omk.getItem(dt.idTrans);
+                        d.id = dt.idTrans;
+                        d.class = 'trans_';
+                        d.type = "o:Media";
+                        //trop gourmand d.omk = me.a.omk.getItem(dt.idTrans);
+                        d.source = dt['source'+d.depth];
                         break;       
                     case 6:
                         d.label = d.data.titleCpt;
@@ -100,7 +121,7 @@ export class transcription {
             let sltHierarchies = me.cont.selectAll('div').data(cours).enter()
                 .append(d=>document.createElement(d.typeNode))
                     .attr('class',d=>'depth'+d.depth)
-                    .attr('id',d=>d.id)
+                    .attr('id',d=>d.class+d.id)
                     .html(d=>d.label);
             //ajoute les compléments de l'arbre
             me.cont.selectAll('.depth1,.depth2,.depth3').call(addLinkReference);
@@ -115,14 +136,14 @@ export class transcription {
 
         function addLinkReference(e){
             e.append('a').attr('href',d=>{
-                    return d.omk["dcterms:source"] ? d.omk["dcterms:source"][0]["@id"] : '';
+                    return d.source;//d.omk["dcterms:source"] ? d.omk["dcterms:source"][0]["@id"] : '';
                 }).attr('target',"_blank")
-                .style('display', d=> d.omk["dcterms:source"] ? "inline" : "none")
+                .style('display', d=> d.bnf ? "inline" : "none")
                 .append('img').attr('src','assets/img/Logo_BnFblanc.svg')
                     .attr('class','mx-2')
                     .style("height","20px");
             e.append('a').attr('href',d=>{
-                    return me.a.omk.getAdminLink(d.omk)
+                    return me.a.omk.getAdminLink(null,d.id,d.type)
                 }).attr('target',"_blank")
                 .append('img').attr('src','assets/img/OmekaS.png')
                     .attr('class','mx-2')
@@ -138,12 +159,13 @@ export class transcription {
                     .on('click',showPrevFragment);
             toolBar.append('audio').attr('id',v=>'audio'+v.id)
                 .attr('src',v=>{
-                    return v.omk["o:original_url"];
+                    return me.a.omk.getMediaLink(v.source);//v.omk["o:original_url"];
                 })
                 .attr("class","mx-2").attr("controls",true)
                 .style("height", "24px")
                 .on("play",audioPlay)
                 .on("timeupdate",audioProgress)
+                .on("ended",audioEnd);
             toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-step"></i>')
                     .on('click',showNextFragment);
             toolBar.append('button').attr('type',"button").attr('class',"btn btn-danger btn-sm").html('<i class="fa-solid fa-forward-fast"></i>')
@@ -159,18 +181,32 @@ export class transcription {
         
         function addLinkTime(e,d){
             let curTime = me.cont.select('#audio'+d.id).node().currentTime*1000;
-            me.cont.select('#'+d.id).selectAll('svg').call(s=>addNoteBox(s,curTime));
+            me.cont.select('#'+d.class+d.id).selectAll('svg').call(s=>addNoteBox(s,curTime));
         }
         function addNoteBoxSave(svg,d){
-            let boxes = svg.selectAll('.noteBoxSave').data(t=>t.notes)
-                .enter().append('g').attr('id',nb=>{
-                    nb.start = Number.parseFloat(nb.omk["oa:start"][0]["@value"]);
-                    nb.end = Number.parseFloat(nb.omk["oa:end"][0]["@value"]);
-                    return 'note'+nb.omk['o:id'];
-                })
-                .attr('class','noteBoxSave')
-                .call(createNoteBox);    
-        }        
+            svg.data().forEach(d=>getNoteForTrans(d));    
+        }       
+        function getNoteForTrans(t){
+            /*trop gourmand
+            on charge le détail au click sur la note
+            let q = "property[0][joiner]=and&property[0][property][]="+me.a.omk.getPropId("oa:hasSource")
+                +"&property[0][type]=res&property[0][text]="+t.idTrans
+                +"&resource_template_id[]="+me.a.omk.getRtId("Note transcription")
+            return me.a.omk.getAllItems(q);
+            */
+            let q = "cours-bnf/page/ajax?json=1&helper=sql&action=getTransNote&id="+t.idTrans;
+            me.a.omk.getSiteViewRequest(q,rs=>{
+                rs.forEach(r=>r.trans=t);
+                d3.select('#trans'+t.idTrans).selectAll('.noteBoxSave').data(rs)
+                    .enter().append('g').attr('id',nb=>{
+                        nb.start = Number.parseFloat(nb.start);
+                        nb.end = Number.parseFloat(nb.end);
+                        return 'note'+nb.id;
+                    })
+                    .attr('class','noteBoxSave')
+                    .call(createNoteBox);    
+            });
+        } 
         function addNoteBox(svg,t){
             svg.selectAll(".noteBoxAdd")
             .data(d=>{
@@ -196,7 +232,7 @@ export class transcription {
             //ajouter une boxe
             boxes.append('rect')
                 .attr('id',nb=>{
-                    return 'noteRect'+(nb.omk ? nb.omk['o:id'] : nb.id)
+                    return 'noteRect'+nb.id
                 })
                 .attr('x',nb=>{
                     nb.x = nb.trans.scaleTime(nb.start);
@@ -209,14 +245,14 @@ export class transcription {
                     return nb.width;
                 })
                 .attr('fill',nb=>{
-                    nb.color = nb.omk ? nb.omk['jdc:degradColors'][0]['@value'] : colorBox;
+                    nb.color = nb.color ? nb.color : colorBox;
                     return nb.color;
                 })
                 .style('cursor','zoom-in')                
                 .on('click',showNoteBox);
             //ajoute les boutons de déplacement
             boxes.append('rect')
-                .attr('id',nb=>'noteMoveRect'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('id',nb=>'noteMoveRect'+nb.id)
                 .attr('x',nb=>nb.x)
                 .attr('y',heightLine-20)
                 .attr('height',20)
@@ -225,7 +261,7 @@ export class transcription {
                 .style('cursor','col-resize')                
                 .on('click',addBrush);    
             boxes.append('image')
-                .attr('id',nb=>'noteArrowLeft'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('id',nb=>'noteArrowLeft'+nb.id)
                 .attr('x',nb=>nb.x)
                 .attr('y',heightLine-20)
                 .attr('height',20)
@@ -234,7 +270,7 @@ export class transcription {
                 .style('cursor','col-resize')                
                 .on('click',addBrush);    
             boxes.append('image')
-                .attr('id',nb=>'noteArrowRight'+(nb.omk ? nb.omk['o:id']: nb.id))
+                .attr('id',nb=>'noteArrowRight'+nb.id)
                 .attr('x',nb=>nb.x+nb.width-20)
                 .attr('y',heightLine-20)
                 .attr('height',20)
@@ -245,8 +281,13 @@ export class transcription {
         }
         function showNoteBox(e,note){
             e.stopImmediatePropagation();
+            me.loader.show();
+            //récupère la note complète si ce n'est déjà fait
+            if(!note.omk){
+                note.omk=me.a.omk.getItem(note.id);
+                me.a.omk.loader.hide(true);
+            }
             mNote.m.show();
-
             mNote.s.select('#inptNoteDeb').node().value = d3.timeFormat("%M:%S.%L")(note.start);
             mNote.s.select('#inptNoteDebVal').node().value = note.start;
             mNote.s.select('#inptNoteFin').node().value = d3.timeFormat("%M:%S.%L")(note.end);
@@ -254,18 +295,41 @@ export class transcription {
             mNote.s.select('#inptNoteColor').node().value = d3.color(note.color).formatHex();                
             mNote.s.select('#inptIdNote').node().value = note.omk ? note.omk['o:id'] : "";
             //on met à jour le titre à chaque fois
-            //l'utilisateur peut juste changer la description
             mNote.s.select('#inptTitreNote').node().value = 
                 'Note '+note.trans.idFrag
                     +'-'+note.trans.idTrans           
                     +' : '+d3.timeFormat("%M:%S.%L")(note.start)+' -> '+d3.timeFormat("%M:%S.%L")(note.end);            
-            if(note.omk && note.omk["dcterms:description"])
-                mNote.s.select('#inptDescNote').node().value = note.omk["dcterms:description"][0]["@value"];
+            //pareil pour la description qui correspond au texte de la sélection
+            mNote.s.select('#inptDescNote').node().value = getNoteDesc(note);
+            mNote.s.select('#inptConceptNote').node().value = getNoteConcept(note);            
             mNote.s.select('#inptIdFrag').node().value = note.trans.idFrag;
-            mNote.s.select('#inptIdTrans').node().value = note.trans.idTrans;            
+            mNote.s.select('#inptIdTrans').node().value = note.trans.idTrans;
+            //on affiche les références
+            showRefs(note);
+            me.loader.hide();
         }
+        function showRefs(note){            
+            mNote.s.selectAll('.list-group').selectAll('li').remove()
+            if(!note.omk)return;
+            typeRef.forEach(r=>{
+                if(note.omk[r]){
+                    let ids = note.omk[r].map(n=>n.value_resource_id);
+                    me.a.omk.searchItems("id="+ids.join(','),items=>showNoteBoxRef(items));
+                }
+            })
+        }
+
+        function getNoteDesc(note){
+            let desc = note.trans[1].filter(n=>n.x1>=note.x && n.x1<=(note.x+note.width)).map(n=>n.titleCpt);
+            return desc.join(" ");
+        }
+        function getNoteConcept(note){
+            return note.trans[1].filter(n=>n.x1>=note.x && n.x1<=(note.x+note.width)).map(n=>n.idCpt).join(",");
+        }
+
         function saveNoteBox(e,d){
             //récupère les données
+            me.loader.show();
             let start = mNote.s.select('#inptNoteDebVal').node().value,
                 end = mNote.s.select('#inptNoteFinVal').node().value,
                 titre = mNote.s.select('#inptTitreNote').node().value,
@@ -286,52 +350,70 @@ export class transcription {
                     "oa:end":end,
                     'jdc:degradColors':color
                 };
-            //récupère les nouvelles références
-            d3.select("#lstNodeBoxPerson").selectAll('li').data().forEach(r=>{
+            //récupère les concepts liés
+            let cpts = mNote.s.select('#inptConceptNote').node().value            
+            //récupère les références
+            mNote.s.selectAll(".list-group").selectAll('li').data().forEach(r=>{
                 console.log(r);
-                //let ref = await getOmkRef(r);
+                let type = getRefType(r);
+                if(!data['jdc:has'+type])data['jdc:has'+type]=[];
+                data['jdc:has'+type].push({'rid':r['o:id']});
             });
             if(idNote){                
                 //mise à jour dans omk
                 me.a.omk.updateRessource(idNote, data,'items',null,"PATCH",i=>{
                     console.log(i);
                     redrawTranscription();
+                    mNote.hide();
+                    me.loader.hide();
                 });
             }else{
                 //enregistre dans omk
                 me.a.omk.createItem(data,i=>{
                     console.log(i);
                     redrawTranscription();
+                    mNote.hide();
+                    me.loader.hide();
                 });
             }
         }
 
-        function getOmkRef(rs){
-
-            for (let index = 0; index < array.length; index++) {
-                const element = array[index];
-                let query = "property[0][joiner]=and&property[0][property]=35"
-                +"&property[0][type]=eq&property[0][text]="+r[4]
-                +"&resource_class_id[]=94&resource_template_id[]=7",
-                rs = me.a.omk.searchItems(query); 
-                if(!rs.length){
+        async function getOmkRef(rs){
+            let arr=[];
+            for (let index = 0; index < rs.length; index++) {
+                const r = rs[index];
+                //on recherche la ref par rapport au titre
+                let rt = me.a.omk.getRt('ref '+r[7]),
+                query = "property[0][joiner]=and&property[0][property]=1"
+                    +"&property[0][type]=eq&property[0][text]="+r[1]
+                    +"&resource_class_id[]="+rt["o:resource_class"]["o:id"]
+                    +"&resource_template_id[]="+rt["o:id"],
+                itemsFind = me.a.omk.searchItems(query); 
+                if(!itemsFind.length){
                     //enregistre dans omk
                     let data = {
-                        'o:resource_template':'ref Personne',
-                        "dcterms:title":r[0], 
-                        "dcterms:isReferencedBy":{'u':r[3],'l':'dataBnF'},
-                        "bio:birth":r[1],
-                        "bio:death":r[2],
-                        "foaf:familyName":r[4],
+                        'o:resource_template':'ref '+r[7],
+                        'o:resource_class':'foaf:Person',
+                        "dcterms:title":r[1], 
+                        "dcterms:isReferencedBy":{'u':r[4],'l':r[8]},
+                        "bio:birth":r[2],
+                        "bio:death":r[3],
+                        "foaf:familyName":r[6],
                         "foaf:givenName":r[5]
                     }    
-                    me.a.omk.createItem(data,i=>{
-                        return i; 
-                    });    
+                    let i = await me.a.omk.createItem(data);
+                    arr.push(i); 
                 }else{
-                    return rs;   
+                    //vérifie l'url de référence
+                    let uriRefs = itemsFind[0]["dcterms:isReferencedBy"].filter(ir=>ir["@id"]==r[4]);
+                    if(uriRefs.length==0){
+                        me.a.omk.updateRessource(itemsFind[0]['o:id'], {"dcterms:isReferencedBy":{'u':r[4],'l':r[8]}}
+                            ,'items',null,'PUT',false,itemsFind[0]);
+                    }
+                    arr.push(itemsFind[0]);   
                 }  
             }
+            return arr;
         }
 
         function deleteNoteBox(e,d){
@@ -339,69 +421,98 @@ export class transcription {
         }
 
         function setNoteBoxRef(e,d){
-            let omkRefs = getOmkRef(hotResult.getData().filter(r=>r[0])),
-            liste = mNote.s.select('#lstNodeBoxPerson').selectAll('li').data(omkRefs).enter()
-                .append('li').attr('class',"list-group-item list-group-item-warning d-flex justify-content-between align-items-start"),
-            listeBody = liste.append('div').attr('class',"ms-2 me-auto"),
-            listeBtn = liste.append('div').attr('class',"d-flex align-items-center");
+            getOmkRef(hotResult.getData().filter(r=>r[0])).then(refs=>{
+                showNoteBoxRef(refs);
+                mRef.m.hide();
+                mNote.m.show();    
+            })        
+        }
+        function getRefType(d){
+            return me.a.omk.getRtById(d["o:resource_template"]["o:id"])['o:label'].substring(4);                        
+        }
+        function showNoteBoxRef(refs){
+            let type = getRefType(refs[0]),
+                liste = mNote.s.select('#lstNodeBox'+type).selectAll('li').data(refs).enter()
+                    .append('li').attr('class',"list-group-item list-group-item-warning d-flex justify-content-between align-items-start"),
+                listeBody = liste.append('div').attr('class',"ms-2 me-auto"),
+                listeBtn = liste.append('div').attr('class',"d-flex flex-row-reverse align-items-center");
+            
             listeBody.append('div').attr('class',"fw-bold")                    
                 .text(d=>{
-                    return d[1];
+                    return d["o:title"];
                 });
-            listeBody.append('p').html(d=>{
-                    return `<i class="fa-solid fa-cake-candles"></i> ${d[2]}
-                        <i class="fa-solid fa-skull"></i> ${d[3]}`;
+            listeBody.append('p').attr('class','mt-0').html(d=>{
+                    return `<i class="fa-solid fa-cake-candles"></i> ${d["bio:birth"][0]["@value"]}
+                        <i class="fa-solid fa-skull"></i> ${d["bio:death"][0]["@value"]}`;
                 });
             listeBtn.append('button').attr('class',"btn btn-danger badge rounded-pill")
-                .html('<i class="fa-solid fa-trash-can"></i>');
+                .html('<i class="fa-solid fa-recycle"></i>')
+                .on('click',extrapolerNote);
+            listeBtn.append('button').attr('class',"btn btn-danger badge rounded-pill")
+                .html('<i class="fa-solid fa-trash-can"></i>');                
             listeBtn.append('a').attr('class',"badge text-bg-success rounded-pill  ms-2")
                 .attr('target',"_blank")
-                .attr('href',d=>d[4])
+                .attr('href',d=>d["dcterms:isReferencedBy"][0]["@id"])
                 .html('<i class="fa-solid fa-link"></i>');
             listeBtn.append('a').attr('class',"badge rounded-pill")
                 .attr('target',"_blank")
-                .attr('href',d=>d[4])
+                .attr('href',d=>me.a.omk.getAdminLink(d))
                 .html('<img height="32px" src="assets/img/OmekaS.png"></img>');
-            mRef.m.hide();
-            mNote.m.show();            
+        }
+
+        function extrapolerNote(e,d){
+            console.log(d);
+
         }
 
         function addNoteBoxRef(e,d){
 
-            let m=new modal({'size':'modal-lg'}),
-                mRef = m.add('modalAddRef'), rs, cherche;
+            let rs, type=e.currentTarget.id.substring(6);
             setTableFindRef([{'cherche':'rien'}]);            
             mRef.s.select('#modalAddRefTitre').html("Ajouter des personnes");
             mRef.s.select('#inptChercheLabel').html("Nom de la personne");                        
-            mRef.s.select('#inptCherche').node().value = "";
+            mRef.s.select('#inptCherche').node().value = mNote.s.select('#inptDescNote').node().value;
             d3.select("#btnAddRefClose").on('click',(e,d)=>mRef.m.hide());        
             d3.select("#btnAddRefSave").on('click',setNoteBoxRef);        
 
             //TODO:gérer les validations https://getbootstrap.com/docs/5.3/forms/validation/
-            d3.select("#btnFindRefBNF").on('click',(e,d)=>{
-                cherche = mRef.s.select('#inptCherche').node().value;
-                if(cherche){
-                    oBnf.findAuthor(cherche).then(rs => {
-                        setTableFindRef(rs);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });                         
-                }
+            d3.select("#btnFindRefBnF").on('click',(e,d)=>{
+                findRef(type,"BnF")
             })
             d3.select("#btnFindRefWikidata").on('click',(e,d)=>{
-                cherche = mRef.s.select('#inptCherche').node().value;
-                if(cherche)rs = oBnf.findAuthor(cherche);
+                findRef(type,"Wikidata")
             })
             mNote.m.hide();
             mRef.m.show();
             console.log(rs);
         }
 
-        function setTableFindRef(data){
-            let headers = Object.keys(data[0]);
-            //ajoute la colonne de choix 
-            headers.unshift('choisir');
+        function findRef(type,source){
+            let cherche = mRef.s.select('#inptCherche').node().value;
+            if(cherche){
+                switch (type+source) {
+                    case 'PersonBnF':
+                        oBnf.findAuthor(cherche).then(rs => {
+                            setTableFindRef(rs,type,source);
+                        });                                
+                        break;                
+                    default:
+                        break;
+                }
+            }
+        }
+
+        function setTableFindRef(data,type,source){
+            //définition du header
+            let headers = [];
+            Object.keys(data[0]).forEach((k,i)=>{
+                //ajoute la colonne de choix 
+                if(i==0)headers.push('choisir');
+                headers.push(k);
+            });
+            headers.push('type');
+            headers.push('source');
+            //construction du tableau
             hotResult = new Handsontable(d3.select('#hstRefFind').node(), {
                 className: 'htDark',
                 afterGetColHeader: function(col, TH){
@@ -411,7 +522,22 @@ export class transcription {
                 rowHeaders: true,
                 data:data.map(d=>{
                     let r = {};
-                    headers.forEach(h => r[h]= h=='choisir' ? false : d[h].value);
+                    headers.forEach(h =>{
+                        switch (h) {
+                            case 'choisir':
+                                r[h]= false;
+                                break;
+                            case 'type':
+                                r[h]= type;
+                                break;
+                            case 'source':
+                                r[h]= source;
+                                break;
+                            default:
+                                r[h]= d[h].value;
+                                break;
+                        }
+                    });
                     return r;
                 }),
                 colHeaders: headers,
@@ -455,6 +581,8 @@ export class transcription {
                         d3.select('#noteMoveRect'+id).attr('x',x).attr('width',w);
                         d3.select('#noteRect'+id).attr('x',x).attr('width',w);
                         t.attr('x',x).attr('width',w);
+                        d.x = x;
+                        d.width = w;
                     }        
                 })
                 .on("end", s=>{
@@ -472,6 +600,37 @@ export class transcription {
         }
         function audioPlay(e,d){
             console.log(d);
+        }
+        function audioEnd(e,d){
+            if(continuousPlaying){
+                //récupère le fragment suivant
+                let url = 'cours-bnf/page/ajax?json=1&helper=sql&action=getNextTrans&idFrag='
+                    +d.data[1][0].idFrag+'&idConf='+d.data[1][0].idConf;
+                me.a.omk.getSiteViewRequest(url,data=>{
+                    if(data.length==0){
+                        let m=new modal({'size':'modal-sm','class':' text-bg-secondary',
+                            'titre':'Aucun élément<i class="fa-solid fa-empty-set"></i><i class="fa-light fa-face-pensive"></i>',
+                            'body':'<div>Vous avez consulté le dernier cours !</div><div class="my-2"><i class="fa-sharp fa-light fa-face-relieved fa-2xl"></i></div>'
+                        });        
+                    }else{
+                        //vérifie si le fragment est déjà présent
+                        let sFrag = d3.select('#frag_'+data[0].idFrag);
+                        if(sFrag.size()){
+                            sFrag.node().scrollIntoView();
+                            /*
+                            let posi = sFrag.node().getBoundingClientRect();
+                            me.cont.node()
+                                .scroll({
+                                    top: posi.x,
+                                    behavior: "auto",
+                                    });
+                            */
+                            d3.select('#audio'+data[0].idFrag).node().play();                            
+                        }
+
+                    }
+                })
+            }
         }
         function audioProgress(e,d){
             let curTime = e.currentTarget.currentTime*1000; 
@@ -500,7 +659,7 @@ export class transcription {
                         });
             //bouge le currentTime de l'audio
             if(idFrag && ct){
-                let a = me.cont.select('#audioomk'+idFrag).node()
+                let a = me.cont.select('#audio'+idFrag).node()
                 a.currentTime = ct;
                 if(play){
                     //met en pause tous les audios
@@ -521,7 +680,7 @@ export class transcription {
                 .attr("class","transConceptLine")
                         .html(d=>{
                             return `<h6>${d[0]}
-                            <a href="${me.a.omk.getAdminLink(null,d[1][0].idTrans)}" target="_blank">
+                            <a href="${me.a.omk.getAdminLink(null,d[1][0].idTrans,"o:Item")}" target="_blank">
                             <img src="assets/img/OmekaS.png" class="mx-2" height="20px" /></a></h6>`;
                         }).call(addConceptLine);
         }
@@ -542,7 +701,7 @@ export class transcription {
                 .on("scroll", handleScroll),
             svg = divSvg.append('svg')
                 .attr('id',t=>{
-                    t.omk = me.a.omk.getItem(t[1][0].idTrans);
+                    //TROP Gourmand t.omk = me.a.omk.getItem(t[1][0].idTrans);
                     t.start = Number.parseFloat(t[1][0].startFrag)*1000;
                     t.end = Number.parseFloat(t[1][0].endFrag)*1000;
                     t.dur = t.end-t.start;
@@ -555,11 +714,13 @@ export class transcription {
                     );
                     //récupère les notes
                     t.notes=[];
+                    /*
                     if(t.omk["@reverse"] && t.omk["@reverse"]["oa:hasSource"]){
                         t.omk["@reverse"]["oa:hasSource"].forEach(r=>{                            
                             t.notes.push({'trans':t,'omk':me.a.omk.getResource(r["@id"])});
                         })
                     }
+                    */
                     return 'trans'+t[1][0].idTrans
                 })
                 //.attr("viewBox", [0, 0, bb.width, heightLine])
@@ -570,23 +731,17 @@ export class transcription {
             //ajoute les concepts
             transCpt = svg.selectAll('g').data(t=>{
                     let data = [];
-                    for (let i = 0; i < t.omk["curation:data"].length; i++) {
-                        let d = t.omk["curation:data"][i];
-                        d.idTrans = t[1][0].idTrans;
-                        d.idFrag = t[1][0].idFrag;
+                    t[1].forEach((d,i)=>{
                         //gestion des temps
-                        d.fragStart = Number.parseFloat(d["@annotation"]["oa:start"][0]["@value"]);
-                        d.start = t.start+d.fragStart*1000;
-                        d.end = t.start+
-                            Number.parseFloat(d["@annotation"]["oa:end"][0]["@value"])*1000;
+                        let start = t.start+Number.parseFloat(d.startCpt)*1000,
+                            end = start+Number.parseFloat(d.endCpt)*1000;
                         //on alterne les mots en y pour éviter les chevauchements
                         d.yText = yBand(i%nbLine+"text");
                         d.yLine = yBand(i%nbLine+"line")+yBand.bandwidth()*1.5;
-                        d.x1 = t.scaleTime(d.start);
-                        d.x2 = t.scaleTime(d.end);
-                        d.label = d["@annotation"]["jdc:hasConcept"][0].display_title
-                    }
-                    return t.omk["curation:data"];
+                        d.x1 = t.scaleTime(start);
+                        d.x2 = t.scaleTime(end);
+                    });
+                    return t[1];
             }).enter().append('g')
                 .style('cursor','zoom-in')
                 .on('click',showConcept);
@@ -596,19 +751,21 @@ export class transcription {
                 .attr("x", d=> d.x1)
             	.attr("y",d => d.yText)
                 .attr("fill",d=> {
-                    if(me.selectConcepts.includes(d.label)){
+                    if(me.selectConcepts.includes(d.titleCpt)){
                         selectConceptsPosis.push(d);
                         return "red"
                     }else return "white"
                 })
                 .style("font", fontSize+"px sans-serif")
                 .text(d=>{
-                    return d.label;
+                    return d.titleCpt;
                 })
                 .on('mouseover',showConcept);
             //ajoute la ligne de durée
             transCpt.append('path')
-                .attr('d', (d,i)=> d3.line()([[d.x1, d.yLine], [d.x2, d.yLine]]))
+                .attr('d', (d,i)=> {
+                    return d3.line()([[d.x1, d.yLine], [d.x2, d.yLine]])
+                })
                 .attr('stroke', 'red')
                 .attr('stroke-width',4)
                 .on('mouseover',showConcept);
@@ -653,14 +810,14 @@ export class transcription {
             if(selectConceptsPosis.length){
                 let grpSCP = Array.from(d3.group(selectConceptsPosis,d => d.idTrans), ([n, v]) => ({ n, v })); 
                 grpSCP.forEach(scp=>{
-                    setTimeFocus(scp.v[0].idTrans,scp.v[0].x1,scp.v[0].idFrag,scp.v[0].fragStart);
+                    setTimeFocus(scp.v[0].idTrans,scp.v[0].x1,scp.v[0].idFrag,scp.v[0].startCpt);
                 });               
             }
 
         }
         function clickTransCpt(e,d){
             let x = e.offsetX, t = (d.scaleTime.invert(x)-d.start)/1000;
-            setTimeFocus(d.idTrans,x,d.idFrag,t,true);            
+            setTimeFocus(d.idTrans,x,d.idFrag,t,false);            
         }
         //gestion des dates
         //merci à https://stackoverflow.com/questions/19700283/how-to-convert-time-in-milliseconds-to-hours-min-sec-format-in-javascript
@@ -712,11 +869,11 @@ export class transcription {
         function showConcept(e,d){
             e.stopImmediatePropagation();
             console.log(d.x1+' '+d.x2
-                +' '+d.start+' '+d.end+' '+d.label
-                +' '+d3.timeFormat("%M:%S.%L")(d.start)
-                +' '+d3.timeFormat("%M:%S.%L")(d.end)
-                +' '+d3.timeFormat("%M:%S.%L")(d.end-d.start)
-                +' '+(d.end-d.start)
+                +' '+d.startCpt+' '+d.endCpt+' '+d.titleCpt
+                +' '+d3.timeFormat("%M:%S.%L")(d.startCpt)
+                +' '+d3.timeFormat("%M:%S.%L")(d.endCpt)
+                +' '+d3.timeFormat("%M:%S.%L")(d.endCpt-d.startCpt)
+                +' '+(d.endCpt-d.startCpt)
             );
         }
         
@@ -776,7 +933,13 @@ export class transcription {
                         .attr('type',"button").attr('class',"btn btn-danger")
                     .on('click',redrawTranscription)
                     .html(`<i class="fa-solid fa-comment-dots"></i>`)    
-        
+
+                    me.toolbar.append('li').attr('class',"nav-item mx-2")
+                    .append("button")
+                        .attr('type',"button").attr('class',"btn btn-danger")
+                    .on('click',playContinuous)
+                    .html(`<i class="fa-solid fa-recycle"></i>`)    
+                    
 
                 //ajoute les paramètres
                 let contTransParamsDetails = me.contParams.append('div')
@@ -818,6 +981,18 @@ export class transcription {
             me.toolbar.select("#inptTransNbFrag").node().value=me.cont.selectAll('.depth3').size();                            
 
             
+        }
+
+        function playContinuous(e,d){
+            let btn = d3.select(e.currentTarget);
+            if(btn.attr('class')=="btn btn-danger"){
+                continuousPlaying = true;
+                btn.attr('class',"btn btn-success");
+            }else{
+                continuousPlaying = true;
+                btn.attr('class',"btn btn-danger");
+            }
+
         }
 
         function loadParams(){

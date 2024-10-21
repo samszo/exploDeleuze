@@ -94,6 +94,12 @@ export let modalNodeBox = `
                             <button id="btnAddPerson" type="button" class="btn btn-warning"><i class="fa-solid fa-person"></i></button>
                         </li>
                         <li class="nav-item">
+                            <button id="btnAddGeo" type="button" class="btn btn-warning"><i class="fa-solid fa-book-atlas"></i></button>
+                        </li>     
+                        <li class="nav-item">
+                            <button id="btnAddEpoque" type="button" class="btn btn-warning"><i class="fa-solid fa-timeline"></i></button>
+                        </li>                       
+                        <li class="nav-item">
                             <button id="btnAddBook" type="button" class="btn btn-warning"><i class="fa-solid fa-book"></i></button>
                         </li>
                         <li class="nav-item">
@@ -118,7 +124,8 @@ export let modalNodeBox = `
             </div>
             <div class="mb-3">
                 <label for="inptDescNote" class="form-label">Description</label>
-                <textarea class="form-control" id="inptDescNote" rows="3"></textarea>
+                <textarea disabled class="form-control" id="inptDescNote" rows="2"></textarea>
+                <input type="text" disabled class="form-control" id="inptConceptNote" >
             </div>  
             <div class="row">
                 <div class="col-4">
@@ -143,6 +150,12 @@ export let modalNodeBox = `
             <h4>Référence(s) associée(s)</5>    
             <h5>Personne(s)</5>    
             <div id="lstNodeBoxPerson" class="list-group">
+            </div> 
+            <h5>Lieu(x)</5>    
+            <div id="lstNodeBoxGeo" class="list-group">
+            </div> 
+            <h5>Epoque(s)</5>    
+            <div id="lstNodeBoxEpoque" class="list-group">
             </div> 
             <h5>Document(s)</5>    
             <div id="lstNodeBoxDoc" class="list-group">
@@ -191,7 +204,7 @@ export let modalAddRef = `
                 <div class="collapse navbar-collapse" id="nbAddRefFind">
                 <div class="navbar-nav">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                <button id="btnFindRefBNF" type="submit" class="btn"><img src="assets/img/Logo_BnF.svg"  height="32px" /></button>
+                <button id="btnFindRefBnF" type="submit" class="btn"><img src="assets/img/Logo_BnF.svg"  height="32px" /></button>
                 <button id="btnFindRefWikidata" type="submit" class="btn"><img src="assets/img/Wikidata-logo.svg.png" height="40px" /></button>
                     </div>                
                 </div>

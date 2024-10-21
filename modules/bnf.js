@@ -40,19 +40,19 @@ export class bnf {
         this.findAuthor=async function(nom){
             me.loader.show();
             let query = `PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-                PREFIX bio: <http://vocab.org/bio/0.1/>
-                SELECT ?nom ?nait ?mort ?ref ?prenom ?famille
-                WHERE {
-                ?ref bio:birth ?nait.
-                ?ref foaf:name ?nom.
-                OPTIONAL {
-                    ?ref bio:death ?mort.  
-                    ?ref  foaf:givenName ?prenom.
-                    ?ref  foaf:familyName ?famille.
-                }
-                FILTER regex(?nom, "${nom}", "i")   
-                }
-                ORDER BY (?nom) LIMIT 100`;
+PREFIX bio: <http://vocab.org/bio/0.1/>
+SELECT ?nom ?nait ?mort ?ref ?prenom ?famille 
+WHERE {
+?ref bio:birth ?nait.
+?ref foaf:name ?nom.
+OPTIONAL {
+?ref bio:death ?mort.  
+?ref foaf:givenName ?prenom.
+?ref foaf:familyName ?famille.
+}
+FILTER regex(?nom, "${nom}", "i")   
+}
+ORDER BY (?nom) LIMIT 100`;
             const response = await getData(me.endpoint,query);
             me.loader.hide(true);
             return response.results.bindings;
@@ -61,7 +61,7 @@ export class bnf {
         // Function to send POST request to SPARQL endpoint
         async function getData(url, data) {
             let q = data ? url+encodeURI(data) : url;
-            const response = await fetch(url, {
+            const response = await fetch(q, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

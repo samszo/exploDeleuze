@@ -7,7 +7,7 @@ export class omk {
         this.ident = params.ident ? params.ident : false;
         this.mail = params.mail ? params.mail : false;
         this.api = params.api ? params.api : false;
-        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','ma','oa','jdc','bibo','skos'];
+        this.vocabs = params.vocabs ? params.vocabs : ['dcterms','ma','oa','jdc','bibo','skos','foaf','bio'];
         this.loader = new loader();
         this.user = false;
         this.props = [];
@@ -25,12 +25,18 @@ export class omk {
                 me.getProps(v);
                 me.getClass(v);
             })
-            me.getRT();
+            me.setRT();
             me.loader.hide(true);
         }
-        this.getRT = function (cb=false){
+        this.setRT = function (cb=false){
             me.rts = syncRequest(me.api+'resource_templates?per_page=1000');
             if(cb)cb(me.rts);
+        }
+        this.getRt = function (label){
+            return me.rts.filter(rt=>rt['o:label']==label)[0];                        
+        }
+        this.getRtById = function (id){
+            return me.rts.filter(rt=>rt['o:id']==id)[0];                        
         }
         this.getRtId = function (label){
             return me.rts.filter(rt=>rt['o:label']==label)[0]['o:id'];                        
@@ -160,11 +166,14 @@ export class omk {
             return rs;
         }        
 
-        this.getAdminLink = function(r,id=false){
-            return id ? me.api.replace("/api/","/admin/item/")+id
-                : r['@type'][0]=="o:Item" ?
-                me.api.replace("/api/","/admin/item/")+r['o:id']
-                : me.api.replace("/api/","/admin/media/")+r['o:id'];
+        this.getAdminLink = function(r,id=false,type=false){
+            if(!type)type = r['@type'][0];
+            return type=="o:Item" ?
+                me.api.replace("/api/","/admin/item/")+(id ? id : r['o:id'])
+                : me.api.replace("/api/","/admin/media/")+(id ? id : r['o:id'])             
+        }
+        this.getMediaLink = function(file){
+            return me.api.replace("/api","")+file;
         }
 
         //merci à https://stackoverflow.com/questions/33780271/export-a-json-object-to-a-text-file/52297652#52297652
@@ -185,7 +194,7 @@ export class omk {
         this.getAllItems = function (query, cb){
             let url = me.api+'items?per_page='+perPage+'&'+query+'&page=', fin=false, rs=[], data, page=1;
             //pause pour gérer l'affichage du loader
-            setTimeout(function(){
+            //setTimeout(function(){
                 while (!fin) {
                     data = syncRequest(url+page);
                     //console.log(url+page,data);
@@ -194,7 +203,7 @@ export class omk {
                     page++;
                 }                
                 return cb ? cb(rs) : rs;                    
-            }, 100);
+            //}, 100);
         }
 
         this.getAllMedias = function (query, cb=false){
@@ -226,7 +235,7 @@ export class omk {
             d3.json(url).then((data) => {
                 me.user = data.length ? data[0] : false;
                 //TODO: mieux gérer anythingLLM Login
-                me.user.anythingLLM = syncRequest('http://localhost/omk_deleuze/s/cours-bnf/page/ajax?json=1&helper=anythingLLMlogin');
+                me.user.anythingLLM = syncRequest(me.api.replace('api/','s/cours-bnf/page/ajax?json=1&helper=anythingLLMlogin'));
                 if(cb)cb(me.user);
             });
 
@@ -344,6 +353,16 @@ export class omk {
             me.loader.hide(true);
             return response.json(); // parses JSON response into native JavaScript objects
         }        
+
+        this.getSiteViewRequest = function(q,cb){
+            let url = me.api.replace('api','s')+q;
+            me.loader.show();
+            d3.json(url).then(json=>{
+                me.loader.hide(true);
+                cb(json);
+            });
+            //cb(syncRequest(url));
+        }
 
         function syncRequest(q){
             me.loader.show();

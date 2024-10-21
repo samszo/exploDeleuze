@@ -15,6 +15,7 @@ export class anythingLLM {
         this.omk = params.omk ? params.omk : false;
         this.cont = params.cont ? params.cont : false;
         this.contParams = params.contParams ? params.contParams : false;
+        this.fct = params.fct ? params.fct : false;
         this.modal;
         this.m;
         this.user;
@@ -97,9 +98,7 @@ export class anythingLLM {
                 .attr('id','modalAnythingLLM').attr('class','modal').attr('tabindex',-1);
             me.m.html(htmlModal);
             me.modal = new bootstrap.Modal('#modalAnythingLLM');
-            let btnShowModal = me.navbar.select("#btnShowAnythingLLM");
-            //gestion des événements
-            btnShowModal.on('click',e=>{
+            me.navbar.select("#btnShowAnythingLLM").on('click',e=>{
                 me.modal.show();
             });
             d3.select('#btnUpdateRef').on('click',updateDocIA)
@@ -131,6 +130,7 @@ export class anythingLLM {
         function showThread(e,t){
             query('workspace/'+me.workspace+'/thread/'+t.slug+'/chats','GET',{}).then(rt=>{
                 console.log(rt);
+                if(me.fct && me.fct.showThread)me.fct.showThread('btnShowAnythingLLM');
                 me.contParams.selectAll('*').remove();
                 let params = me.contParams.append('div').attr('class',"btn-group")
                     .attr('role',"group").attr('aria-label',"Outils de dialogue");

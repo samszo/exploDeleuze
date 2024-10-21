@@ -116,7 +116,8 @@ export class tagcloud {
                     </ul>
                 </div>
             </div>`);
-            me.toolbar = me.contParams.select("#tcNavbarToolBar"); 
+            me.toolbar = me.contParams.select("#tcNavbarToolBar");
+            /* 
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .append("button").attr('id',"btnSaveParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
@@ -126,11 +127,12 @@ export class tagcloud {
                 .append("button").attr('id',"btnLoadParams")
                     .attr('type',"button").attr('class',"btn btn-danger")
                 .on('click',loadParams)
-                .html(`<i class="fa-solid fa-download"></i>`);    
+                .html(`<i class="fa-solid fa-download"></i>`);
+            */    
             me.toolbar.append('li').attr('class',"nav-item mx-2")
                 .html(`<div  class="input-group">
                     <span class="input-group-text">Nb de concept</span>
-                    <input id="inptNbCptTot" style="width:100px;" type="number" aria-label="First name" class="form-control">
+                    <input id="inptNbCptTot" type="number" aria-label="First name" class="form-control">
                     </div>`);
 
             me.toolbar.append('li').attr('class',"nav-item mx-2")
@@ -331,7 +333,7 @@ export class tagcloud {
                         tooltip
                             .style("visibility", "visible");
                         tooltip.select('#ttTitre').text(d.text);
-                        tooltip.select('#ttSousTitre').text(d.vals.length+' fragment(s)');
+                        tooltip.select('#ttSousTitre').text(d.vals.length+' occurence(s)');
                         tooltip.select('#ttTexte').remove();
                         tooltip.select('#ttLinkCpt').remove();
                         //tooltip.select('#ttLinkCpt').attr('href',me.omk.api.replace("/api/","/admin/item/")+d.vals[0].idCpt);
@@ -359,7 +361,7 @@ export class tagcloud {
             );            
 
             if(me.fct.drawEnd){
-                me.fct.drawEnd(vis.selectAll("text"));
+                me.fct.drawEnd(vis.selectAll("text"),me.data);
             }
 
             me.loader.hide(true);

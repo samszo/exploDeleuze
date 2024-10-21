@@ -1,3 +1,9 @@
+.accordion{
+    --bs-accordion-active-color: white;
+    --bs-accordion-active-bg:black;
+    --bs-accordion-btn-focus-border-color:red;
+}
+
 .spanTag {
     margin-left: 2px;
     margin-right: 2px;
