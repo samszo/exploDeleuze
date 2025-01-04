@@ -53,12 +53,14 @@
         headers.forEach(h=>{
             switch (h) {
                 case 'choix':
+                case 'Choix':
                 case 'choisir':
                         editors.push({data:h, type: 'checkbox'})                          
                     break;
                 case 'date':
+                case 'Date':
                     editors.push({data:h, type:'date'})                  
-                    break;                    
+                    break;
                 default:
                     editors.push({data:h, type: 'text'})                  
                     break;

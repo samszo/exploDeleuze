@@ -13,6 +13,8 @@ export class transcription {
         this.selectConcepts = config.selectConcepts ? config.selectConcepts : [];  
         this.a = config.a ? config.a : [];  
         this.loader = new loader();
+        this.note = config.note ? config.note : false;
+        this.events = config.events ? config.events : [];
         let rectContRess, 
             heightLine = 200, nbLine = 3, lineBand, 
             pixelParMilliseconde = 0.5,
@@ -20,13 +22,14 @@ export class transcription {
             selectConceptsPosis=[], 
             mNote, noteBox=[], 
             mRef=new modal({'size':'modal-lg'}).add('modalAddRef'),
+            mShowConcept=new modal({'size':'modal-xl'}).add('modalShowConcept'),
             //en milliseconde
             margeBox = 100,
             oBnf = new bnf(), hotResult, hotResultHeight=400,
             typeRef = ['jdc:hasPerson','jdc:hasGeo','jdc:hasEpoque','jdc:hasBook','jdc:hasMovie','jdc:hasMusic','jdc:hasLink','jdc:hasConcept'],
             continuousPlaying;
 
-        this.init = function () {
+        this.init = function (idFrag=false) {
             //initialisation des contenus
             me.cont.selectAll('*').remove();
             rectContRess = me.cont.node().getBoundingClientRect();
@@ -130,7 +133,12 @@ export class transcription {
             me.cont.selectAll('.depth4').remove();
             //ajoute la barre des paramètres
             if(me.contParams)showParams();   
-            
+            //vérifie s'il faut lancer une vidéo
+            if(idFrag){
+                let sFrag = d3.select('#frag_'+idFrag);
+                sFrag.node().scrollIntoView();
+                d3.select('#audio'+idFrag).node().play();                            
+            }
             me.loader.hide(true);
         }
 
@@ -197,7 +205,7 @@ export class transcription {
             let q = "cours-bnf/page/ajax?json=1&helper=sql&action=getTransNote&id="+t.idTrans;
             me.a.omk.getSiteViewRequest(q,rs=>{
                 rs.forEach(r=>r.trans=t);
-                d3.select('#trans'+t.idTrans).selectAll('.noteBoxSave').data(rs)
+                d3.select('#trans'+t.idTrans).select(".gTransNotes").selectAll('.noteBoxSave').data(rs)
                     .enter().append('g').attr('id',nb=>{
                         nb.start = Number.parseFloat(nb.start);
                         nb.end = Number.parseFloat(nb.end);
@@ -208,7 +216,7 @@ export class transcription {
             });
         } 
         function addNoteBox(svg,t){
-            svg.selectAll(".noteBoxAdd")
+            svg.select(".gTransNotes").selectAll(".noteBoxAdd")
             .data(d=>{
                 let db={'omk':false,'id':'trans'+d.idTrans+'_box'+noteBox.length,
                     'trans':d
@@ -285,6 +293,7 @@ export class transcription {
             //récupère la note complète si ce n'est déjà fait
             if(!note.omk){
                 note.omk=me.a.omk.getItem(note.id);
+                note.omk.owner = me.a.omk.getOwner(note.omk["o:owner"]["o:id"]);
                 me.a.omk.loader.hide(true);
             }
             mNote.m.show();
@@ -295,10 +304,26 @@ export class transcription {
             mNote.s.select('#inptNoteColor').node().value = d3.color(note.color).formatHex();                
             mNote.s.select('#inptIdNote').node().value = note.omk ? note.omk['o:id'] : "";
             //on met à jour le titre à chaque fois
-            mNote.s.select('#inptTitreNote').node().value = 
+            mNote.s.select('#inptTitreNote').html( 
                 'Note '+note.trans.idFrag
                     +'-'+note.trans.idTrans           
-                    +' : '+d3.timeFormat("%M:%S.%L")(note.start)+' -> '+d3.timeFormat("%M:%S.%L")(note.end);            
+                    +' : '+d3.timeFormat("%M:%S.%L")(note.start)+' -> '+d3.timeFormat("%M:%S.%L")(note.end)
+                );  
+            mNote.s.select('#aShareNote')
+                .style('display',note.omk ? "block":"none")
+                .attr("href",note.omk ? "?idNote="+note.id : "");
+             
+            mNote.s.select('#aOmkNote')
+                .style('display',note.omk ? "block":"none")
+                .attr('href',
+                    note.omk ? me.a.omk.getAdminLink(false,note.id,"o:Item") : ""
+                );
+
+            mNote.s.select('#inptAuteurNote')
+                .style('display',note.omk ? "block":"none")
+                .html("Crée par : "+note.omk.owner["o:name"]);
+                        
+                              
             //pareil pour la description qui correspond au texte de la sélection
             mNote.s.select('#inptDescNote').node().value = getNoteDesc(note);
             mNote.s.select('#inptConceptNote').node().value = getNoteConcept(note);            
@@ -364,7 +389,7 @@ export class transcription {
                 me.a.omk.updateRessource(idNote, data,'items',null,"PATCH",i=>{
                     console.log(i);
                     redrawTranscription();
-                    mNote.hide();
+                    mNote.m.hide();
                     me.loader.hide();
                 });
             }else{
@@ -372,7 +397,7 @@ export class transcription {
                 me.a.omk.createItem(data,i=>{
                     console.log(i);
                     redrawTranscription();
-                    mNote.hide();
+                    mNote.m.hide();
                     me.loader.hide();
                 });
             }
@@ -617,17 +642,12 @@ export class transcription {
                         let sFrag = d3.select('#frag_'+data[0].idFrag);
                         if(sFrag.size()){
                             sFrag.node().scrollIntoView();
-                            /*
-                            let posi = sFrag.node().getBoundingClientRect();
-                            me.cont.node()
-                                .scroll({
-                                    top: posi.x,
-                                    behavior: "auto",
-                                    });
-                            */
                             d3.select('#audio'+data[0].idFrag).node().play();                            
+                        }else{
+                            //on réinitialise avec les nouvelles données
+                            me.vals = me.vals.concat(data);
+                            me.init(data[0].idFrag);
                         }
-
                     }
                 })
             }
@@ -728,8 +748,10 @@ export class transcription {
                 .attr("height", heightLine)
                 .style('cursor','pointer')
                 .on('click',clickTransCpt),
+            //ajoute le groupe des notes avant pour ne pas cacher les concepts
+            transNote = svg.append('g').attr('class','gTransNotes'),
             //ajoute les concepts
-            transCpt = svg.selectAll('g').data(t=>{
+            transCpt = svg.selectAll('.gTransConcept').data(t=>{
                     let data = [];
                     t[1].forEach((d,i)=>{
                         //gestion des temps
@@ -743,6 +765,7 @@ export class transcription {
                     });
                     return t[1];
             }).enter().append('g')
+                .attr('class','gTransConcept')
                 .style('cursor','zoom-in')
                 .on('click',showConcept);
             
@@ -760,7 +783,7 @@ export class transcription {
                 .text(d=>{
                     return d.titleCpt;
                 })
-                .on('mouseover',showConcept);
+                .on('click',showConcept);
             //ajoute la ligne de durée
             transCpt.append('path')
                 .attr('d', (d,i)=> {
@@ -768,7 +791,7 @@ export class transcription {
                 })
                 .attr('stroke', 'red')
                 .attr('stroke-width',4)
-                .on('mouseover',showConcept);
+                .on('click',showConcept);
 
                  
             //gestion de l'axe
@@ -813,7 +836,19 @@ export class transcription {
                     setTimeFocus(scp.v[0].idTrans,scp.v[0].x1,scp.v[0].idFrag,scp.v[0].startCpt);
                 });               
             }
+            if(me.events["endDraw"] && me.note){
+                me.gotoNote(me.note);
+            }
 
+
+        }
+        this.gotoNote = function(note){
+            let svg =  me.cont.select('#trans'+note.idTrans),
+            svgData = svg.data()[0], 
+            coursTime = svgData.start+note.start,
+            scale = svgData.scaleTime,
+            x = scale(coursTime);
+            setTimeFocus(note.idTrans,x);            
         }
         function clickTransCpt(e,d){
             let x = e.offsetX, t = (d.scaleTime.invert(x)-d.start)/1000;
@@ -875,8 +910,201 @@ export class transcription {
                 +' '+d3.timeFormat("%M:%S.%L")(d.endCpt-d.startCpt)
                 +' '+(d.endCpt-d.startCpt)
             );
+            //affiche le détail du concept
+            mShowConcept.s.select('#modalShowConceptTitre').html(d.titleCpt);
+            //affiche la liste des transcription
+            setListeConceptTrans(d);            
+            mShowConcept.m.show();
+
+            //initialise l'autoconplétion
+            let autoCompleteJS = new autoComplete({
+                selector: "#inptChangeConceptTitle",
+                placeHolder: "Saisir le titre du concept...",
+                data: {
+                    src: async (query) => {
+                      try {
+                        // Fetch Data from external Source
+                        const url = me.a.omk.api.replace('api/','')
+                            +"s/cours-bnf/page/ajax?json=1&helper=sql&action=suggestConcept&label="+query;                                   
+                        const source = await fetch(url);
+                        // Data should be an array of `Objects` or `Strings`
+                        const data = await source.json();                
+                        return data;
+                      } catch (error) {
+                        return error;
+                      }
+                    },
+                    // Data source 'Object' key to be searched
+                    keys: ["label"],
+                },
+                resultsList: {
+                    element: (list, data) => {
+                        const info = document.createElement("p");
+                        if (data.results.length == 0) {
+                            info.innerHTML = `<span>Pas de résultat pour "${data.query}"</span>`;
+                        }
+                        list.prepend(info);      
+                    },
+                    noResults: true,
+                    maxResults: 15
+                },
+                resultItem: {
+                    element: (item, data) => {
+                      // Modify Results Item Style
+                      item.style = "display: flex; justify-content: space-between;";
+                      // Modify Results Item Content
+                      item.innerHTML = `
+                      <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                        ${data.match} (${data.value.id})
+                      </span>`;
+                    },
+                    highlight: true
+                  },
+            });
+            autoCompleteJS.input.addEventListener("selection", function (event) {
+                const feedback = event.detail;
+                autoCompleteJS.input.blur();
+                // Prepare User's Selected Value
+                const selection = feedback.selection.value[feedback.selection.key];
+                // Render selected choice to selection div
+                //document.querySelector(".selection").innerHTML = selection;
+                // Replace Input value with the selected value
+                autoCompleteJS.input.value = selection;
+                // Console log autoComplete data feedback
+                console.log(feedback);
+              });
+
+        }
+        function getConcept(){
+            
+        }
+        function setConcept(){
+
         }
         
+        async function setListeConceptTrans(concept,page=1,nb=10){                        
+            //récupère les transcriptions liées au concept
+            try {
+                const url = me.a.omk.api.replace('api/','')
+                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=getConceptTrans&idConcept="+concept.idCpt;                                   
+                const source = await fetch(url);
+                const data = await source.json();   
+                //intialisation de la timeline
+                let timeline = new TL.Timeline('timelineConceptTrans',
+                    getTimelineJson(concept, data),
+                    {'language':"fr"}
+                );
+
+                //définition du header
+                let headers = ['Choix',"Nb.","Transcription","Cours","Date","Agent","Début","Fin"];
+                //construction du tableau
+                hotResult = new Handsontable(d3.select('#hstConceptTrans').node(), {
+                    className: 'htDark',
+                    afterGetColHeader: function(col, TH){
+                        TH.className = 'darkTH'
+                    },
+                    colHeaders: true,
+                    rowHeaders: true,
+                    data:data.map(d=>{
+                        let r = {},link;
+                        headers.forEach(h =>{
+                            switch (h) {
+                                case 'Choix':
+                                    r[h]= false;
+                                    break;
+                                case 'Transcription':
+                                    link = '<a class="link-danger" href="?idTrans='+d["idTrans"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a>';
+                                    r[h]=link+d[h].replace(new RegExp(concept.titleCpt, "ig"), '<span class="sltConcept">'+concept.titleCpt+'</span>');
+                                    break;
+                                case 'Cours':
+                                    link = '<a class="link-danger" href="?idConf='+d["idConf"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a>';
+                                    r[h]=link+d[h];
+                                    break;
+                                default:
+                                    r[h]= d[h];
+                                    break;
+                            }
+                        });
+                        return r;
+                    }),
+                    colHeaders: headers,
+                    colWidths: [60, 50, 400, 200, 60, 60, 60, 60, 50],
+                    height: hotResultHeight+'px',
+                    width: '100%',
+                    licenseKey: 'non-commercial-and-evaluation',
+                    customBorders: true,
+                    dropdownMenu: true,
+                    multiColumnSorting: true,
+                    filters: true,
+                    columns: [
+                        {data:'Choix', type: 'checkbox'},
+                        {data:'Nb.', type: 'numeric'},
+                        {data:'Transcription', renderer:'html'},//, renderer: conceptRenderer
+                        {data:'Cours', renderer:'html'},
+                        {data:'Date', type:'date'},
+                        {data:'Agent', type:'text'},
+                        {data:'Début', type:'numeric'},
+                        {data:'Fin', type:'numeric'}               
+                    ],
+                    allowInsertColumn: false,
+                    copyPaste: false,
+                    search: true,                        
+                });                
+                
+            } catch (error) {
+                return error;
+            }
+
+        } 
+
+        function getTimelineJson(concept, data){
+            //définition du résumé
+            const cptGroup = d3.group(data, (d) => d.Cours);
+            const nbUse = d3.sum(data, d => d["Nb."]);
+            const extUse = d3.extent(data, d => d["Nb."]);
+            let json = {
+                "title": {
+                    "text": {
+                      "headline": "Timeline du concept : "+concept.titleCpt,
+                      "text": "Le concept est utilisé "+nbUse+" fois "
+                        +(nbUse > 1 ? "entre "+extUse[0]+" et "+extUse[1]+" fois par transcription":"")
+                        +" dans "+cptGroup.size+" conférence"+(cptGroup.size>1 ? "s" : "")
+                    }
+                },
+                "events": []
+            }
+            data.forEach((d,i)=>{
+                let dt = d.Date.split('-'),
+                deb = msToTime(d["Début"]),
+                dur = deb.split(":"),
+                audio = '<audio src="'+me.a.omk.getMediaLink(d.Audio)+'" class="mx-2" controls="true" style="height: 24px;"></audio>',
+                headline = '<a href="'+d.source+'" target="_blank"><img src="assets/img/Logo_BnF.svg" class="mx-2" height="10px"></img></a> '                    
+                    +d.Theme+'<br/>'
+                    +' <a class="link-danger" href="?idConf='+d["idConf"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a> '
+                    +' '+d.Date+' '
+                    +d["Début"] +' -> '+d["Fin"] ,
+                    text = audio+'<br/><a class="link-danger" href="?idTrans='+d["idTrans"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a> '
+                    +d.Transcription.replace(new RegExp(concept.titleCpt, "ig"), '<span class="sltConcept">'+concept.titleCpt+'</span>')
+                ;            
+                json.events.push({
+                    "start_date": {
+                        "month": dt[1],
+                        "day": dt[2],
+                        "year": dt[0],
+                        "hour":dur[0],
+                        "minute":dur[1],
+                        "second":dur[2].split(".")[0]                        
+                    },
+                    "group":d.Theme,
+                    "text": {
+                        "headline": headline,
+                        "text": text
+                    }
+                })
+            })
+            return json;            
+        }
+
         function showFirstFragment(e,d){
             console.log(d);
         }

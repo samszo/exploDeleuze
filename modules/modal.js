@@ -75,52 +75,22 @@ export class modal {
 }
 //modal pour modifier une notebox 
 export let modalNodeBox = `
-    <div class="modal-dialog ">
+    <div class="modal-dialog modal-xl">
     <div class="modal-content">
         <div class="modal-header text-bg-warning">
         <h5 class="modal-title">Modifier la note</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-bg-dark">
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Ajouter</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nbNodeBox" aria-controls="nbNodeBox" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="nbNodeBox">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <button id="btnAddPerson" type="button" class="btn btn-warning"><i class="fa-solid fa-person"></i></button>
-                        </li>
-                        <li class="nav-item">
-                            <button id="btnAddGeo" type="button" class="btn btn-warning"><i class="fa-solid fa-book-atlas"></i></button>
-                        </li>     
-                        <li class="nav-item">
-                            <button id="btnAddEpoque" type="button" class="btn btn-warning"><i class="fa-solid fa-timeline"></i></button>
-                        </li>                       
-                        <li class="nav-item">
-                            <button id="btnAddBook" type="button" class="btn btn-warning"><i class="fa-solid fa-book"></i></button>
-                        </li>
-                        <li class="nav-item">
-                            <button id="btnAddMovie" type="button" class="btn btn-warning"><i class="fa-solid fa-film"></i></button>
-                        </li>
-                        <li class="nav-item">
-                            <button id="btnAddMusic" type="button" class="btn btn-warning"><i class="fa-solid fa-music"></i></button>
-                        </li>                        
-                        <li class="nav-item">
-                            <button id="btnAddLink" type="button" class="btn btn-warning"><i class="fa-solid fa-link"></i></button>                
-                        </li>
-                        <li class="nav-item">
-                            <button id="btnAddConcept" type="button" class="btn btn-warning"><i class="fa-solid fa-diagram-project"></i></button>                
-                        </li>                        
-                    </ul>
-                    </div>
-                </div>
-            </nav>
             <div class="mb-3">
-                <label for="inptTitreNote" class="form-label">Titre</label>
-                <input type="text" disabled class="form-control" id="inptTitreNote" >
+                <label id="inptTitreNote" class="form-label">Description</label>
+                <a id="aShareNote" class="link-danger" target="_blank" href=""><i class="fa-light fa-share"></i></a>
+                <a id="aOmkNote"  target="_blank" href="">
+                    <img src="assets/img/OmekaS.png" style="height: 20px;">
+                </a>
+            </div>
+            <div class="mb-3">
+                <label id="inptAuteurNote" class="form-label">Description</label>
             </div>
             <div class="mb-3">
                 <label for="inptDescNote" class="form-label">Description</label>
@@ -147,29 +117,65 @@ export let modalNodeBox = `
                     </div>
                 </div>              
             </div>              
-            <h4>Référence(s) associée(s)</5>    
-            <h5>Personne(s)</5>    
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Ajouter</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nbNodeBox" aria-controls="nbNodeBox" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="nbNodeBox">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <button id="btnAddPerson" type="button" class="btn btn-warning"><i class="fa-solid fa-person"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddGeo" type="button" class="btn btn-warning"><i class="fa-solid fa-book-atlas"></i></button>
+                        </li>     
+                        <li class="nav-item">
+                            <button id="btnAddEpoque" type="button" class="btn btn-warning"><i class="fa-light fa-timeline-arrow"></i></button>
+                        </li>                       
+                        <li class="nav-item">
+                            <button id="btnAddBook" type="button" class="btn btn-warning"><i class="fa-solid fa-book"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddMovie" type="button" class="btn btn-warning"><i class="fa-solid fa-film"></i></button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddMusic" type="button" class="btn btn-warning"><i class="fa-solid fa-music"></i></button>
+                        </li>                        
+                        <li class="nav-item">
+                            <button id="btnAddLink" type="button" class="btn btn-warning"><i class="fa-solid fa-link"></i></button>                
+                        </li>
+                        <li class="nav-item">
+                            <button id="btnAddConcept" type="button" class="btn btn-warning"><i class="fa-solid fa-diagram-project"></i></button>                
+                        </li>                        
+                    </ul>
+                    </div>
+                </div>
+            </nav>
+            <h4>Référence(s) associée(s)</h4>    
+            <h5>Personne(s)</h5>    
             <div id="lstNodeBoxPerson" class="list-group">
             </div> 
-            <h5>Lieu(x)</5>    
+            <h5>Lieu(x)</h5>    
             <div id="lstNodeBoxGeo" class="list-group">
             </div> 
-            <h5>Epoque(s)</5>    
+            <h5>Epoque(s)</h5>    
             <div id="lstNodeBoxEpoque" class="list-group">
             </div> 
-            <h5>Document(s)</5>    
+            <h5>Document(s)</h5>    
             <div id="lstNodeBoxDoc" class="list-group">
             </div> 
-            <h5>Films(s)</5>    
+            <h5>Films(s)</h5>    
             <div id="lstNodeBoxFilm" class="list-group">
             </div> 
-            <h5>Musique(s)</5>    
+            <h5>Musique(s)</h5>    
             <div id="lstNodeBoxMusique" class="list-group">
             </div> 
-            <h5>Liens</5>    
+            <h5>Liens</h5>    
             <div id="lstNodeBoxLink" class="list-group">
             </div> 
-            <h5>Concepts</5>    
+            <h5>Concepts</h5>    
             <div id="lstNodeBoxConcept" class="list-group">
             </div> 
 
@@ -215,6 +221,30 @@ export let modalAddRef = `
         <div class="modal-footer text-bg-warning">
             <button id="btnAddRefClose" type="button" class="btn btn-secondary">Fermer</button>        
             <button id="btnAddRefSave" type="button" class="btn btn-success">Enregistrer</button>        
+        </div>
+    </div>
+    </div>
+`;
+//modal pour gérer un concept
+export let modalShowConcept = `
+    <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-bg-warning">
+            <h5 class="modal-title">Gestion d'un concept</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-bg-dark">
+            <h1 id="modalShowConceptTitre">Titre du concept</h1>
+            <div class="mb-3">
+                <label for="inptChangeConceptTitle" class="form-label">Changer le titre du concept</label>
+                <input id="inptChangeConceptTitle" type="search" dir="ltr" spellcheck=false autocorrect="off" autocomplete="off" autocapitalize="off" maxlength="2048" tabindex="1"></input>
+            </div>
+            <div id="timelineConceptTrans" style="height:480px;" />
+            <div class="clearfix" id="hstConceptTrans" />
+        </div>                          
+        <div class="modal-footer text-bg-warning">
+            <button id="btnShowConceptClose" type="button" class="btn btn-secondary">Fermer</button>        
+            <button id="btnShowConceptSave" type="button" class="btn btn-success">Enregistrer</button>        
         </div>
     </div>
     </div>

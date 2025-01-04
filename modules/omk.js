@@ -14,6 +14,7 @@ export class omk {
         this.class = [];
         this.medias = [];
         this.items = [];
+        this.owners = []
         this.resources = [];
         this.rts
         this.queries = [];
@@ -156,6 +157,16 @@ export class omk {
             if(cb)cb(rs);                    
             return rs;
         }
+
+        this.getOwner = function (id, cb=false){
+            if(me.owners[id])return me.owners[id];
+            let url = me.api+'users/'+id+'?key_identity='+me.ident+'&key_credential='+me.key,
+                rs = syncRequest(url);
+            me.owners[id]=rs;
+            if(cb)cb(rs);                    
+            return rs;
+        }
+        
 
         this.getMedia = function (id, cb=false){
             if(me.medias[id])return me.medias[id];

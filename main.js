@@ -5,13 +5,15 @@ import {loader} from './modules/loader.js';
 import {tree} from './modules/tree.js';
 import {transcription} from './modules/transcription.js';
 import {anythingLLM} from './modules/anythingLLM.js';
+import {appUrl} from './modules/appUrl.js';
 
         let tc, conferences, cours,
             hotRes, 
             //accordion = document.getElementById('accordionJDC'),
             //rectAccordion = accordion.getBoundingClientRect(),
             wait = new loader(),
-            cherche, curData, curConf;
+            cherche, curData, curConf,
+            aUrl = new appUrl({'url':new URL(document.location)});
             
 
         //dimensionne les contenus
@@ -35,6 +37,10 @@ import {anythingLLM} from './modules/anythingLLM.js';
         //log l'utilisateur
         a.getUser(u=>{
             console.log(u);
+            if(aUrl.params.has('idTrans'))showTranscription(aUrl.params.get('idTrans'));
+            if(aUrl.params.has('idConf'))showSeminar(null,null,aUrl.params.get('idConf'));
+            if(aUrl.params.has('idNote'))showNote(aUrl.params.get('idNote'));
+            
             /*on remplace par un arbre des cours
             a.omk.getAllItems('resource_class_id=47',
                 data=>{
@@ -84,6 +90,43 @@ import {anythingLLM} from './modules/anythingLLM.js';
                 });
             }
         })        
+
+        function showTranscription(idTrans){
+            wait.show();
+            let url = a.omk.api.replace('api/','')
+                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=timelineConceptAnnexe&idTrans="+idTrans;                               
+            d3.json(url).then(function(rs) {
+                let t = new transcription({
+                    'a':a,
+                    'cont':d3.select("#contentResources"),
+                    'contParams':d3.select('#contentResourcesParams'),  
+                    'vals':rs,
+                    'selectConcepts': []
+                })
+                wait.hide();
+            });
+
+        }
+
+        function showNote(idNote){
+            wait.show();
+            let url = a.omk.api.replace('api/','')
+                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=getTransNote&idNote="+idNote;                               
+            d3.json(url).then(function(rs) {
+                let t = new transcription({
+                    'a':a,
+                    'cont':d3.select("#contentResources"),
+                    'contParams':d3.select('#contentResourcesParams'),  
+                    'vals':rs.trans,
+                    'selectConcepts': [],
+                    'note':rs.note,
+                    'events':{'endDraw':'gotoNote'}
+                });
+                wait.hide();
+            });
+
+        }
+        
 
         function changeButtonColor(id){
             //change la couleur des boutons
@@ -187,12 +230,13 @@ import {anythingLLM} from './modules/anythingLLM.js';
             wait.hide();
         }
 
-        function showSeminar(e,d){
+        function showSeminar(e,d,id){
             wait.show();
             let url = a.omk.api.replace('api/','')
                 //+"s/cours-bnf/page/ajax?json=1&helper=sql&action=statConcept&id="+d['o:id'];
                 //+"s/cours-bnf/page/ajax?json=1&helper=sql&action=timelineConcept&idConf="+d['o:id'];                               
-                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=timelineConceptAnnexe&idConf="+d.id;                               
+                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=timelineConceptAnnexe&idConf="
+                +(d ? d.id : id);                               
             d3.json(url).then(function(rs) {
                 console.log('data seminaire : OK');
                 curData=rs;
@@ -209,7 +253,7 @@ import {anythingLLM} from './modules/anythingLLM.js';
             if(idsConf.length==cours.length)return;
             console.log(idsConf);
             d3.select('#accConferences').selectAll('.list-group-item.p-1')
-                .attr('class',(d,i)=>getListConfClass(d,i,idsConf.includes(d.id) ? "visible" : "invisible"))
+                .attr('class',(d,i)=>(d,i,idsConf.includes(d.id) ? "visible" : "invisible"))
                 .style('display',d=>idsConf.includes(d.id) ? "block" : "none")
         }
 

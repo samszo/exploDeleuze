@@ -114,7 +114,7 @@ export class anythingLLM {
                 //transforme les infos des documents
                 oWorkspace.documents.forEach(d=>{
                     d.infos = JSON.parse(d.metadata);
-                    d.idOmk = parseInt(d.infos.title.split('-')[1].split('.')[0]) 
+                    d.idOmk = parseInt(d.infos.title.split('-')[1].split('.')[0]);
                 });
                 //affiche le bouton de tchat IA
                 setModal();                
@@ -184,7 +184,7 @@ export class anythingLLM {
 
         }
 
-        function updateDocIA(e,d){
+        function updateDocIA(e,d,page=1){
             if(!me.omk){
                 let m=new modal({
                     'titre':"Impossible de mettre à jour les documents",
@@ -198,34 +198,35 @@ export class anythingLLM {
             //récupère la liste des docs
             ///v1/document/create-folder
             //me.omk.getAllItems('resource_class_id=412',
-            me.omk.searchItems('resource_class_id=412',
-                    data=>{
-                    data.forEach((d,i) => {
-                        if(!docInWorkspace(d)){
-                            let txt = 
-                                "#"+d["ma:isFragmentOf"][0].display_title+'\n'
-                                +"##"+d["oa:hasSource"][0].display_title+'\n'
-                                +d['o:title'],
-                            params = {
-                                "textContent": txt,
-                                "metadata": {
-                                    "title":"Transcription "+d['o:id'],
-                                    "idTrans": d['o:id'],
-                                    "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
-                                    "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
-                                        +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
-                                    "idSource": d['oa:hasSource'][0]['value_resource_id'],
-                                    "idCours": d['ma:isFragmentOf'][0]['value_resource_id']
-                                }
+            me.omk.searchItems('property[0][joiner]=and&property[0][property][]=35&property[0][type]=nex&resource_class_id=412&per_page=100&page='+page,data=>{
+                if(data.length==0)return;
+                data.forEach((d,i) => {
+                    if(!docInWorkspace(d)){
+                        let txt = 
+                            "#"+d["ma:isFragmentOf"][0].display_title+'\n'
+                            +"##"+d["oa:hasSource"][0].display_title+'\n'
+                            +d['o:title'],
+                        params = {
+                            "textContent": txt,
+                            "metadata": {
+                                "title":"Transcription "+d['o:id'],
+                                "idTrans": d['o:id'],
+                                "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
+                                "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
+                                    +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
+                                "idSource": d['oa:hasSource'][0]['value_resource_id'],
+                                "idCours": d['ma:isFragmentOf'][0]['value_resource_id']
                             }
-                            //Ajoute le document dans anythingLLM
-                            query('document/raw-text','POST',params).then(r=>{
-                                console.log(r);
-                                docAddToWorkspace(r);
-                            });
                         }
-                    });
-                    me.loader.hide();
+                        //Ajoute le document dans anythingLLM
+                        query('document/raw-text','POST',params).then(r=>{
+                            console.log(r);
+                            docAddToWorkspace(r);
+                        });
+                    }
+                });
+                updateDocIA(e,d,page+1);
+                me.loader.hide();
                 },false
             );
         }
@@ -256,13 +257,25 @@ export class anythingLLM {
                   r.documents[0].location
                 ]
               }    
-            query('workspace/'+me.workspace+'/update-embeddings','POST',params).then(r=>{
-                console.log(r);
+            query('workspace/'+me.workspace+'/update-embeddings','POST',params).then(d=>{
+                docWorkspaceToOmk(d.workspace.documents[d.workspace.documents.length-1]);
             });
         }
 
         function docInWorkspace(d){
-            return oWorkspace.documents.filter(od=>od.idOmk==d['o:id']).length;
+            let docsIn =  oWorkspace.documents.filter(od=>od.idOmk==d['o:id'])
+            //mettre à jour la référence dans omk
+            if(docsIn.length)docWorkspaceToOmk(docsIn[0]);                     
+            return docsIn.length;
+        }
+
+        function docWorkspaceToOmk(d){
+            //enregistre la référence dans omk
+            if(!d.infos){
+                d.infos = JSON.parse(d.metadata);
+                d.idOmk = parseInt(d.infos.title.split('-')[1].split('.')[0]); 
+            }
+            me.omk.updateRessource(d.idOmk,{'dcterms:isReferencedBy':d.docpath});
         }
 
         async function query(a,m,b={}) {
