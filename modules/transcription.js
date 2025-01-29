@@ -286,12 +286,16 @@ export class transcription {
                 .attr('xlink:href',"assets/img/right-arrow.svg")
                 .style('cursor','col-resize')                
                 .on('click',addBrush);
+            //Affiche automatique la note passée en paramètre
+            if(me.events["endDraw"] && me.note){
+                me.gotoNote(me.note);
+            }
         }
         function showNoteBox(e,note){
-            e.stopImmediatePropagation();
+            if(e)e.stopImmediatePropagation();
             me.loader.show();
             //récupère la note complète si ce n'est déjà fait
-            if(!note.omk){
+            if(!note.omk && !isNaN(note.id)){
                 note.omk=me.a.omk.getItem(note.id);
                 note.omk.owner = me.a.omk.getOwner(note.omk["o:owner"]["o:id"]);
                 me.a.omk.loader.hide(true);
@@ -305,8 +309,8 @@ export class transcription {
             mNote.s.select('#inptIdNote').node().value = note.omk ? note.omk['o:id'] : "";
             //on met à jour le titre à chaque fois
             mNote.s.select('#inptTitreNote').html( 
-                'Note '+note.trans.idFrag
-                    +'-'+note.trans.idTrans           
+                'Note '+(note.trans ? note.trans.idFrag : note.idFrag)
+                    +'-'+(note.trans ? note.trans.idTrans : note.idTrans)           
                     +' : '+d3.timeFormat("%M:%S.%L")(note.start)+' -> '+d3.timeFormat("%M:%S.%L")(note.end)
                 );  
             mNote.s.select('#aShareNote')
@@ -321,14 +325,32 @@ export class transcription {
 
             mNote.s.select('#inptAuteurNote')
                 .style('display',note.omk ? "block":"none")
-                .html("Crée par : "+note.omk.owner["o:name"]);
+                .html("Crée par : "+(note.omk ? note.omk.owner["o:name"]:""));
                         
                               
-            //pareil pour la description qui correspond au texte de la sélection
-            mNote.s.select('#inptDescNote').node().value = getNoteDesc(note);
-            mNote.s.select('#inptConceptNote').node().value = getNoteConcept(note);            
-            mNote.s.select('#inptIdFrag').node().value = note.trans.idFrag;
-            mNote.s.select('#inptIdTrans').node().value = note.trans.idTrans;
+            //la description est libre 
+            mNote.s.select('#inptDescNote').node().value = note.omk ? note.omk["dcterms:description"][0]["@value"] : "Saisir une description";
+
+            let conceptsNote = getNoteConcept(note);
+            mNote.s.select('#inptConceptNote').node().value = conceptsNote.map(n=>n.titleCpt).join(" ");            
+            mNote.s.select('#inptIdFrag').node().value = note.trans ? note.trans.idFrag : note.idFrag;
+            mNote.s.select('#inptIdTrans').node().value = note.trans ? note.trans.idTrans : note.idTrans;
+            
+            //initialise les events
+            mNote.s.select('#btnShowConceptOccur').on("click",()=>{
+                getTableConceptOccurence(conceptsNote);
+            })
+
+            //affiche les concepts de la sélection
+            mNote.s.select('#lstNodeBoxConcept')
+                .selectAll('span').remove();            
+            mNote.s.select('#lstNodeBoxConcept')
+                .selectAll('span').data(conceptsNote).enter()
+                    .append('span').attr('class',"badge text-bg-warning rounded m-1")
+                    .style('cursor','pointer')
+                    .text(d=>d.titleCpt)
+                    .on('click',showConcept)         
+
             //on affiche les références
             showRefs(note);
             me.loader.hide();
@@ -349,7 +371,7 @@ export class transcription {
             return desc.join(" ");
         }
         function getNoteConcept(note){
-            return note.trans[1].filter(n=>n.x1>=note.x && n.x1<=(note.x+note.width)).map(n=>n.idCpt).join(",");
+            return note.trans[1].filter(n=>n.x1>=note.x && n.x1<=(note.x+note.width));//.map(n=>n.idCpt).join(",");
         }
 
         function saveNoteBox(e,d){
@@ -357,7 +379,7 @@ export class transcription {
             me.loader.show();
             let start = mNote.s.select('#inptNoteDebVal').node().value,
                 end = mNote.s.select('#inptNoteFinVal').node().value,
-                titre = mNote.s.select('#inptTitreNote').node().value,
+                titre = mNote.s.select('#inptTitreNote').html(),
                 desc = mNote.s.select('#inptDescNote').node().value,
                 idFrag = mNote.s.select('#inptIdFrag').node().value,
                 idTrans = mNote.s.select('#inptIdTrans').node().value,
@@ -836,11 +858,6 @@ export class transcription {
                     setTimeFocus(scp.v[0].idTrans,scp.v[0].x1,scp.v[0].idFrag,scp.v[0].startCpt);
                 });               
             }
-            if(me.events["endDraw"] && me.note){
-                me.gotoNote(me.note);
-            }
-
-
         }
         this.gotoNote = function(note){
             let svg =  me.cont.select('#trans'+note.idTrans),
@@ -848,7 +865,8 @@ export class transcription {
             coursTime = svgData.start+note.start,
             scale = svgData.scaleTime,
             x = scale(coursTime);
-            setTimeFocus(note.idTrans,x);            
+            setTimeFocus(note.idTrans,x); 
+            me.cont.select('#noteRect'+me.note.id).node().dispatchEvent(new Event("click"));            
         }
         function clickTransCpt(e,d){
             let x = e.offsetX, t = (d.scaleTime.invert(x)-d.start)/1000;
@@ -982,23 +1000,20 @@ export class transcription {
 
         }
         
-        async function setListeConceptTrans(concept,page=1,nb=10){                        
-            //récupère les transcriptions liées au concept
+        async function getTableConceptOccurence(concepts){                        
+            //récupère les transcriptions liées aux concepts
             try {
                 const url = me.a.omk.api.replace('api/','')
-                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=getConceptTrans&idConcept="+concept.idCpt;                                   
+                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=getConceptTrans&idsConcept="
+                    +concepts.map(n=>n.idCpt).join(",");
+                const conceptsLib = concepts.map(n=>n.titleCpt).join(" ");                                   
                 const source = await fetch(url);
                 const data = await source.json();   
-                //intialisation de la timeline
-                let timeline = new TL.Timeline('timelineConceptTrans',
-                    getTimelineJson(concept, data),
-                    {'language':"fr"}
-                );
 
                 //définition du header
-                let headers = ['Choix',"Nb.","Transcription","Cours","Date","Agent","Début","Fin"];
+                let headers = ['Choix',"Transcription","Audio","Cours","Date","Agent","Début","Fin"];
                 //construction du tableau
-                hotResult = new Handsontable(d3.select('#hstConceptTrans').node(), {
+                hotResult = new Handsontable(mNote.s.select('#hstConceptTrans').node(), {
                     className: 'htDark',
                     afterGetColHeader: function(col, TH){
                         TH.className = 'darkTH'
@@ -1012,9 +1027,12 @@ export class transcription {
                                 case 'Choix':
                                     r[h]= false;
                                     break;
+                                case 'Audio':
+                                    r[h]= '<audio src="'+me.a.omk.getMediaLink(d.Audio)+'" controls="true" style="height:24px;width:280px;"></audio>';
+                                    break;
                                 case 'Transcription':
                                     link = '<a class="link-danger" href="?idTrans='+d["idTrans"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a>';
-                                    r[h]=link+d[h].replace(new RegExp(concept.titleCpt, "ig"), '<span class="sltConcept">'+concept.titleCpt+'</span>');
+                                    r[h]=link+d[h].replace(new RegExp(conceptsLib, "ig"), '<span class="sltConcept">'+conceptsLib+'</span>');
                                     break;
                                 case 'Cours':
                                     link = '<a class="link-danger" href="?idConf='+d["idConf"]+'" target="_blank"><i class="fa-sharp fa-light fa-eye"></i></a>';
@@ -1028,8 +1046,8 @@ export class transcription {
                         return r;
                     }),
                     colHeaders: headers,
-                    colWidths: [60, 50, 400, 200, 60, 60, 60, 60, 50],
-                    height: hotResultHeight+'px',
+                    colWidths: [60, 400, 300, 200, 60, 60, 60, 60, 50],
+                    height: '300px',
                     width: '100%',
                     licenseKey: 'non-commercial-and-evaluation',
                     customBorders: true,
@@ -1038,8 +1056,8 @@ export class transcription {
                     filters: true,
                     columns: [
                         {data:'Choix', type: 'checkbox'},
-                        {data:'Nb.', type: 'numeric'},
                         {data:'Transcription', renderer:'html'},//, renderer: conceptRenderer
+                        {data:'Audio', renderer:'html'},
                         {data:'Cours', renderer:'html'},
                         {data:'Date', type:'date'},
                         {data:'Agent', type:'text'},
@@ -1050,6 +1068,25 @@ export class transcription {
                     copyPaste: false,
                     search: true,                        
                 });                
+                
+            } catch (error) {
+                return error;
+            }
+
+        } 
+
+        async function setListeConceptTrans(concept,page=1,nb=10){                        
+            //récupère les transcriptions liées au concept
+            try {
+                const url = me.a.omk.api.replace('api/','')
+                    +"s/cours-bnf/page/ajax?json=1&helper=sql&action=getConceptTrans&idConcept="+concept.idCpt;                                   
+                const source = await fetch(url);
+                const data = await source.json();   
+                //intialisation de la timeline
+                let timeline = new TL.Timeline('timelineConceptTrans',
+                    getTimelineJson(concept, data),
+                    {'language':"fr"}
+                );             
                 
             } catch (error) {
                 return error;

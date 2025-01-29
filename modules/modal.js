@@ -82,41 +82,68 @@ export let modalNodeBox = `
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-bg-dark">
-            <div class="mb-3">
-                <label id="inptTitreNote" class="form-label">Description</label>
-                <a id="aShareNote" class="link-danger" target="_blank" href=""><i class="fa-light fa-share"></i></a>
-                <a id="aOmkNote"  target="_blank" href="">
-                    <img src="assets/img/OmekaS.png" style="height: 20px;">
-                </a>
-            </div>
-            <div class="mb-3">
+            <h4 id="inptTitreNote"></h4>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <audio id="audioNote" src="../omk_deleuze/files/original/c7a476293b34292e1b899828623c50d0dc862e18.flac" class="mx-2" controls="true" style="height: 24px;"></audio>
+                </div>              
+                <div class="col-6">
                 <label id="inptAuteurNote" class="form-label">Description</label>
-            </div>
-            <div class="mb-3">
-                <label for="inptDescNote" class="form-label">Description</label>
-                <textarea disabled class="form-control" id="inptDescNote" rows="2"></textarea>
-                <input type="text" disabled class="form-control" id="inptConceptNote" >
-            </div>  
+                </div>    
+            </div>    
             <div class="row">
-                <div class="col-4">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">Couleur</span>
-                        <input type="color" class="form-control form-control-color" id="inptNoteColor" value="#ffc00870" title="Choisir une couleur">
+                <div class="col-6">
+                    <div class="input-group h-100">
+                        <span class="input-group-text">Description</span>
+                        <textarea class="form-control" id="inptDescNote" rows="3"></textarea>
+                    </div>  
+                </div>              
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Couleur</span>
+                                <input type="color" class="form-control form-control-color" id="inptNoteColor" value="#ffc00870" title="Choisir une couleur">
+                            </div>              
+                        </div>              
+                        <div class="col-2">
+                            <a id="aShareNote" class="link-danger" target="_blank" href=""><i class="fa-light fa-share"></i></a>
+                        </div>              
+                        <div class="col-2">
+                            <a id="aOmkNote" target="_blank" href=""><img src="assets/img/OmekaS.png" style="height: 20px;"></a>
+                        </div>              
                     </div>              
-                </div>              
-                <div class="col-8">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">Début & fin</span>
-                        <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
-                        <input type="hidden" id="inptNoteDebVal" value="" />
-                        <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
-                        <input type="hidden" id="inptNoteFinVal" value="" />
-                        <input type="hidden" id="inptIdFrag" value="" />
-                        <input type="hidden" id="inptIdTrans" value="" />
-                        <input type="hidden" id="inptIdNote" value="" />                
-                    </div>
-                </div>              
-            </div>              
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-text">Début & fin</span>
+                            <input id="inptNoteDeb" disabled type="text" aria-label="Début" class="form-control">
+                            <input type="hidden" id="inptNoteDebVal" value="" />
+                            <input id="inptNoteFin" disabled type="text" aria-label="Fin" class="form-control">
+                            <input type="hidden" id="inptNoteFinVal" value="" />
+                            <input type="hidden" id="inptIdFrag" value="" />
+                            <input type="hidden" id="inptIdTrans" value="" />
+                            <input type="hidden" id="inptIdNote" value="" />                
+                        </div>
+                    </div>              
+                </div>    
+            </div>    
+            <div class="row mb-3 mt-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupTransOri">Transcription</span>
+                    <input id="inptConceptNote" type="text" class="form-control" aria-label="Transcription originale" aria-describedby="inputGroupTransOri">
+                    <button id="btnShowConceptOccur" class="btn btn-success" type="button" id="button-addon2">Voir les occurences</button>
+                </div>                
+            </div>
+            <div class="row" id="noteListeOccurence">
+                <div class="clearfix" id="hstConceptTrans" ></div>
+            </div>
+            <div class="row mb-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupTransCorrection">Correction</span>
+                    <input type="text" class="form-control" placeholder="Choisir/créer un concept" aria-label="Choisir/créer un concept" aria-describedby="inputGroupTransCorrection">
+                    <button class="btn btn-danger" type="button">Appliquer</button>
+                </div>
+            </div>
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="#">Ajouter</a>
@@ -176,7 +203,7 @@ export let modalNodeBox = `
             <div id="lstNodeBoxLink" class="list-group">
             </div> 
             <h5>Concepts</h5>    
-            <div id="lstNodeBoxConcept" class="list-group">
+            <div id="lstNodeBoxConcept" class="d-flex flex-wrap">
             </div> 
 
         </div>                          
