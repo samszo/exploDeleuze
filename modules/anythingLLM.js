@@ -22,7 +22,10 @@ export class anythingLLM {
         let oWorkspace, userThreads;
                 
         this.init = function () {
-            if(me.workspace){
+            if(me.a.user.anythingLLM){
+                me.apikey = me.a.user.anythingLLM.key;
+                me.workspace = me.a.user.anythingLLM.ws;
+                me.endpoint = me.a.user.anythingLLM.url;
                 //récupère les infos de l'utilisateur
                 me.getUserInfo().then(e=>{
                     //récupère les infos du workspace
@@ -184,7 +187,7 @@ export class anythingLLM {
 
         }
 
-        function updateDocIA(e,d,page=1){
+        function updateDocIA(e,d,page=0){
             if(!me.omk){
                 let m=new modal({
                     'titre':"Impossible de mettre à jour les documents",
@@ -196,12 +199,29 @@ export class anythingLLM {
             }
             me.loader.show();
             //récupère la liste des docs
-            ///v1/document/create-folder
+            /*
             //me.omk.getAllItems('resource_class_id=412',
-            me.omk.searchItems('property[0][joiner]=and&property[0][property][]=35&property[0][type]=nex&resource_class_id=412&per_page=100&page='+page,data=>{
-                if(data.length==0)return;
+            //let query = 'property[0][joiner]=and&property[0][property][]=35&property[0][type]=nex&resource_class_id=412&per_page=100&page='+page;
+            let query = 'resource_class_id[]=412&datetime[0][joiner]=and&datetime[0][field]=modified&datetime[0][type]=lt&datetime[0][value]=2025-01-29&per_page=100&page='+page;
+            me.omk.searchItems(query,data=>{
+            */
+            let url = me.omk.api.replace('api/','')
+                +"s/cours-bnf/page/ajax?json=1&helper=sql&action=transcriptionsForRag&nb=100&page="+page
+            d3.json(url).then(data=>{
+                if(data.length==0){
+                    let m=new modal({
+                        'titre':"Impossible de mettre à jour les documents",
+                        'body':"Vous n'êtes pas connecté à la base de données.",
+                        'class':'text-bg-dark'
+                    })
+                    me.loader.hide();
+                    m.show();
+                    return;
+                };
                 data.forEach((d,i) => {
                     if(!docInWorkspace(d)){
+                        //pour formater le RAG cf. https://docs.mistral.ai/guides/rag/
+                        /*
                         let txt = 
                             "#"+d["ma:isFragmentOf"][0].display_title+'\n'
                             +"##"+d["oa:hasSource"][0].display_title+'\n'
@@ -211,6 +231,23 @@ export class anythingLLM {
                             "metadata": {
                                 "title":"Transcription "+d['o:id'],
                                 "idTrans": d['o:id'],
+                                "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
+                                "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
+                                    +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
+                                "idSource": d['oa:hasSource'][0]['value_resource_id'],
+                                "idCours": d['ma:isFragmentOf'][0]['value_resource_id']
+                            }
+                        }
+                            */
+                        let txt = 
+                            "#"+d.theme+'\n'
+                            +"##"+d.promo+'\n'
+                            +d['o:title'],
+                        params = {
+                            "textContent": txt,
+                            "metadata": {
+                                "title":"Transcription "+d.idTrans,
+                                "idTrans": d.idTrans,
                                 "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
                                 "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
                                     +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
@@ -263,7 +300,7 @@ export class anythingLLM {
         }
 
         function docInWorkspace(d){
-            let docsIn =  oWorkspace.documents.filter(od=>od.idOmk==d['o:id'])
+            let docsIn =  oWorkspace.documents.filter(od=>od.idOmk==d.idTrans)
             //mettre à jour la référence dans omk
             if(docsIn.length)docWorkspaceToOmk(docsIn[0]);                     
             return docsIn.length;

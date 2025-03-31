@@ -64,8 +64,8 @@ import {appUrl} from './modules/appUrl.js';
                 showConferences();
                 wait.hide();
             })
-            aLLM = new anythingLLM({'apikey':'2GBSFDS-P19M2CS-J96ZK2Z-CR2K7RK',
-                'workspace':'cours-de-gilles-deleuze',//'explodeleuze'
+            aLLM = new anythingLLM({
+                //stocké dans les settings du user omk 'apikey':'T03JGY6-HQ14Q1W-HB9YB82-DJTZ0XW','workspace':'cours-de-gilles-deleuze',//'explodeleuze'
                 'a':a,
                 'omk':a.omk,
                 'cont':d3.select('#contentMap'),
