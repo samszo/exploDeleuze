@@ -246,7 +246,7 @@ export class omk {
             d3.json(url).then((data) => {
                 me.user = data.length ? data[0] : false;
                 //TODO: mieux gérer anythingLLM Login
-                me.user.anythingLLM = syncRequest(me.api.replace('api/','s/cours-bnf/page/ajax?json=1&helper=anythingLLMlogin'));
+                //me.user.anythingLLM = syncRequest(me.api.replace('api/','s/cours-bnf/page/ajax?json=1&helper=anythingLLMlogin'));
                 if(cb)cb(me.user);
             });
 
