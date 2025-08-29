@@ -6,6 +6,7 @@ import {tree} from './modules/tree.js';
 import {transcription} from './modules/transcription.js';
 import {anythingLLM} from './modules/anythingLLM.js';
 import {appUrl} from './modules/appUrl.js';
+import {pa} from './modules/authParams.js';
 
         let tc, conferences, cours,
             hotRes, 
@@ -28,12 +29,7 @@ import {appUrl} from './modules/appUrl.js';
             wMap = rectMap.width,
             aLLM,
             //initialisation des connexions
-            a = new auth({'navbar':d3.select('#navbarConnect'),
-                mail:'samuel.szoniecky@univ-paris8.fr',
-                apiOmk:'../omk_deleuze/api/',
-                ident: 'lBBNzw1HsXS4UhOwur0xE3nvNgOWapNv',
-                key: 'NUHcMUVsolp4PSFfZYGGh5Z01eLClbML'
-            });
+            a = new auth(pa);
         //log l'utilisateur
         a.getUser(u=>{
             console.log(u);
@@ -65,7 +61,7 @@ import {appUrl} from './modules/appUrl.js';
                 wait.hide();
             })
             aLLM = new anythingLLM({
-                //stocké dans les settings du user omk 'apikey':'T03JGY6-HQ14Q1W-HB9YB82-DJTZ0XW','workspace':'cours-de-gilles-deleuze',//'explodeleuze'
+                //stocké dans les settings de authParams.js
                 'a':a,
                 'omk':a.omk,
                 'cont':d3.select('#contentMap'),

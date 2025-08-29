@@ -1,7 +1,7 @@
 export const pa = {
     'navbar':d3.select('#navbarMain'),
-    mail:'api@samszo.org',
-    apiOmk:'../omk/api',
-    ident: 'lrLmPipjlVOHaoO5gDZEIHT9I3U3TZtZ',
-    key:'yyaEBHRkIOlu0iQKYNrtmq9QzDM9pBFW',
+    mail:'samuel.szoniecky@univ-paris8.fr',
+    apiOmk:'../omk_deleuze/api/',
+    ident: 'lBBNzw1HsXS4UhOwur0xE3nvNgOWapNv',
+    key: 'NUHcMUVsolp4PSFfZYGGh5Z01eLClbML',
 }

@@ -22,15 +22,27 @@ export class anythingLLM {
         let oWorkspace, userThreads;
                 
         this.init = function () {
-            if(me.a.user.anythingLLM){
+            if(me.a.user.anythingLLM && me.a.user.anythingLLM.key){
                 me.apikey = me.a.user.anythingLLM.key;
                 me.workspace = me.a.user.anythingLLM.ws;
                 me.endpoint = me.a.user.anythingLLM.url;
-                //récupère les infos de l'utilisateur
-                me.getUserInfo().then(e=>{
+                //récupère les infos de l'utilisateur si l'instance anythingLLM n'est pas desktop
+                if(me.a.user.anythingLLM.login!="desktop"){
+                    me.getUserInfo().then(e=>{
+                        //récupère les infos du workspace
+                        me.getWorkspace();
+                    });
+                }else{
                     //récupère les infos du workspace
                     me.getWorkspace();
-                });
+                }
+            }else{
+                let m=new modal({
+                    'titre':"Impossible de se connecter à AnythingLLM",
+                    'body':"Pensez à renseigner vos paramètres dans Omeka S. <a target='_blank' href='"+me.omk.api.replace('api/','admin/user/'+me.a.user.id+'/edit#user-settings')+"'>connexion</a>",
+                    'class':'text-bg-dark'
+                })
+                m.show();
             }
         } 
 
@@ -126,6 +138,13 @@ export class anythingLLM {
                 userThreads = oWorkspace.threads.filter(t=>t.user_id==me.user.id);
                 setMenu('#ddAnythingLLMListeThread', userThreads,'slug',showThread);
                 
+            }else{
+                let m=new modal({
+                    'titre':"Impossible de trouver le Workspace",
+                    'body':"Pensez à renseigner vos paramètres dans Omeka S. <a target='_blank' href='"+me.omk.api.replace('api/','admin/user/'+me.a.user.id+'/edit#user-settings')+"'>connexion</a>",
+                    'class':'text-bg-dark'
+                })
+                m.show();
             }
             console.log(oWorkspace);
         }
@@ -221,38 +240,20 @@ export class anythingLLM {
                 data.forEach((d,i) => {
                     if(!docInWorkspace(d)){
                         //pour formater le RAG cf. https://docs.mistral.ai/guides/rag/
-                        /*
-                        let txt = 
-                            "#"+d["ma:isFragmentOf"][0].display_title+'\n'
-                            +"##"+d["oa:hasSource"][0].display_title+'\n'
-                            +d['o:title'],
-                        params = {
-                            "textContent": txt,
-                            "metadata": {
-                                "title":"Transcription "+d['o:id'],
-                                "idTrans": d['o:id'],
-                                "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
-                                "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
-                                    +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
-                                "idSource": d['oa:hasSource'][0]['value_resource_id'],
-                                "idCours": d['ma:isFragmentOf'][0]['value_resource_id']
-                            }
-                        }
-                            */
                         let txt = 
                             "#"+d.theme+'\n'
                             +"##"+d.promo+'\n'
-                            +d['o:title'],
+                            +d.texte,
                         params = {
                             "textContent": txt,
                             "metadata": {
                                 "title":"Transcription "+d.idTrans,
                                 "idTrans": d.idTrans,
-                                "docSource":d['ma:isFragmentOf'][0]['value_resource_id'],
-                                "description":"cours_"+d['ma:isFragmentOf'][0]['value_resource_id']
-                                    +"-frag_"+d['oa:hasSource'][0]['value_resource_id'],
-                                "idSource": d['oa:hasSource'][0]['value_resource_id'],
-                                "idCours": d['ma:isFragmentOf'][0]['value_resource_id']
+                                "docSource":d.source,
+                                "description":"cours_"+d.idConf
+                                    +"-frag_"+d.idFrag,
+                                "idFrag": d.idFrag,
+                                "idConf": d.idConf
                             }
                         }
                         //Ajoute le document dans anythingLLM
