@@ -135,8 +135,8 @@ export class anythingLLM {
                 setModal();                
 
                 //récupère les fils de discussion
-                userThreads = oWorkspace.threads.filter(t=>t.user_id==me.user.id);
-                setMenu('#ddAnythingLLMListeThread', userThreads,'slug',showThread);
+                //pour filtrer si multi-utilisateur userThreads = oWorkspace.threads.filter(t=>t.user_id==me.user.id);
+                setMenu('#ddAnythingLLMListeThread', oWorkspace.threads,'slug',showThread);
                 
             }else{
                 let m=new modal({
