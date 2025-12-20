@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparaison de colonnes CSV avec D3.js</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 1em;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .identique {
+            color: green;
+            font-weight: bold;
+        }
+        .different {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Comparaison de colonnes d'un fichier CSV</h1>
+    <p>Cette page charge un fichier nommé <code>compareLocalServeur.csv</code> et compare les valeurs des colonnes "valeur1" et "valeur2".</p>
+    
+    <!-- Un conteneur pour le tableau de résultats -->
+    <div id="visualization"></div>
+
+    <!-- Inclusion de la bibliothèque D3.js -->
+    <script src="assets/js/d3.v7.min.js"></script>
+
+    <script>
+        // Chemin vers votre fichier CSV. 
+        // Assurez-vous que ce fichier est accessible depuis votre page web.
+        // Le fichier CSV doit avoir au moins deux colonnes, par exemple "valeur1" et "valeur2".
+        const csvFilePath = 'assets/data/compareLocalServeur.csv';
+
+        // Utilisation de D3 pour charger et traiter le fichier CSV
+        d3.csv(csvFilePath).then(function(data) {
+            // Sélectionner le conteneur pour la visualisation
+            const container = d3.select("#visualization");
+
+            // Créer un tableau
+            const table = container.append("table");
+            const thead = table.append("thead");
+            const tbody = table.append("tbody");
+
+            // Obtenir les noms des colonnes à partir de la première ligne de données
+            const columns = data.columns;
+            if (columns.length < 2) {
+                container.append("p").text("Erreur: Le fichier CSV doit contenir au moins deux colonnes.");
+                return;
+            }
+            
+            const col1 = columns[0];
+            const col2 = columns[1];
+
+
+            // Ajouter l'en-tête du tableau
+            thead.append("tr")
+                .selectAll("th")
+                .data([col2, "Vérification"])
+                .enter()
+                .append("th")
+                .text(d => d);
+
+            // Créer une ligne pour chaque enregistrement dans le CSV
+            const rows = tbody.selectAll("tr")
+                .data(data)
+                .enter()
+                .append("tr");
+
+            // Remplir les cellules de chaque ligne
+            rows.each(function(d) {
+                const row = d3.select(this);
+                const val1 = d[col2];
+                const filtre = data.filter(dt=>d[col2]===dt[col1]);
+                const val2 = filtre.length;
+
+                // Cellule pour la première valeur
+                row.append("td").text(val1);
+                // Cellule pour la deuxième valeur
+                row.append("td").text(val2);
+            });
+
+        }).catch(function(error) {
+            // Gérer les erreurs de chargement du fichier
+            console.error("Erreur lors du chargement du fichier CSV:", error);
+            d3.select("#visualization").append("p")
+              .style("color", "red")
+              .text(`Erreur: Impossible de charger le fichier ${csvFilePath}. Vérifiez que le fichier existe et que le chemin est correct. Consultez la console pour plus de détails.`);
+        });
+    </script>
+
+    <h2>Exemple de fichier <code>data.csv</code></h2>
+    <p>Créez un fichier nommé <code>data.csv</code> dans le même répertoire que ce fichier HTML avec le contenu suivant :</p>
+    <pre><code>valeur1,valeur2
+pomme,pomme
+banane,orange
+123,123
+texte,autre
+45,46
+FIN,FIN
+</code></pre>
+
+</body>
+</html>
