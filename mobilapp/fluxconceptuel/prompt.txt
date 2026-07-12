@@ -1,0 +1,7 @@
+Crée une application mobile pour explorer les cours du philosophe Gilles Deleuze enregistrés à l'université Paris 8.
+L'application est hébergée sur une serveur Web apache.
+La liste des cours sont dans les data json suivantes : http://localhost/omk_deleuze/s/cours-bnf/chaoticum-seminario-api/listconferences
+Pour chaque cours, les fichiers audios et les données de transcription sont dans le json suivant : http://localhost/omk_deleuze/s/cours-bnf/chaoticum-seminario-api/transcriptions?idConf=?
+Après avoir choisi un cours, les transcriptions s'enchainent : 
+- lecture du fichier audio de la transcription
+- pour chaque concept défilement du "title" suivant "start" et "end"  

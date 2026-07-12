@@ -1,0 +1,261 @@
+:root {
+  --bg: #14141a;
+  --bg-elevated: #1e1e26;
+  --text: #eceaf0;
+  --text-dim: #9c98a8;
+  --accent: #e8c15a;
+  --border: #2c2c36;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overscroll-behavior-y: contain;
+}
+
+.view {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0.2rem 0 0;
+}
+
+.status {
+  padding: 1.5rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.status.error {
+  color: #e07a5f;
+}
+
+/* --- Liste des cours --- */
+
+.list-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.list-header h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+#search {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.course-groups {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 1rem 2rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.theme-group h3 {
+  font-size: 1rem;
+  color: var(--accent);
+  margin: 1.25rem 0 0.5rem;
+}
+
+.course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.course-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.course-card:active {
+  background: #26262f;
+}
+
+.course-num {
+  flex: 0 0 auto;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.course-promo {
+  font-size: 0.95rem;
+}
+
+.course-stats {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* --- Lecteur --- */
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.player-title {
+  min-width: 0;
+}
+
+.player-title h2 {
+  font-size: 1.05rem;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+.captions {
+  width: 100%;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 0.35rem 0.5rem;
+  max-height: 100%;
+  overflow-y: auto;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.captions .word {
+  color: var(--text-dim);
+  opacity: 0.5;
+  transition: color 0.15s ease, opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.captions .word.active {
+  color: var(--accent);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.player-controls {
+  padding: 0.75rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+}
+
+.progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+}
+
+.fragment-counter {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.4rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.icon-btn:disabled {
+  opacity: 0.3;
+}
+
+.icon-btn.play {
+  font-size: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo1{
+  height: 1rem;
+}
+.logo2{
+  height: 2rem;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Flux Conceptuel — Cours de Gilles Deleuze",
+  "short_name": "Flux Conceptuel",
+  "description": "Explorer et écouter les cours de Gilles Deleuze enregistrés à l'université Paris 8, avec défilement synchronisé des concepts.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14141a",
+  "theme_color": "#14141a",
+  "lang": "fr",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

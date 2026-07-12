@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flux Conceptuel — Cours de Gilles Deleuze</title>
+<meta name="description" content="Explorer et écouter les cours de Gilles Deleuze enregistrés à l'université Paris 8.">
+<meta name="theme-color" content="#14141a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="view-list" class="view">
+  <header class="list-header">
+    <div style="display:flex;align-items:center;gap:.75rem;">
+      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://paragraphe.univ-paris8.fr/" target="_blank"><img class="logo2" src="img/logo-paragraphe-blanc.svg" /></a></span>
+      <div>
+        <h1>Flux Conceptuel</h1>
+        <p class="subtitle">Cours de Gilles Deleuze · Université Paris 8</p>
+      </div>
+      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://paragraphe.univ-paris8.fr/" target="_blank"><img class="logo2" src="img/logo-github.png" /></a></span>
+    </div>
+    <input id="search" type="search" placeholder="Rechercher un cours, un thème…" autocomplete="off">
+  </header>
+  <main id="course-groups" class="course-groups">
+    <p class="status">Chargement des cours…</p>
+  </main>
+</div>
+
+<div id="view-player" class="view hidden">
+  <header class="player-header">
+    <button id="btn-back" class="icon-btn" aria-label="Retour à la liste">←</button>
+    <div class="player-title">
+      <h2 id="course-title">—</h2>
+      <p id="course-meta" class="subtitle">—</p>
+    </div>
+  </header>
+
+  <main class="player-main">
+    <div id="captions" class="captions" aria-live="polite"></div>
+  </main>
+
+  <footer class="player-controls">
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+    <p id="fragment-counter" class="fragment-counter">—</p>
+    <div class="buttons">
+      <button id="btn-prev" class="icon-btn" aria-label="Fragment précédent">⏮</button>
+      <button id="btn-play" class="icon-btn play" aria-label="Lecture / Pause">▶</button>
+      <button id="btn-next" class="icon-btn" aria-label="Fragment suivant">⏭</button>
+    </div>
+  </footer>
+
+  <audio id="audio" preload="auto"></audio>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

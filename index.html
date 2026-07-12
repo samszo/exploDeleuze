@@ -112,9 +112,29 @@
                                 </div>
                             </div>
                             <div class="col-8">
-                                <div class="row px-2" id="contentResourcesParams">
-                                </div>
-                                <div id="contentResources" class="row g-4" style="height: 600px;overflow-y: scroll;">                                    
+                                <ul class="nav nav-tabs" id="resourcesTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="textes-tab" data-bs-toggle="tab"
+                                            data-bs-target="#textes-pane" type="button" role="tab"
+                                            aria-controls="textes-pane" aria-selected="true">Textes</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="fragments-audios-tab" data-bs-toggle="tab"
+                                            data-bs-target="#fragments-audios-pane" type="button" role="tab"
+                                            aria-controls="fragments-audios-pane" aria-selected="false">Fragments audios</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content pt-3" id="resourcesTabsContent">
+                                    <div class="tab-pane fade show active" id="textes-pane" role="tabpanel"
+                                        aria-labelledby="textes-tab" tabindex="0">
+                                    </div>
+                                    <div class="tab-pane fade" id="fragments-audios-pane" role="tabpanel"
+                                        aria-labelledby="fragments-audios-tab" tabindex="0">
+                                        <div class="row px-2" id="contentResourcesParams">
+                                        </div>
+                                        <div id="contentResources" class="row g-4" style="height: 600px;overflow-y: scroll;">                                    
+                                        </div>
+                                    </div>
                                 </div>
                             </div>  
                         </div>
