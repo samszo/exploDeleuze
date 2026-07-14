@@ -111,7 +111,7 @@ function renderCourseList(filter = "") {
           <a href="${conf.source}" target="_blank"><img class="logo1" src="img/Logo_BnFblanc.svg"</img></a>
         </div>
         <div class="course-info">
-          <a href="${conf.nbConcept}" target="_blank"><img class="logo1" src="img/OmekaS.png"</img></a>
+          <a href="${conf.nbConcept}" target="_blank"><img class="logo2" src="img/OmekaS.png"</img></a>
         </div>
       `;
       li.addEventListener("click", () => openCourse(conf));
