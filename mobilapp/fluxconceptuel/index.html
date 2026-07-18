@@ -16,14 +16,32 @@
 <div id="view-list" class="view">
   <header class="list-header">
     <div style="display:flex;align-items:center;gap:.75rem;">
-      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://paragraphe.univ-paris8.fr/" target="_blank"><img class="logo" src="img/logo-paragraphe-blanc.svg" /></a></span>
+      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://paragraphe.univ-paris8.fr/" target="_blank"><img class="logo" src="./img/logo-paragraphe-blanc.svg" /></a></span>
       <div>
         <h1>Flux Conceptuel</h1>
         <p class="subtitle">Cours de Gilles Deleuze · Université Paris 8</p>
       </div>
-      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://github.com/samszo/exploDeleuze/tree/main/mobilapp/fluxconceptuel" target="_blank"><img class="logo" src="img/logo-github.png" /></a></span>
+      <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://github.com/samszo/exploDeleuze/tree/main/mobilapp/fluxconceptuel" target="_blank"><img class="logo" src="./img/logo-github.png" /></a></span>
     </div>
-    <input id="search" type="search" placeholder="Rechercher un cours, un thème…" autocomplete="off">
+    <form id="search-form" class="search-form">
+      <input id="search" type="search" placeholder="Rechercher un cours, un thème…" autocomplete="off">
+      <button type="submit" class="search-btn" aria-label="Rechercher">Rechercher</button>
+    </form>
+
+    <div id="auth-box" class="auth-box">
+      <button id="btn-auth-toggle" class="auth-link">Se connecter à Omeka S</button>
+      <form id="login-form" class="login-form hidden">
+        <input id="login-email" type="email" placeholder="Email" autocomplete="username" required>
+        <input id="login-identity" type="text" placeholder="Key identity" autocomplete="off" required>
+        <input id="login-credential" type="password" placeholder="Key credential" autocomplete="current-password" required>
+        <button type="submit" class="search-btn">Connexion</button>
+        <p id="login-error" class="status error hidden"></p>
+      </form>
+      <div id="logged-in-box" class="logged-in-box hidden">
+        <span id="logged-in-name"></span>
+        <button id="btn-logout" class="auth-link">Se déconnecter</button>
+      </div>
+    </div>
   </header>
   <main id="course-groups" class="course-groups">
     <p class="status">Chargement des cours…</p>
@@ -52,6 +70,40 @@
       <button id="btn-prev" class="icon-btn" aria-label="Fragment précédent">⏮</button>
       <button id="btn-play" class="icon-btn play" aria-label="Lecture / Pause">▶</button>
       <button id="btn-next" class="icon-btn" aria-label="Fragment suivant">⏭</button>
+    </div>
+    <div class="secondary-actions">
+      <button id="btn-copy-ref" class="copy-ref-btn" aria-label="Copier la référence du fragment (lien BnF + horodatage)">
+        Copier la référence du fragment
+      </button>
+      <button id="btn-share" class="copy-ref-btn" aria-label="Partager le lien vers ce fragment">
+        Partager ce fragment
+      </button>
+    </div>
+
+    <div id="collab-actions" class="secondary-actions hidden">
+      <button id="btn-relancer" class="copy-ref-btn" data-report-type="relancer">Relancer la transcription</button>
+      <button class="copy-ref-btn" data-report-type="correction">Signaler une correction</button>
+      <button class="copy-ref-btn" data-report-type="personne">Référence à une personne</button>
+      <button class="copy-ref-btn" data-report-type="oeuvre">Référence à une œuvre</button>
+      <button class="copy-ref-btn" data-report-type="date">Référence à une date/période</button>
+      <button class="copy-ref-btn" data-report-type="lieu">Référence à un lieu</button>
+    </div>
+
+    <div id="report-panel" class="report-panel hidden">
+      <p id="report-title" class="report-title"></p>
+
+      <select id="report-modele" class="report-select hidden">
+        <option value="whisper">Whisper</option>
+        <option value="google">Google Speech-to-Text</option>
+      </select>
+
+      <textarea id="report-texte" class="report-textarea hidden" rows="3" placeholder="Décrivez la correction ou la référence…"></textarea>
+
+      <p id="report-error" class="status error hidden"></p>
+      <div class="report-buttons">
+        <button id="btn-report-cancel" class="icon-btn">Annuler</button>
+        <button id="btn-report-submit" class="search-btn">Envoyer</button>
+      </div>
     </div>
   </footer>
 
