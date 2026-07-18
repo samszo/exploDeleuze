@@ -250,14 +250,12 @@ body {
 .captions {
   width: 100%;
   padding: 0 1.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  gap: 0.35rem 0.5rem;
   max-height: 100%;
   overflow-y: auto;
   font-size: 1.4rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  color: var(--text-dim);
+  text-align: left;
 }
 
 .captions .word {

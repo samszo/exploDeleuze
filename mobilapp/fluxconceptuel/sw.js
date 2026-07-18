@@ -1,4 +1,4 @@
-const CACHE = "flux-conceptuel-v4";
+const CACHE = "flux-conceptuel-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
