@@ -1,0 +1,16 @@
+output.txt
+node_modules
+dist
+.mastra
+.env.development
+.env
+*.db
+*.db-*
+.netlify
+.vercel
+*.duckdb
+*.duckdb.wal
+data/
+quantum-service/.venv
+quantum-service/__pycache__
+quantum-service/**/__pycache__

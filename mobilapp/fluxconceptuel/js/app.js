@@ -49,6 +49,14 @@ const REPORT_LABELS = {
 
 let conferences = [];
 let currentReportType = null;
+let currentReportTimecode = null;
+
+function formatTime(seconds) {
+  const s = Math.max(0, Math.floor(seconds));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, "0")}`;
+}
 
 const player = new Player(audioEl, captionsEl, {
   onFragmentChange: (index, total, fragment) => {
@@ -212,7 +220,10 @@ collabActions.addEventListener("click", (e) => {
 
 function openReportPanel(type) {
   currentReportType = type;
-  reportTitle.textContent = REPORT_LABELS[type];
+  currentReportTimecode = audioEl.currentTime;
+  reportTitle.textContent = type === "relancer"
+    ? REPORT_LABELS[type]
+    : `${REPORT_LABELS[type]} (à ${formatTime(currentReportTimecode)})`;
   reportError.classList.add("hidden");
   reportModele.classList.toggle("hidden", type !== "relancer");
   reportTexte.classList.toggle("hidden", type === "relancer");
@@ -222,6 +233,7 @@ function openReportPanel(type) {
 
 function closeReportPanel() {
   currentReportType = null;
+  currentReportTimecode = null;
   reportPanel.classList.add("hidden");
 }
 
@@ -250,6 +262,7 @@ btnReportSubmit.addEventListener("click", async () => {
         idTrans: fragment.idTrans,
         type: currentReportType,
         texte,
+        timecode: currentReportTimecode,
         lien: fragmentShareUrl(fragment),
         auth,
       });
