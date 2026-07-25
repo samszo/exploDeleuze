@@ -40,10 +40,13 @@ export async function fetchTranscriptions(idConf) {
 }
 
 // signale une correction/référence à trier plus tard dans l'admin Omeka.
-export async function signalerFragment({ idConf, idTrans, type, texte, timecode, lien, auth }) {
+export async function signalerFragment({ idConf, idTrans, type, texte, remplacer, par, surTout, timecode, lien, auth }) {
   const params = new URLSearchParams({ idConf, idTrans, type, texte });
   if (lien) params.set("lien", lien);
   if (timecode != null) params.set("timecode", timecode);
+  if (remplacer != null) params.set("remplacer", remplacer);
+  if (par != null) params.set("par", par);
+  if (surTout != null) params.set("surTout", surTout ? "1" : "0");
   const res = await fetch(`${API_BASE}/signaler?${params.toString()}&${authQuery(auth)}`);
   const data = await res.json();
   if (!res.ok || data.error) throw new Error(data.error || `signaler: HTTP ${res.status}`);

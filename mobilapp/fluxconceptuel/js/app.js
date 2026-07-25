@@ -34,6 +34,10 @@ const reportPanel = document.getElementById("report-panel");
 const reportTitle = document.getElementById("report-title");
 const reportModele = document.getElementById("report-modele");
 const reportTexte = document.getElementById("report-texte");
+const reportCorrection = document.getElementById("report-correction");
+const reportRemplacer = document.getElementById("report-remplacer");
+const reportPar = document.getElementById("report-par");
+const reportSurTout = document.getElementById("report-sur-tout");
 const reportError = document.getElementById("report-error");
 const btnReportCancel = document.getElementById("btn-report-cancel");
 const btnReportSubmit = document.getElementById("btn-report-submit");
@@ -58,6 +62,10 @@ function formatTime(seconds) {
   return `${m}:${String(r).padStart(2, "0")}`;
 }
 
+function setIcon(button, name) {
+  button.innerHTML = `<i class="fa-solid fa-${name}" aria-hidden="true"></i>`;
+}
+
 const player = new Player(audioEl, captionsEl, {
   onFragmentChange: (index, total, fragment) => {
     fragmentCounterEl.textContent = `Fragment ${index + 1} / ${total}`;
@@ -66,23 +74,23 @@ const player = new Player(audioEl, captionsEl, {
     btnNext.disabled = index === total - 1;
     btnCopyRef.disabled = !mediaFragmentUrl(fragment);
     btnCopyRef.classList.remove("copied");
-    btnCopyRef.textContent = "Copier la référence du fragment";
+    setIcon(btnCopyRef, "link");
     btnShare.disabled = !fragmentShareUrl(fragment);
     btnShare.classList.remove("copied");
-    btnShare.textContent = "Partager ce fragment";
+    setIcon(btnShare, "share-nodes");
     closeReportPanel();
   },
   onProgress: (ratio) => {
     progressFillEl.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
   },
   onCourseEnd: () => {
-    btnPlay.textContent = "▶";
+    setIcon(btnPlay, "play");
     fragmentCounterEl.textContent = "Cours terminé";
   },
 });
 
-audioEl.addEventListener("play", () => (btnPlay.textContent = "⏸"));
-audioEl.addEventListener("pause", () => (btnPlay.textContent = "▶"));
+audioEl.addEventListener("play", () => setIcon(btnPlay, "pause"));
+audioEl.addEventListener("pause", () => setIcon(btnPlay, "play"));
 
 btnPlay.addEventListener("click", () => player.toggle());
 btnPrev.addEventListener("click", () => player.goTo(player.index - 1));
@@ -110,10 +118,10 @@ btnCopyRef.addEventListener("click", async () => {
 
   try {
     await navigator.clipboard.writeText(url);
-    btnCopyRef.textContent = "Référence copiée !";
+    setIcon(btnCopyRef, "check");
     btnCopyRef.classList.add("copied");
     setTimeout(() => {
-      btnCopyRef.textContent = "Copier la référence du fragment";
+      setIcon(btnCopyRef, "link");
       btnCopyRef.classList.remove("copied");
     }, 1500);
   } catch (err) {
@@ -154,10 +162,10 @@ btnShare.addEventListener("click", async () => {
 
   try {
     await navigator.clipboard.writeText(url);
-    btnShare.textContent = "Lien copié !";
+    setIcon(btnShare, "check");
     btnShare.classList.add("copied");
     setTimeout(() => {
-      btnShare.textContent = "Partager ce fragment";
+      setIcon(btnShare, "share-nodes");
       btnShare.classList.remove("copied");
     }, 1500);
   } catch (err) {
@@ -226,8 +234,12 @@ function openReportPanel(type) {
     : `${REPORT_LABELS[type]} (à ${formatTime(currentReportTimecode)})`;
   reportError.classList.add("hidden");
   reportModele.classList.toggle("hidden", type !== "relancer");
-  reportTexte.classList.toggle("hidden", type === "relancer");
+  reportTexte.classList.toggle("hidden", type === "relancer" || type === "correction");
+  reportCorrection.classList.toggle("hidden", type !== "correction");
   reportTexte.value = "";
+  reportRemplacer.value = "";
+  reportPar.value = "";
+  reportSurTout.checked = false;
   reportPanel.classList.remove("hidden");
 }
 
@@ -250,6 +262,29 @@ btnReportSubmit.addEventListener("click", async () => {
   try {
     if (currentReportType === "relancer") {
       await relancerTranscription({ idFrag: fragment.idFrag, modele: reportModele.value, auth });
+    } else if (currentReportType === "correction") {
+      const remplacer = reportRemplacer.value.trim();
+      const par = reportPar.value.trim();
+      if (!remplacer) {
+        reportError.textContent = "Merci d'indiquer le texte à remplacer.";
+        reportError.classList.remove("hidden");
+        return;
+      }
+      const surTout = reportSurTout.checked;
+      const texte = `Remplacer « ${remplacer} » par « ${par} »`
+        + (surTout ? " (partout dans le cours)" : " (à cet endroit uniquement)");
+      await signalerFragment({
+        idConf: fragment.idConf,
+        idTrans: fragment.idTrans,
+        type: currentReportType,
+        texte,
+        remplacer,
+        par,
+        surTout,
+        timecode: currentReportTimecode,
+        lien: fragmentShareUrl(fragment),
+        auth,
+      });
     } else {
       const texte = reportTexte.value.trim();
       if (!texte) {

@@ -337,12 +337,16 @@ body {
 }
 
 .copy-ref-btn {
-  padding: 0.5rem 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg-elevated);
   color: var(--text-dim);
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   cursor: pointer;
 }
 
@@ -385,6 +389,20 @@ body {
   font-family: inherit;
 }
 
+.report-correction {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.report-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
 .report-buttons {
   display: flex;
   justify-content: flex-end;
@@ -392,8 +410,23 @@ body {
 }
 
 .report-buttons .icon-btn {
-  font-size: 0.85rem;
-  padding: 0.5rem 0.9rem;
+  font-size: 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#btn-report-submit {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
 
 .logo1{

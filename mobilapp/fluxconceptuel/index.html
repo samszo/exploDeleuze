@@ -9,6 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="css/fontawesome.min.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -50,7 +51,7 @@
 
 <div id="view-player" class="view hidden">
   <header class="player-header">
-    <button id="btn-back" class="icon-btn" aria-label="Retour à la liste">←</button>
+    <button id="btn-back" class="icon-btn" aria-label="Retour à la liste"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
     <div class="player-title">
       <h2 id="course-title">—</h2>
       <p id="course-meta" class="subtitle">—</p>
@@ -67,26 +68,38 @@
     </div>
     <p id="fragment-counter" class="fragment-counter">—</p>
     <div class="buttons">
-      <button id="btn-prev" class="icon-btn" aria-label="Fragment précédent">⏮</button>
-      <button id="btn-play" class="icon-btn play" aria-label="Lecture / Pause">▶</button>
-      <button id="btn-next" class="icon-btn" aria-label="Fragment suivant">⏭</button>
+      <button id="btn-prev" class="icon-btn" aria-label="Fragment précédent"><i class="fa-solid fa-backward-step" aria-hidden="true"></i></button>
+      <button id="btn-play" class="icon-btn play" aria-label="Lecture / Pause"><i class="fa-solid fa-play" aria-hidden="true"></i></button>
+      <button id="btn-next" class="icon-btn" aria-label="Fragment suivant"><i class="fa-solid fa-forward-step" aria-hidden="true"></i></button>
     </div>
     <div class="secondary-actions">
       <button id="btn-copy-ref" class="copy-ref-btn" aria-label="Copier la référence du fragment (lien BnF + horodatage)">
-        Copier la référence du fragment
+        <i class="fa-solid fa-link" aria-hidden="true"></i>
       </button>
       <button id="btn-share" class="copy-ref-btn" aria-label="Partager le lien vers ce fragment">
-        Partager ce fragment
+        <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
       </button>
     </div>
 
     <div id="collab-actions" class="secondary-actions hidden">
-      <button id="btn-relancer" class="copy-ref-btn" data-report-type="relancer">Relancer la transcription</button>
-      <button class="copy-ref-btn" data-report-type="correction">Signaler une correction</button>
-      <button class="copy-ref-btn" data-report-type="personne">Référence à une personne</button>
-      <button class="copy-ref-btn" data-report-type="oeuvre">Référence à une œuvre</button>
-      <button class="copy-ref-btn" data-report-type="date">Référence à une date/période</button>
-      <button class="copy-ref-btn" data-report-type="lieu">Référence à un lieu</button>
+      <button id="btn-relancer" class="copy-ref-btn" data-report-type="relancer" aria-label="Relancer la transcription">
+        <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+      </button>
+      <button class="copy-ref-btn" data-report-type="correction" aria-label="Signaler une correction">
+        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+      </button>
+      <button class="copy-ref-btn" data-report-type="personne" aria-label="Référence à une personne">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </button>
+      <button class="copy-ref-btn" data-report-type="oeuvre" aria-label="Référence à une œuvre">
+        <i class="fa-solid fa-book" aria-hidden="true"></i>
+      </button>
+      <button class="copy-ref-btn" data-report-type="date" aria-label="Référence à une date ou une période">
+        <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+      </button>
+      <button class="copy-ref-btn" data-report-type="lieu" aria-label="Référence à un lieu">
+        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+      </button>
     </div>
 
     <div id="report-panel" class="report-panel hidden">
@@ -99,10 +112,19 @@
 
       <textarea id="report-texte" class="report-textarea hidden" rows="3" placeholder="Décrivez la correction ou la référence…"></textarea>
 
+      <div id="report-correction" class="report-correction hidden">
+        <input id="report-remplacer" type="text" class="report-select" placeholder="Remplacer…" autocomplete="off">
+        <input id="report-par" type="text" class="report-select" placeholder="Par…" autocomplete="off">
+        <label class="report-checkbox">
+          <input id="report-sur-tout" type="checkbox">
+          Remplacer partout dans le cours
+        </label>
+      </div>
+
       <p id="report-error" class="status error hidden"></p>
       <div class="report-buttons">
-        <button id="btn-report-cancel" class="icon-btn">Annuler</button>
-        <button id="btn-report-submit" class="search-btn">Envoyer</button>
+        <button id="btn-report-cancel" class="icon-btn" aria-label="Annuler"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <button id="btn-report-submit" class="search-btn" aria-label="Envoyer"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
       </div>
     </div>
   </footer>

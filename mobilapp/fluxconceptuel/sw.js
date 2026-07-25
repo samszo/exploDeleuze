@@ -1,10 +1,12 @@
-const CACHE = "flux-conceptuel-v6";
+const CACHE = "flux-conceptuel-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon.svg",
   "./css/style.css",
+  "./css/fontawesome.min.css",
+  "./webfonts/fa-solid-900.woff2",
   "./js/app.js",
   "./js/api.js",
   "./js/auth.js",
