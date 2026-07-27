@@ -272,7 +272,7 @@ btnReportSubmit.addEventListener("click", async () => {
       }
       const surTout = reportSurTout.checked;
       const texte = `Remplacer « ${remplacer} » par « ${par} »`
-        + (surTout ? " (partout dans le cours)" : " (à cet endroit uniquement)");
+        + (surTout ? " (dans tous le cours)" : " (à cet endroit uniquement)");
       await signalerFragment({
         idConf: fragment.idConf,
         idTrans: fragment.idTrans,
@@ -286,6 +286,7 @@ btnReportSubmit.addEventListener("click", async () => {
         auth,
       });
     } else {
+      const surTout = reportSurTout.checked;
       const texte = reportTexte.value.trim();
       if (!texte) {
         reportError.textContent = "Merci de décrire la référence ou la correction.";
@@ -297,6 +298,7 @@ btnReportSubmit.addEventListener("click", async () => {
         idTrans: fragment.idTrans,
         type: currentReportType,
         texte,
+        surTout,
         timecode: currentReportTimecode,
         lien: fragmentShareUrl(fragment),
         auth,
