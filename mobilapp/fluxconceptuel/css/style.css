@@ -271,6 +271,16 @@ body {
   font-weight: 600;
 }
 
+.captions.selecting .word {
+  cursor: cell;
+}
+
+.captions .word.selected {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  opacity: 1;
+  border-radius: 3px;
+}
+
 .player-controls {
   padding: 0.75rem 1.25rem max(1rem, env(safe-area-inset-bottom));
   border-top: 1px solid var(--border);

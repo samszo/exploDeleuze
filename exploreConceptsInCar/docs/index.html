@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flux Conceptuel Auto — Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Fragment+Mono&display=swap">
+<style>
+:root{
+  --bg:#f2f2f3; --panel:#ffffff; --text:#1d1f20; --text-dim:#5d5d60;
+  --line:rgba(29,31,32,.16); --line-soft:rgba(29,31,32,.1); --line-strong:rgba(29,31,32,.34);
+  --accent:#5980a6; --accent-700:#3d5b76; --accent-wash:rgba(89,128,166,.08); --accent-wash-2:rgba(89,128,166,.16);
+  --gold:#c99a2e; --gold-wash:rgba(201,154,46,.12);
+  --code-bg:#1a1d20; --code-text:#dfe6ec; --code-dim:#8a97a3; --code-accent:#8fb4d6;
+  --font-head:"Barlow Condensed",system-ui,sans-serif;
+  --font-body:"Barlow",system-ui,sans-serif;
+  --font-mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111417; --panel:#161a1e; --text:#e8ecf0; --text-dim:#93a1ac;
+    --line:rgba(148,188,227,.18); --line-soft:rgba(148,188,227,.1); --line-strong:rgba(148,188,227,.36);
+    --accent:#6f97bd; --accent-700:#a8c4e0; --accent-wash:rgba(111,151,189,.12); --accent-wash-2:rgba(111,151,189,.2);
+    --gold:#e0b955; --gold-wash:rgba(224,185,85,.14);
+    --code-bg:#0c0e10; --code-text:#dfe6ec; --code-dim:#7c8994; --code-accent:#8fb4d6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111417; --panel:#161a1e; --text:#e8ecf0; --text-dim:#93a1ac;
+  --line:rgba(148,188,227,.18); --line-soft:rgba(148,188,227,.1); --line-strong:rgba(148,188,227,.36);
+  --accent:#6f97bd; --accent-700:#a8c4e0; --accent-wash:rgba(111,151,189,.12); --accent-wash-2:rgba(111,151,189,.2);
+  --gold:#e0b955; --gold-wash:rgba(224,185,85,.14);
+  --code-bg:#0c0e10; --code-text:#dfe6ec; --code-dim:#7c8994; --code-accent:#8fb4d6;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.55}
+::selection{background:var(--accent-wash-2)}
+a{color:var(--accent-700)}
+a:hover{color:var(--accent)}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+
+header.mast{border-bottom:1px solid var(--line);padding:40px 0 30px;background:var(--panel)}
+.eyebrow{font:600 12px var(--font-body);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font:600 46px/1.05 var(--font-head);margin:10px 0 8px;text-wrap:balance}
+.lede{font:400 18px/1.5 var(--font-body);color:var(--text-dim);max-width:60ch}
+.pagenav{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.pagenav a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);
+  padding:9px 16px;font:600 13px var(--font-head);letter-spacing:.08em;text-transform:uppercase;
+  text-decoration:none;color:var(--text)}
+.pagenav a.current{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pagenav a:hover:not(.current){background:var(--accent-wash)}
+
+main{padding:36px 0 80px}
+h2{font:600 30px/1.15 var(--font-head);margin:56px 0 6px;padding-top:18px;border-top:1px solid var(--line-soft);text-wrap:balance}
+h2:first-of-type{border-top:0;margin-top:0}
+h3{font:600 21px var(--font-head);margin:30px 0 8px}
+p{font:400 16px/1.6 var(--font-body);margin:12px 0}
+.section-sub{color:var(--text-dim);margin-top:-2px}
+
+.toc{border:1px solid var(--line);padding:20px 22px;margin:26px 0 10px}
+.toc-label{font:600 11px var(--font-body);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+.toc li{font:400 15px var(--font-body);margin:5px 0;break-inside:avoid}
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--line);margin:22px 0}
+.stat{padding:18px 20px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat-n{font:600 26px var(--font-head);color:var(--text)}
+.stat-label{font:400 13px var(--font-body);color:var(--text-dim);margin-top:2px}
+
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+.twrap{overflow-x:auto}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font:600 12px var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);
+  border-bottom:1px solid var(--line-strong)}
+td code, li code, p code{font-family:var(--font-mono);font-size:13px;background:var(--accent-wash);
+  color:var(--accent-700);padding:1px 6px;border-radius:2px}
+
+pre{background:var(--code-bg);color:var(--code-text);padding:18px 20px;overflow-x:auto;
+  font:400 13.5px/1.6 var(--font-mono);margin:16px 0;border:1px solid var(--line-strong)}
+pre .c{color:var(--code-dim)}
+pre .k{color:var(--code-accent)}
+
+.callout{position:relative;border:1px solid var(--line-strong);padding:18px 20px;margin:22px 0}
+.callout::before,.callout::after,.callout .c2::before,.callout .c2::after{content:"";position:absolute;width:11px;height:11px;
+  background:linear-gradient(var(--line-strong),var(--line-strong)) 5px 0/1px 100% no-repeat,
+    linear-gradient(var(--line-strong),var(--line-strong)) 0 5px/100% 1px no-repeat}
+.callout::before{top:-6px;left:-6px}.callout::after{top:-6px;right:-6px}
+.callout .c2::before{bottom:-6px;left:-6px}.callout .c2::after{bottom:-6px;right:-6px}
+.callout-label{font:600 11px var(--font-body);letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.callout p{margin:6px 0}
+
+.diagram{border:1px solid var(--line);padding:28px 22px;margin:26px 0;overflow-x:auto}
+.d-row{display:flex;justify-content:center;gap:16px;flex-wrap:nowrap;min-width:600px}
+.d-box{border:1px solid var(--line-strong);padding:12px 16px;text-align:center;flex:1;min-width:140px}
+.d-box .t{font:600 15px var(--font-head)}
+.d-box .s{font:400 12px var(--font-body);color:var(--text-dim);margin-top:2px}
+.d-box.accent{border-color:var(--accent);background:var(--accent-wash)}
+.d-arrow-row{display:flex;justify-content:center;min-width:600px;padding:6px 0;color:var(--text-dim);font-size:20px}
+.d-note{text-align:center;font:400 12px var(--font-body);color:var(--text-dim);margin-top:10px;letter-spacing:.02em}
+
+.filetree{font-family:var(--font-mono);font-size:13.5px;line-height:1.75;white-space:pre;overflow-x:auto;
+  border:1px solid var(--line);padding:18px 20px;color:var(--text)}
+.filetree .dim{color:var(--text-dim)}
+
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);font-size:14px}
+@media (max-width:640px){
+  h1{font-size:34px} .stat-row{grid-template-columns:1fr} .stat{border-right:0;border-bottom:1px solid var(--line)}
+  .toc ol{columns:1}
+}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="eyebrow">Documentation du projet</div>
+    <h1>Flux Conceptuel Auto</h1>
+    <p class="lede">Une application embarquée pour explorer, à la voix, les 176 séances de cours de Gilles Deleuze — recherche plein texte, lecture audio, et une carte de topologie de concepts calculée en direct depuis les co-occurrences réelles du corpus.</p>
+    <nav class="pagenav">
+      <a href="index.html" class="current">Vue d'ensemble</a>
+      <a href="deployment.html">Installation Debian</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="toc">
+    <div class="toc-label">Sommaire</div>
+    <ol>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#volume">Le problème de volume</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#arbo">Arborescence du dépôt</a></li>
+      <li><a href="#pipeline">Le pipeline de données</a></li>
+      <li><a href="#api">L'API</a></li>
+      <li><a href="#client">Le client web</a></li>
+      <li><a href="#local">Démarrage local</a></li>
+      <li><a href="#qualite">Qualité des données</a></li>
+    </ol>
+  </div>
+
+  <h2 id="vision">Vision</h2>
+  <p>Hypothèse de départ : le conducteur ne lit pas, il écoute et il parle — la voix construit la topologie de concepts, l'écran ne fait que confirmer ce qui vient d'être agencé. Le passager, lui, peut manipuler l'interface au doigt.</p>
+  <p>Direction visuelle : le système <em>Industry</em> (Barlow Condensed / Barlow, acier <code>#5980a6</code>, cadres au trait avec repères de calage), inversé sur fond nuit pour la conduite ; l'or <code>#e8c15a</code> ne sert qu'à une seule chose — le concept vivant, celui qui vient d'être prononcé ou entendu.</p>
+
+  <h2 id="volume">Le problème de volume</h2>
+  <p>Le corpus source (base Omeka S) est trop volumineux pour être consulté directement depuis un téléphone en voiture, sur un réseau mobile variable.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-n">10 Go</div><div class="stat-label">base Omeka S · 53 M lignes</div></div>
+    <div class="stat"><div class="stat-n">88,26 Go</div><div class="stat-label">audio source · 28 484 fichiers FLAC</div></div>
+    <div class="stat"><div class="stat-n">3,7 Go</div><div class="stat-label">audio servi · Opus 24 kbps mono (≈ 24×)</div></div>
+  </div>
+  <p>Ce dernier chiffre est ce qui rend le projet réalisable : l'ensemble des fragments audio tient sans effort dans un cache, voire en téléchargement complet sur un téléphone.</p>
+
+  <h2 id="architecture">Architecture</h2>
+  <p class="section-sub">Principe directeur : <strong>Omeka S n'est jamais interrogée en direct par l'application</strong>. Un pipeline ETL, en lecture seule, produit une couche de diffusion légère que l'API sert seule.</p>
+  <div class="diagram">
+    <div class="d-row"><div class="d-box"><div class="t">Omeka S (MySQL)</div><div class="s">source de vérité · jamais modifiée</div></div></div>
+    <div class="d-arrow-row">↓ lecture seule</div>
+    <div class="d-row"><div class="d-box accent"><div class="t">Pipeline ETL — scripts/</div><div class="s">conversion audio · minage de concepts · export d'index</div></div></div>
+    <div class="d-arrow-row">↓</div>
+    <div class="d-row">
+      <div class="d-box"><div class="t">Meilisearch</div><div class="s">3 index</div></div>
+      <div class="d-box"><div class="t">audios/</div><div class="s">fichiers Opus</div></div>
+      <div class="d-box"><div class="t">data/*.json</div><div class="s">concepts composés</div></div>
+    </div>
+    <div class="d-arrow-row">↓</div>
+    <div class="d-row"><div class="d-box accent"><div class="t">API — api/main.py</div><div class="s">/api/* · /audio/*</div></div></div>
+    <div class="d-arrow-row">↓</div>
+    <div class="d-row"><div class="d-box"><div class="t">Client web — web/index.html</div><div class="s">même origine, une seule adresse à ouvrir</div></div></div>
+    <div class="d-note">Isole l'archive des pics de charge d'une app grand public ; la couche de diffusion se reconstruit entièrement sans jamais écrire dans l'archive.</div>
+  </div>
+
+  <h2 id="arbo">Arborescence du dépôt</h2>
+  <div class="filetree">exploreConceptsInCar/
+├── .env                        <span class="dim">identifiants &amp; chemins (jamais commité)</span>
+├── requirements.txt             <span class="dim">dépendances Python (venv)</span>
+├── scripts/
+│   ├── export_manifest.sh       <span class="dim">liste les fragments Whisper à convertir</span>
+│   ├── convert_batch.sh         <span class="dim">conversion FLAC → Opus, parallèle, reprenable</span>
+│   ├── mine_concept_phrases.py  <span class="dim">extraction de concepts composés</span>
+│   └── export_meilisearch.py    <span class="dim">construit et publie les 3 index Meilisearch</span>
+├── audios/                      <span class="dim">fichiers .opus (généré, ~3,7 Go, non commité)</span>
+│   └── logs/                    <span class="dim">succès / échecs / manquants de la conversion</span>
+├── data/
+│   └── concept_phrases.json     <span class="dim">concepts composés minés (généré, non commité)</span>
+├── meilisearch/data/             <span class="dim">stockage Meilisearch (généré, non commité)</span>
+├── api/main.py                   <span class="dim">API FastAPI</span>
+├── web/index.html                 <span class="dim">client (Android Auto / navigateur mobile)</span>
+└── docs/                         <span class="dim">ce document</span></div>
+
+  <h2 id="pipeline">Le pipeline de données, étape par étape</h2>
+  <p>Chaque étape est un script séparé, relançable indépendamment et sans effet de bord sur Omeka S.</p>
+
+  <h3>1 — Conversion audio : FLAC → Opus</h3>
+  <pre>./scripts/export_manifest.sh   <span class="c"># interroge transcriptions (agent = WhisperSpeechToText)</span>
+./scripts/convert_batch.sh     <span class="c"># BITRATE=24k JOBS=16 par défaut</span></pre>
+  <p>Codec : <strong>Opus 24 kbps mono</strong> (<code>-application voip</code>) — le meilleur rapport qualité/poids pour de la voix parlée, validé à l'oreille avant le run complet. Le script est reprenable : un fichier déjà présent est sauté.</p>
+  <div class="callout"><div class="c2"></div>
+    <div class="callout-label">Résultat mesuré</div>
+    <p>27 803 fragments référencés → <strong>27 674 convertis, 0 échec ffmpeg, 129 sources introuvables</strong> (références orphelines, voir <a href="#qualite">qualité des données</a>).</p>
+  </div>
+
+  <h3>2 — Minage des concepts composés</h3>
+  <pre>./.venv/bin/python3 scripts/mine_concept_phrases.py</pre>
+  <p><code>timeline_concept</code> s'est révélé être la transcription mot-à-mot (chaque mot = une ligne, écart quasi toujours nul entre deux mots consécutifs), pas une couche d'annotation sémantique. Un concept comme <em>« machine de guerre »</em> n'existe donc nulle part comme entité unique — il faut le reconstruire.</p>
+  <p>Méthode : n-grammes (2 à 4 mots) bornés par des mots pleins, comptés sur tout le corpus, retenus s'ils atteignent <strong>8 occurrences dans au moins 5 fragments distincts</strong> — le seuil qui sépare une vraie expression récurrente d'une coïncidence de syntaxe.</p>
+  <div class="callout"><div class="c2"></div>
+    <div class="callout-label">Résultat mesuré</div>
+    <p><strong>4 799 concepts composés</strong> extraits de 3 050 838 tokens : <em>machine de guerre</em> ×127, <em>plan d'immanence</em> ×114, <em>puissance du faux</em> ×128, <em>pouvoir d'être affecté</em> ×45…</p>
+  </div>
+
+  <h3>3 — Construction des index Meilisearch</h3>
+  <pre>./.venv/bin/python3 scripts/export_meilisearch.py</pre>
+  <p>Trois index, entièrement reconstruits à chaque exécution (idempotent) :</p>
+  <div class="twrap"><table>
+    <tr><th>Index</th><th>Documents</th><th>Contenu</th></tr>
+    <tr><td><code>conferences</code></td><td>176</td><td>catalogue des séances — thème, promo, date, sujets BnF</td></tr>
+    <tr><td><code>fragments</code></td><td>27 674</td><td>une transcription par document, thème/titre dénormalisés, audio résolu, concepts fusionnés</td></tr>
+    <tr><td><code>concepts</code></td><td>50 273</td><td>45 474 concepts à un mot + 4 799 composés, classés par fréquence après pertinence texte</td></tr>
+  </table></div>
+  <p>Le classement par fréquence sert la résolution vocale approximative : une commande dictée « machine de gere » doit retomber sur le vrai concept, pas sur un mot rare qui matche par accident.</p>
+
+  <h2 id="api">L'API</h2>
+  <p><code>api/main.py</code> — FastAPI, ne lit jamais Omeka S ni MySQL au moment de la requête ; tout vient de Meilisearch et du dossier <code>audios/</code>.</p>
+  <div class="twrap"><table>
+    <tr><th>Endpoint</th><th>Rôle</th></tr>
+    <tr><td><code>GET /api/themes</code></td><td>thèmes de cours avec nombre de séances</td></tr>
+    <tr><td><code>GET /api/themes/{theme}/seances</code></td><td>séances d'un thème, triées chronologiquement</td></tr>
+    <tr><td><code>GET /api/seances/{id}</code></td><td>détail d'une séance + ses fragments ordonnés</td></tr>
+    <tr><td><code>GET /api/fragments/{id}</code></td><td>un fragment isolé (texte, audio, concepts)</td></tr>
+    <tr><td><code>GET /api/search?q=</code></td><td>recherche plein texte, filtrable par thème/séance</td></tr>
+    <tr><td><code>GET /api/concepts/resolve?q=</code></td><td>résolution floue d'une expression dictée</td></tr>
+    <tr><td><code>GET /api/topology?concept=</code></td><td>graphe de co-occurrence calculé à la volée</td></tr>
+    <tr><td><code>GET /audio/{fichier}</code></td><td>fichiers <code>.opus</code>, requêtes <code>Range</code> supportées</td></tr>
+    <tr><td><code>GET /api/health</code></td><td>vérifie la connexion à Meilisearch</td></tr>
+  </table></div>
+  <p>L'endpoint de topologie interroge <code>fragments</code> avec un filtre <code>concepts = "&lt;label&gt;"</code>, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.</p>
+
+  <h2 id="client">Le client web</h2>
+  <p><code>web/index.html</code> — une seule page, sans framework, servie à la même origine que l'API. Reprend l'identité visuelle <em>Industry</em> inversée nuit.</p>
+  <ul>
+    <li><strong>Accueil / Thèmes / Séances / Lecteur</strong> — catalogue et lecture réels, navigation prev/suivant dans les fragments d'une séance.</li>
+    <li><strong>Recherche</strong> — plein texte réel, clic sur un résultat → ouvre le fragment exact.</li>
+    <li><strong>Topologie</strong> — graphe interactif, cliquer un nœud recentre l'exploration dessus.</li>
+    <li><strong>Voix</strong> — Web Speech API du navigateur (HTTPS généralement requis), commandes « ouvre… », « cherche… », « agence X avec Y ».</li>
+    <li><strong>Historique</strong> — fragments écoutés et topologies enregistrées, dans <code>localStorage</code>, pas de compte utilisateur.</li>
+  </ul>
+
+  <h2 id="local">Démarrage local</h2>
+  <pre>python3 -m venv .venv &amp;&amp; ./.venv/bin/pip install -r requirements.txt
+
+<span class="c"># .env : DB_HOST, DB_USER, DB_PASS, DB_NAME, SRC_ROOT, OUT_DIR, MEILI_URL, MEILI_KEY</span>
+
+meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 &amp;
+
+./scripts/export_manifest.sh
+./scripts/convert_batch.sh
+./.venv/bin/python3 scripts/mine_concept_phrases.py
+./.venv/bin/python3 scripts/export_meilisearch.py
+
+./.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000
+<span class="c"># ouvrir http://&lt;ip-locale&gt;:8000/</span></pre>
+  <p>Pour la mise en production, voir <a href="deployment.html">Installation sur un VPS Debian</a>.</p>
+
+  <h2 id="qualite">Constats sur la qualité des données</h2>
+  <p>Des observations faites en construisant le pipeline, à connaître avant d'itérer dessus :</p>
+  <ul>
+    <li><strong><code>concepts</code> / <code>timeline_concept</code> est une tokenisation mot-à-mot</strong>, pas une couche d'annotation sémantique — chaque mot du texte y a sa ligne. D'où le minage de concepts composés plutôt qu'un mapping direct.</li>
+    <li><strong>129 fragments Whisper</strong> référencent un <code>idConf</code> introuvable dans <code>conferences</code> (contenu retiré de l'archive) — exclus de la conversion audio et des index.</li>
+    <li><strong>467 fragments n'ont qu'une transcription Google</strong> et référencent eux aussi un <code>idConf</code> introuvable dans 100 % des cas — exclus pour la même raison.</li>
+    <li><strong>Doublons ponctuels observés</strong> : au moins une séance a deux transcriptions distinctes toutes deux à <code>start=0, end=50</code>. Pas corrigé, à traiter si ça devient gênant en usage réel.</li>
+    <li>Le champ <code>sujets</code> de <code>conferences</code> (indexations BnF) est un JSON valide sur 100 % des lignes.</li>
+  </ul>
+
+</main>
+
+<footer class="wrap">
+  Flux Conceptuel Auto — documentation générée pour le projet. Voir aussi <a href="deployment.html">l'installation sur VPS Debian</a>.
+</footer>
+
+</body>
+</html>

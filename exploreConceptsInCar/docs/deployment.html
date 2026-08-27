@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Installation sur VPS Debian — Flux Conceptuel Auto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Fragment+Mono&display=swap">
+<style>
+:root{
+  --bg:#f2f2f3; --panel:#ffffff; --text:#1d1f20; --text-dim:#5d5d60;
+  --line:rgba(29,31,32,.16); --line-soft:rgba(29,31,32,.1); --line-strong:rgba(29,31,32,.34);
+  --accent:#5980a6; --accent-700:#3d5b76; --accent-wash:rgba(89,128,166,.08); --accent-wash-2:rgba(89,128,166,.16);
+  --gold:#c99a2e; --gold-wash:rgba(201,154,46,.12);
+  --code-bg:#1a1d20; --code-text:#dfe6ec; --code-dim:#8a97a3; --code-accent:#8fb4d6;
+  --font-head:"Barlow Condensed",system-ui,sans-serif;
+  --font-body:"Barlow",system-ui,sans-serif;
+  --font-mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111417; --panel:#161a1e; --text:#e8ecf0; --text-dim:#93a1ac;
+    --line:rgba(148,188,227,.18); --line-soft:rgba(148,188,227,.1); --line-strong:rgba(148,188,227,.36);
+    --accent:#6f97bd; --accent-700:#a8c4e0; --accent-wash:rgba(111,151,189,.12); --accent-wash-2:rgba(111,151,189,.2);
+    --gold:#e0b955; --gold-wash:rgba(224,185,85,.14);
+    --code-bg:#0c0e10; --code-text:#dfe6ec; --code-dim:#7c8994; --code-accent:#8fb4d6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111417; --panel:#161a1e; --text:#e8ecf0; --text-dim:#93a1ac;
+  --line:rgba(148,188,227,.18); --line-soft:rgba(148,188,227,.1); --line-strong:rgba(148,188,227,.36);
+  --accent:#6f97bd; --accent-700:#a8c4e0; --accent-wash:rgba(111,151,189,.12); --accent-wash-2:rgba(111,151,189,.2);
+  --gold:#e0b955; --gold-wash:rgba(224,185,85,.14);
+  --code-bg:#0c0e10; --code-text:#dfe6ec; --code-dim:#7c8994; --code-accent:#8fb4d6;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.55}
+::selection{background:var(--accent-wash-2)}
+a{color:var(--accent-700)}
+a:hover{color:var(--accent)}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+
+header.mast{border-bottom:1px solid var(--line);padding:40px 0 30px;background:var(--panel)}
+.eyebrow{font:600 12px var(--font-body);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font:600 42px/1.08 var(--font-head);margin:10px 0 8px;text-wrap:balance}
+.lede{font:400 18px/1.5 var(--font-body);color:var(--text-dim);max-width:60ch}
+.pagenav{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.pagenav a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);
+  padding:9px 16px;font:600 13px var(--font-head);letter-spacing:.08em;text-transform:uppercase;
+  text-decoration:none;color:var(--text)}
+.pagenav a.current{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pagenav a:hover:not(.current){background:var(--accent-wash)}
+
+main{padding:36px 0 80px}
+h2{font:600 28px/1.15 var(--font-head);margin:52px 0 6px;padding-top:16px;border-top:1px solid var(--line-soft);
+  display:flex;align-items:baseline;gap:12px;text-wrap:balance}
+h2:first-of-type{border-top:0;margin-top:0}
+h2 .num{font:600 16px var(--font-head);color:var(--accent);flex:none}
+h3{font:600 19px var(--font-head);margin:26px 0 8px}
+p{font:400 16px/1.6 var(--font-body);margin:12px 0}
+
+.toc{border:1px solid var(--line);padding:20px 22px;margin:26px 0 10px}
+.toc-label{font:600 11px var(--font-body);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px;counter-reset:step}
+.toc li{font:400 15px var(--font-body);margin:5px 0;break-inside:avoid}
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+.twrap{overflow-x:auto}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font:600 12px var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);
+  border-bottom:1px solid var(--line-strong)}
+code{font-family:var(--font-mono);font-size:13px;background:var(--accent-wash);
+  color:var(--accent-700);padding:1px 6px;border-radius:2px}
+
+pre{background:var(--code-bg);color:var(--code-text);padding:18px 20px;overflow-x:auto;
+  font:400 13.5px/1.6 var(--font-mono);margin:16px 0;border:1px solid var(--line-strong)}
+pre .c{color:var(--code-dim)}
+
+.callout{position:relative;border:1px solid var(--line-strong);padding:18px 20px;margin:22px 0}
+.callout::before,.callout::after,.callout .c2::before,.callout .c2::after{content:"";position:absolute;width:11px;height:11px;
+  background:linear-gradient(var(--line-strong),var(--line-strong)) 5px 0/1px 100% no-repeat,
+    linear-gradient(var(--line-strong),var(--line-strong)) 0 5px/100% 1px no-repeat}
+.callout::before{top:-6px;left:-6px}.callout::after{top:-6px;right:-6px}
+.callout .c2::before{bottom:-6px;left:-6px}.callout .c2::after{bottom:-6px;right:-6px}
+.callout-label{font:600 11px var(--font-body);letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.callout p{margin:6px 0}
+.callout.warn .callout-label{color:#c96a3a}
+
+.stepline{display:flex;align-items:center;gap:14px;margin:0 0 4px}
+.stepline .n{flex:none;width:34px;height:34px;border:1px solid var(--line-strong);display:flex;align-items:center;
+  justify-content:center;font:600 15px var(--font-head);color:var(--accent)}
+
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);font-size:14px}
+@media (max-width:640px){
+  h1{font-size:32px} .toc ol{columns:1}
+}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="eyebrow">Documentation du projet</div>
+    <h1>Installation sur un VPS Debian</h1>
+    <p class="lede">Mise en production de la couche de diffusion — Meilisearch, API, client web et fichiers audio — sur un serveur Debian 12 (bookworm). Omeka S, la base source, n'a pas besoin d'être sur ce serveur.</p>
+    <nav class="pagenav">
+      <a href="index.html">Vue d'ensemble</a>
+      <a href="deployment.html" class="current">Installation Debian</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="toc">
+    <div class="toc-label">Sommaire</div>
+    <ol>
+      <li><a href="#prereq">Prérequis</a></li>
+      <li><a href="#systeme">Préparation du système</a></li>
+      <li><a href="#meili">Installation de Meilisearch</a></li>
+      <li><a href="#code">Déploiement du code</a></li>
+      <li><a href="#donnees">Où vivent les données</a></li>
+      <li><a href="#systemd">Service systemd pour l'API</a></li>
+      <li><a href="#apache">Apache et HTTPS</a></li>
+      <li><a href="#verif">Vérification</a></li>
+      <li><a href="#maintenance">Maintenance</a></li>
+      <li><a href="#securite">Sécurité — récapitulatif</a></li>
+    </ol>
+  </div>
+
+  <h2 id="prereq"><span class="num">1</span>Prérequis</h2>
+  <ul>
+    <li>Un VPS Debian 12, accès <code>sudo</code> ou root.</li>
+    <li>Un nom de domaine pointé vers l'IP du VPS — nécessaire pour le HTTPS, et donc pour la reconnaissance vocale du navigateur, qui exige une origine sécurisée.</li>
+    <li>Soit un accès réseau depuis le VPS vers la base MySQL/MariaDB d'Omeka S, soit les artefacts déjà générés ailleurs (<code>audios/</code>, <code>data/</code>, un export Meilisearch) à transférer — voir <a href="#donnees">§5</a>.</li>
+  </ul>
+
+  <h2 id="systeme"><span class="num">2</span>Préparation du système</h2>
+  <pre>sudo apt update &amp;&amp; sudo apt full-upgrade -y
+sudo apt install -y python3 python3-venv python3-pip ffmpeg git curl rsync apache2 ufw</pre>
+
+  <p>Compte système dédié, sans shell de connexion — l'app ne doit pas tourner en root :</p>
+  <pre>sudo useradd --system --create-home --home-dir /opt/flux-conceptuel-auto \
+  --shell /usr/sbin/nologin fluxconceptuel</pre>
+
+  <p>Pare-feu minimal : seuls SSH, HTTP et HTTPS sont exposés. Meilisearch (7700) et l'API (8000) restent en écoute sur <code>127.0.0.1</code> uniquement.</p>
+  <pre>sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable</pre>
+
+  <h2 id="meili"><span class="num">3</span>Installation de Meilisearch</h2>
+  <pre>curl -L https://install.meilisearch.com | sh
+sudo mv ./meilisearch /usr/local/bin/meilisearch
+sudo mkdir -p /var/lib/meilisearch
+sudo chown fluxconceptuel:fluxconceptuel /var/lib/meilisearch</pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Important</div>
+    <p>En développement local le projet tourne <strong>sans</strong> clé Meilisearch, ce qui n'est acceptable que sur <code>127.0.0.1</code>. En production, sans clé, n'importe qui atteignant le port pourrait lire ou effacer tout l'index.</p>
+  </div>
+  <pre>openssl rand -base64 48
+<span class="c"># gardez cette valeur : elle sert deux fois, ci-dessous et dans le .env de l'API (§5)</span></pre>
+
+  <p><code>/etc/systemd/system/meilisearch.service</code> :</p>
+  <pre>[Unit]
+Description=Meilisearch
+After=network.target
+
+[Service]
+Type=simple
+User=fluxconceptuel
+Group=fluxconceptuel
+Environment=MEILI_MASTER_KEY=REMPLACER_PAR_LA_CLE_GENEREE
+Environment=MEILI_ENV=production
+ExecStart=/usr/local/bin/meilisearch --db-path /var/lib/meilisearch --http-addr 127.0.0.1:7700 --no-analytics
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+  <pre>sudo systemctl daemon-reload
+sudo systemctl enable --now meilisearch
+sudo systemctl status meilisearch   <span class="c"># doit être "active (running)"</span></pre>
+
+  <h2 id="code"><span class="num">4</span>Déploiement du code</h2>
+  <pre>sudo -u fluxconceptuel git clone &lt;url-du-dépôt&gt; /opt/flux-conceptuel-auto/app</pre>
+  <p>(à défaut d'un dépôt git accessible depuis le VPS, <code>rsync</code> depuis la machine de développement fonctionne tout aussi bien — voir la commande au <a href="#donnees">§5</a>)</p>
+  <pre>cd /opt/flux-conceptuel-auto/app
+sudo -u fluxconceptuel python3 -m venv .venv
+sudo -u fluxconceptuel ./.venv/bin/pip install -r requirements.txt
+sudo -u fluxconceptuel ./.venv/bin/pip install gunicorn</pre>
+
+  <p>Créez le <code>.env</code> (jamais commité — permissions restrictives) :</p>
+  <pre>sudo -u fluxconceptuel tee .env > /dev/null &lt;&lt;'EOF'
+MEILI_URL=http://127.0.0.1:7700
+MEILI_KEY=REMPLACER_PAR_LA_CLE_GENEREE
+OUT_DIR=/opt/flux-conceptuel-auto/app/audios
+
+<span class="c"># uniquement nécessaire si le pipeline d'export tourne sur CE serveur (§5, option A)</span>
+DB_HOST=
+DB_USER=
+DB_PASS=
+DB_NAME=
+SRC_ROOT=
+EOF
+sudo chmod 600 .env</pre>
+
+  <h2 id="donnees"><span class="num">5</span>Où vivent les données (source vs diffusion)</h2>
+  <p>Omeka S reste la source de vérité et n'a pas besoin d'être sur ce VPS. Deux façons de peupler la couche de diffusion :</p>
+
+  <h3>Option A — le pipeline tourne sur le VPS</h3>
+  <p>Le VPS a un accès réseau à la base MySQL/MariaDB d'Omeka S (renseignez <code>DB_*</code> et <code>SRC_ROOT</code> dans le <code>.env</code>) :</p>
+  <pre>cd /opt/flux-conceptuel-auto/app
+sudo -u fluxconceptuel ./scripts/export_manifest.sh
+sudo -u fluxconceptuel ./scripts/convert_batch.sh
+sudo -u fluxconceptuel ./.venv/bin/python3 scripts/mine_concept_phrases.py
+sudo -u fluxconceptuel ./.venv/bin/python3 scripts/export_meilisearch.py</pre>
+
+  <h3>Option B — les artefacts sont générés ailleurs</h3>
+  <p>Par exemple sur la machine de développement, puis transférés :</p>
+  <pre>rsync -avz --progress audios/ deploy@vps:/opt/flux-conceptuel-auto/app/audios/
+rsync -avz --progress data/   deploy@vps:/opt/flux-conceptuel-auto/app/data/</pre>
+  <p>Puis, sur le VPS (Meilisearch démarré, base joignable au moins le temps de cet export) :</p>
+  <pre>sudo -u fluxconceptuel ./.venv/bin/python3 scripts/export_meilisearch.py</pre>
+  <p>Alternative plus rapide si la base n'est pas joignable depuis le VPS : copier directement le répertoire de données Meilisearch déjà construit (service arrêté des deux côtés pendant la copie) :</p>
+  <pre>sudo systemctl stop meilisearch          <span class="c"># sur le VPS</span>
+rsync -avz --progress meilisearch/data/ deploy@vps:/var/lib/meilisearch/
+sudo chown -R fluxconceptuel:fluxconceptuel /var/lib/meilisearch
+sudo systemctl start meilisearch</pre>
+
+  <h2 id="systemd"><span class="num">6</span>Service systemd pour l'API</h2>
+  <p>En production, <code>gunicorn</code> pilotant des workers <code>uvicorn</code> est plus robuste qu'un simple <code>uvicorn --reload</code> — relance automatique en cas de crash, plusieurs workers en parallèle.</p>
+  <p><code>/etc/systemd/system/flux-api.service</code> :</p>
+  <pre>[Unit]
+Description=Flux Conceptuel Auto — API
+After=network.target meilisearch.service
+Requires=meilisearch.service
+
+[Service]
+Type=simple
+User=fluxconceptuel
+Group=fluxconceptuel
+WorkingDirectory=/opt/flux-conceptuel-auto/app
+EnvironmentFile=/opt/flux-conceptuel-auto/app/.env
+ExecStart=/opt/flux-conceptuel-auto/app/.venv/bin/gunicorn api.main:app \
+  -k uvicorn.workers.UvicornWorker -w 2 --bind 127.0.0.1:8000 \
+  --access-logfile - --error-logfile -
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+  <p>Ajustez <code>-w 2</code> (nombre de workers) selon les cœurs disponibles — 2 suffisent largement pour ce trafic.</p>
+  <pre>sudo systemctl daemon-reload
+sudo systemctl enable --now flux-api
+sudo systemctl status flux-api</pre>
+
+  <h2 id="apache"><span class="num">7</span>Apache et HTTPS</h2>
+  <p>Pour la performance, <strong>Apache sert directement les fichiers statiques</strong> (client web et fichiers audio) — bien plus efficace qu'un serveur ASGI Python pour ça — et ne proxifie que les appels <code>/api/</code>. Les requêtes <code>Range</code> (avance rapide dans l'audio) sont supportées nativement par Apache pour les fichiers statiques, sans module supplémentaire.</p>
+  <p>Activez les modules nécessaires — <code>proxy</code>/<code>proxy_http</code> pour le reverse-proxy vers l'API, <code>headers</code> pour les en-têtes de cache, <code>ssl</code> pour le HTTPS :</p>
+  <pre>sudo a2enmod proxy proxy_http headers ssl</pre>
+  <p><code>/etc/apache2/sites-available/flux-conceptuel-auto.conf</code> :</p>
+  <pre>&lt;VirtualHost *:80&gt;
+    ServerName flux.exemple.tld
+    DocumentRoot /opt/flux-conceptuel-auto/app/web
+
+    ProxyPreserveHost On
+    ProxyPass /api/ http://127.0.0.1:8000/api/
+    ProxyPassReverse /api/ http://127.0.0.1:8000/api/
+
+    Alias /audio/ /opt/flux-conceptuel-auto/app/audios/
+    &lt;Directory /opt/flux-conceptuel-auto/app/audios/&gt;
+        Require all granted
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    &lt;/Directory&gt;
+
+    &lt;Directory /opt/flux-conceptuel-auto/app/web/&gt;
+        Require all granted
+    &lt;/Directory&gt;
+
+    ErrorLog ${APACHE_LOG_DIR}/flux-conceptuel-error.log
+    CustomLog ${APACHE_LOG_DIR}/flux-conceptuel-access.log combined
+&lt;/VirtualHost&gt;</pre>
+  <pre>sudo a2ensite flux-conceptuel-auto
+sudo a2dissite 000-default   <span class="c"># évite un conflit avec le site par défaut</span>
+sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">HTTPS nécessaire</div>
+    <p>Sans HTTPS, les navigateurs refusent le micro sur une origine autre que <code>localhost</code> — la reconnaissance vocale du client sera bloquée de toute façon.</p>
+  </div>
+  <pre>sudo apt install -y certbot python3-certbot-apache
+sudo certbot --apache -d flux.exemple.tld</pre>
+  <p><code>certbot</code> crée automatiquement le VirtualHost 443 correspondant (<code>SSLEngine on</code> et chemins de certificat) et programme le renouvellement automatique (vérifiez avec <code>sudo systemctl status certbot.timer</code>).</p>
+
+  <h2 id="verif"><span class="num">8</span>Vérification</h2>
+  <pre>curl https://flux.exemple.tld/api/health
+<span class="c"># {"status":"ok","meilisearch":{"status":"available"}}</span>
+
+curl -I https://flux.exemple.tld/audio/&lt;un-hash&gt;.opus
+<span class="c"># HTTP/2 200, content-type: audio/ogg</span></pre>
+  <p>Puis dans un navigateur : ouvrir <code>https://flux.exemple.tld/</code>, vérifier le chargement des thèmes, lancer un fragment (lecture réelle), faire une recherche, ouvrir la topologie d'un concept.</p>
+
+  <h2 id="maintenance"><span class="num">9</span>Maintenance</h2>
+  <h3>Mettre à jour le code</h3>
+  <pre>cd /opt/flux-conceptuel-auto/app
+sudo -u fluxconceptuel git pull
+sudo -u fluxconceptuel ./.venv/bin/pip install -r requirements.txt
+sudo systemctl restart flux-api</pre>
+
+  <p><strong>Ré-exécuter le pipeline</strong> (après de nouvelles transcriptions dans Omeka S) : relancer les 4 scripts du <a href="#donnees">§5</a> — chacun est conçu pour être rejoué sans nettoyage préalable.</p>
+
+  <h3>Journaux</h3>
+  <pre>sudo journalctl -u flux-api -f
+sudo journalctl -u meilisearch -f
+sudo tail -f /var/log/apache2/flux-conceptuel-error.log</pre>
+
+  <h3>Sauvegardes</h3>
+  <p>Trois éléments à conserver, tous régénérables depuis Omeka S mais coûteux à reconstruire :</p>
+  <div class="twrap"><table>
+    <tr><th>Élément</th><th>Rôle</th></tr>
+    <tr><td><code>/var/lib/meilisearch</code></td><td>l'index de recherche</td></tr>
+    <tr><td><code>audios/</code></td><td>les fichiers Opus (3,7 Go)</td></tr>
+    <tr><td><code>data/concept_phrases.json</code></td><td>les concepts composés minés</td></tr>
+  </table></div>
+
+  <h2 id="securite"><span class="num">10</span>Sécurité — récapitulatif</h2>
+  <ul>
+    <li>Meilisearch (7700) et l'API brute (8000) écoutent sur <code>127.0.0.1</code> uniquement ; seul Apache (80/443) est exposé au pare-feu.</li>
+    <li>Clé maîtresse Meilisearch obligatoire en production.</li>
+    <li><code>.env</code> en permissions <code>600</code>, jamais commité.</li>
+    <li>L'app tourne sous un compte système dédié sans shell, pas en root.</li>
+    <li>HTTPS obligatoire — sans quoi la reconnaissance vocale sera bloquée par le navigateur.</li>
+  </ul>
+
+</main>
+
+<footer class="wrap">
+  Flux Conceptuel Auto — documentation générée pour le projet. Voir aussi <a href="index.html">la vue d'ensemble de l'architecture</a>.
+</footer>
+
+</body>
+</html>

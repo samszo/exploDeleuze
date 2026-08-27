@@ -1,0 +1,8 @@
+.env
+.DS_Store
+audios/
+.venv/
+meilisearch/data/
+meilisearch/*.log
+__pycache__/
+data/

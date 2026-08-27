@@ -1,4 +1,4 @@
-const CACHE = "flux-conceptuel-v8";
+const CACHE = "flux-conceptuel-v14";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,6 +12,9 @@ const APP_SHELL = [
   "./js/auth.js",
   "./js/player.js",
   "./js/config.js",
+  "./js/zotero.js",
+  "./js/md5.js",
+  "./js/audioExtract.js",
   "./img/Logo_BNFblanc.svg",
   "./img/logo-paragraphe-blanc.svg",
   "./img/OmekaS.png",

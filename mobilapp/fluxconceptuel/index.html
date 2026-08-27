@@ -67,6 +67,7 @@
       <div id="progress-fill" class="progress-fill"></div>
     </div>
     <p id="fragment-counter" class="fragment-counter">—</p>
+    <p id="time-elapsed" class="fragment-counter">0:00 / 0:00</p>
     <div class="buttons">
       <button id="btn-prev" class="icon-btn" aria-label="Fragment précédent"><i class="fa-solid fa-backward-step" aria-hidden="true"></i></button>
       <button id="btn-play" class="icon-btn play" aria-label="Lecture / Pause"><i class="fa-solid fa-play" aria-hidden="true"></i></button>
@@ -79,6 +80,35 @@
       <button id="btn-share" class="copy-ref-btn" aria-label="Partager le lien vers ce fragment">
         <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
       </button>
+      <button id="btn-select-extract" class="copy-ref-btn" aria-label="Sélectionner un extrait audio">
+        <i class="fa-solid fa-scissors" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div id="extract-panel" class="report-panel hidden">
+      <p id="extract-title" class="report-title">Touchez le premier mot de l'extrait</p>
+
+      <div class="report-buttons" style="justify-content:flex-start;">
+        <button id="btn-extract-download" class="copy-ref-btn" aria-label="Télécharger l'extrait" disabled>
+          <i class="fa-solid fa-download" aria-hidden="true"></i>
+        </button>
+        <button id="btn-extract-zotero" class="copy-ref-btn" aria-label="Enregistrer dans Zotero" disabled>
+          <img src="img/Zotero_icon.png" style="height: 2rem;" />
+        </button>
+      </div>
+
+      <form id="zotero-login-form" class="login-form hidden">
+        <input id="zotero-userid" type="text" placeholder="Zotero User ID" autocomplete="off" required>
+        <input id="zotero-apikey" type="password" placeholder="Zotero API Key" autocomplete="off" required>
+        <button type="submit" class="search-btn">Connecter Zotero</button>
+      </form>
+
+      <p id="extract-error" class="status error hidden"></p>
+      <p id="extract-success" class="status hidden" style="color:var(--accent);"></p>
+
+      <div class="report-buttons">
+        <button id="btn-extract-cancel" class="icon-btn" aria-label="Annuler la sélection"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
     </div>
 
     <div id="collab-actions" class="secondary-actions hidden">
@@ -132,6 +162,6 @@
   <audio id="audio" preload="auto"></audio>
 </div>
 
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=14"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
-import { fetchConferences, fetchTranscriptions, fetchSearchResults, signalerFragment, relancerTranscription } from "./api.js";
+import { fetchConferences, fetchTranscriptions, fetchSearchResults, signalerFragment, relancerTranscription, mediaUrl } from "./api.js";
 import { login, logout, getAuth } from "./auth.js";
+import { getZoteroAuth, saveZoteroAuth, findOrCreateCourseItem, createExtractItem, uploadAttachment } from "./zotero.js";
+import { extractAudioRange } from "./audioExtract.js";
 import { Player } from "./player.js";
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
@@ -14,6 +16,7 @@ const captionsEl = document.getElementById("captions");
 const courseTitleEl = document.getElementById("course-title");
 const courseMetaEl = document.getElementById("course-meta");
 const fragmentCounterEl = document.getElementById("fragment-counter");
+const timeElapsedEl = document.getElementById("time-elapsed");
 const progressFillEl = document.getElementById("progress-fill");
 const btnPlay = document.getElementById("btn-play");
 const btnPrev = document.getElementById("btn-prev");
@@ -21,6 +24,16 @@ const btnNext = document.getElementById("btn-next");
 const btnBack = document.getElementById("btn-back");
 const btnCopyRef = document.getElementById("btn-copy-ref");
 const btnShare = document.getElementById("btn-share");
+
+const btnSelectExtract = document.getElementById("btn-select-extract");
+const extractPanel = document.getElementById("extract-panel");
+const extractTitle = document.getElementById("extract-title");
+const btnExtractDownload = document.getElementById("btn-extract-download");
+const btnExtractZotero = document.getElementById("btn-extract-zotero");
+const btnExtractCancel = document.getElementById("btn-extract-cancel");
+const extractError = document.getElementById("extract-error");
+const extractSuccess = document.getElementById("extract-success");
+const zoteroLoginForm = document.getElementById("zotero-login-form");
 
 const btnAuthToggle = document.getElementById("btn-auth-toggle");
 const loginForm = document.getElementById("login-form");
@@ -54,6 +67,8 @@ const REPORT_LABELS = {
 let conferences = [];
 let currentReportType = null;
 let currentReportTimecode = null;
+let currentConf = null;
+let extractedBlob = null;
 
 function formatTime(seconds) {
   const s = Math.max(0, Math.floor(seconds));
@@ -79,13 +94,39 @@ const player = new Player(audioEl, captionsEl, {
     btnShare.classList.remove("copied");
     setIcon(btnShare, "share-nodes");
     closeReportPanel();
+    exitSelectionMode();
   },
   onProgress: (ratio) => {
     progressFillEl.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
   },
+  onGlobalProgress: (elapsed, total) => {
+    timeElapsedEl.textContent = `${formatTime(elapsed)} / ${formatTime(total)}`;
+  },
   onCourseEnd: () => {
     setIcon(btnPlay, "play");
     fragmentCounterEl.textContent = "Cours terminé";
+  },
+  onSelectionChange: (range) => {
+    extractedBlob = null;
+    extractError.classList.add("hidden");
+    extractSuccess.classList.add("hidden");
+    zoteroLoginForm.classList.add("hidden");
+    if (!range) {
+      extractTitle.textContent = "Touchez le premier mot de l'extrait";
+      btnExtractDownload.disabled = true;
+      btnExtractZotero.disabled = true;
+    } else if (!range.end) {
+      const globalStart = (player.cumulativeOffsets[player.index] || 0) + range.start.start;
+      extractTitle.textContent = `Touchez le dernier mot de l'extrait (début : ${formatTime(globalStart)})`;
+      btnExtractDownload.disabled = true;
+      btnExtractZotero.disabled = true;
+    } else {
+      const duration = range.end.end - range.start.start;
+      const { start, end } = globalRange(player.index, range);
+      extractTitle.textContent = `Extrait sélectionné : ${formatTime(start)} → ${formatTime(end)} (${duration.toFixed(1)}s)`;
+      btnExtractDownload.disabled = false;
+      btnExtractZotero.disabled = false;
+    }
   },
 });
 
@@ -172,6 +213,144 @@ btnShare.addEventListener("click", async () => {
     console.error(err);
   }
 });
+
+// --- Extraction d'un extrait audio (sélection de mots) ---
+
+function exitSelectionMode() {
+  btnSelectExtract.classList.remove("copied");
+  captionsEl.classList.remove("selecting");
+  extractPanel.classList.add("hidden");
+  player.setSelectionMode(false);
+}
+
+btnSelectExtract.addEventListener("click", () => {
+  const active = !captionsEl.classList.contains("selecting");
+  if (active) {
+    btnSelectExtract.classList.add("copied");
+    captionsEl.classList.add("selecting");
+    extractPanel.classList.remove("hidden");
+    player.setSelectionMode(true);
+  } else {
+    exitSelectionMode();
+  }
+});
+
+btnExtractCancel.addEventListener("click", exitSelectionMode);
+
+// Position de l'extrait par rapport à la totalité du cours (mêmes offsets cumulés
+// que "time-elapsed", qui s'enchaînent en continu d'un fragment à l'autre). Ne pas
+// utiliser fragment.start/end ici : ces champs redémarrent à 0 à chaque nouveau
+// disque Gallica/BnF (un cours en a souvent plusieurs), ce qui désynchroniserait
+// cet affichage de celui de "time-elapsed" passé la fin du premier disque.
+function globalRange(fragmentIndex, range) {
+  const offset = player.cumulativeOffsets[fragmentIndex] || 0;
+  return {
+    start: offset + range.start.start,
+    end: offset + range.end.end,
+  };
+}
+
+function extractFilename(fragment, range) {
+  const safeTheme = (fragment.theme || "extrait").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").slice(0, 40);
+  const { start } = globalRange(player.index, range);
+  return `${safeTheme}-cours${fragment.num || ""}-${formatTime(start).replace(":", "m")}s.wav`;
+}
+
+async function getOrCreateExtract() {
+  if (extractedBlob) return extractedBlob;
+  const fragment = player.fragments[player.index];
+  const range = player.getSelectionRange();
+  if (!fragment || !range || !range.end) throw new Error("Aucun extrait sélectionné.");
+  extractedBlob = await extractAudioRange(mediaUrl(fragment.source), range.start.start, range.end.end);
+  return extractedBlob;
+}
+
+btnExtractDownload.addEventListener("click", async () => {
+  extractError.classList.add("hidden");
+  extractSuccess.classList.add("hidden");
+  btnExtractDownload.disabled = true;
+  try {
+    const fragment = player.fragments[player.index];
+    const range = player.getSelectionRange();
+    const blob = await getOrCreateExtract();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = extractFilename(fragment, range);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  } catch (err) {
+    extractError.textContent = "Échec de l'extraction : " + err.message;
+    extractError.classList.remove("hidden");
+    console.error(err);
+  } finally {
+    btnExtractDownload.disabled = false;
+  }
+});
+
+btnExtractZotero.addEventListener("click", async () => {
+  extractError.classList.add("hidden");
+  extractSuccess.classList.add("hidden");
+
+  const zoteroAuth = getZoteroAuth();
+  if (!zoteroAuth) {
+    zoteroLoginForm.classList.remove("hidden");
+    return;
+  }
+
+  await sendExtractToZotero(zoteroAuth);
+});
+
+zoteroLoginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userId = document.getElementById("zotero-userid").value.trim();
+  const apiKey = document.getElementById("zotero-apikey").value.trim();
+  const auth = saveZoteroAuth(userId, apiKey);
+  zoteroLoginForm.classList.add("hidden");
+  zoteroLoginForm.reset();
+  await sendExtractToZotero(auth);
+});
+
+async function sendExtractToZotero(zoteroAuth) {
+  btnExtractZotero.disabled = true;
+  extractError.classList.add("hidden");
+  try {
+    const fragment = player.fragments[player.index];
+    const range = player.getSelectionRange();
+    if (!fragment || !range || !range.end) throw new Error("Aucun extrait sélectionné.");
+    if (!currentConf) throw new Error("Référence du cours indisponible.");
+
+    const blob = await getOrCreateExtract();
+    const filename = extractFilename(fragment, range);
+
+    const { start: globalStart, end: globalEnd } = globalRange(player.index, range);
+    const positionLabel = `${formatTime(globalStart)} → ${formatTime(globalEnd)}`;
+    const title = `${currentConf.theme} — Cours ${currentConf.num} — extrait ${positionLabel}`;
+    const transcriptText = player.getSelectionText();
+
+    const courseItemKey = await findOrCreateCourseItem(zoteroAuth, currentConf);
+    const extractItemKey = await createExtractItem(zoteroAuth, {
+      title,
+      date: currentConf.created,
+      runningTime: positionLabel,
+      label: transcriptText,
+      url: fragmentShareUrl(fragment),
+      courseItemKey,
+      source:currentConf.source
+    });
+    await uploadAttachment(zoteroAuth, extractItemKey, blob, filename);
+
+    extractSuccess.textContent = "Extrait enregistré dans Zotero.";
+    extractSuccess.classList.remove("hidden");
+  } catch (err) {
+    extractError.textContent = "Échec Zotero : " + err.message;
+    extractError.classList.remove("hidden");
+    console.error(err);
+  } finally {
+    btnExtractZotero.disabled = false;
+  }
+}
 
 // --- Authentification Omeka S (email + clé API) ---
 
@@ -426,7 +605,7 @@ function renderSearchResults(hits, trouve) {
   const sections = d3.select(courseGroups).selectAll("section").data(themes).enter().append("section").attr("class","theme-group");
   const titreSect = sections.append("h3").text(d=>d[0]);
   titreSect.append("span").attr("class","course-promo").text(t=>{
-    return " : score = "+Math.ceil(t.score)+" nb. cours ="+t.cours.length;
+    return " : score = "+Math.ceil(t.score)+" / nb. cours = "+t.cours.length;
   })
   //affiche les transcriptions regroupées par cours
   const liCours = sections.append("ul").attr("class","course-list").selectAll("li").data(t=>t.cours).enter().append("li").attr("class", "course-card");
@@ -434,7 +613,7 @@ function renderSearchResults(hits, trouve) {
   const divLi = liCours.append("div").attr("class","course-info");
     divLi.append("span").attr("class","course-promo").text(d=>dateCours(new Date(d.conf.created)));
     divLi.append("span").attr("class","course-sujets").text(c=>{
-      return "score = "+Math.ceil(c.score)+" nb. extraits = "+c[1].length
+      return "score = "+Math.ceil(c.score)+" / nb. extraits = "+c[1].length
     });
   //affiche les transcriptions regroupées par cours
   const liTrans = liCours.append("ul").attr("class","trans-list").selectAll("li").data(c=>c[1]).enter().append("li").attr("class", "course-card").html(t=>{
@@ -494,6 +673,13 @@ function playStandaloneFragment(fragment) {
   courseMetaEl.textContent = "Extrait isolé";
   fragmentCounterEl.textContent = "Chargement…";
   captionsEl.innerHTML = "";
+  currentConf = {
+    theme: fragment.theme || "Extrait trouvé",
+    num: fragment.num || "",
+    created: "",
+    source: fragment.bnf || "",
+    promo: "",
+  };
   showPlayer();
   player.load([fragment]);
   player.goTo(0);
@@ -504,6 +690,7 @@ async function openCourse(conf, { jumpToIdTrans } = {}) {
   courseMetaEl.textContent = `${dateCours(new Date(conf.created))}`;
   fragmentCounterEl.textContent = "Chargement…";
   captionsEl.innerHTML = "";
+  currentConf = conf;
   showPlayer();
 
   try {

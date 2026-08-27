@@ -7,19 +7,96 @@ export class Player {
     this.onFragmentChange = callbacks.onFragmentChange || (() => {});
     this.onProgress = callbacks.onProgress || (() => {});
     this.onCourseEnd = callbacks.onCourseEnd || (() => {});
+    this.onSelectionChange = callbacks.onSelectionChange || (() => {});
+    this.onGlobalProgress = callbacks.onGlobalProgress || (() => {});
 
     this.fragments = [];
     this.index = -1;
     this.words = [];
     this.activeWordIndex = -1;
 
+    this.selectionMode = false;
+    this.selectionStartIndex = null;
+    this.selectionEndIndex = null;
+
     this.audio.addEventListener("timeupdate", () => this._onTimeUpdate());
     this.audio.addEventListener("ended", () => this._onEnded());
+  }
+
+  // Active/désactive le mode sélection de mots (pour l'extraction d'un extrait audio).
+  // En mode sélection, cliquer un mot définit les bornes de l'extrait au lieu de
+  // déplacer la lecture.
+  setSelectionMode(active) {
+    this.selectionMode = active;
+    this._clearSelection();
+  }
+
+  getSelectionRange() {
+    if (this.selectionStartIndex === null) return null;
+    return {
+      start: this.words[this.selectionStartIndex],
+      end: this.selectionEndIndex === null ? null : this.words[this.selectionEndIndex],
+    };
+  }
+
+  // Texte transcrit couvert par la sélection (mots + ponctuation/liaisons entre eux),
+  // reconstitué dans l'ordre du DOM pour rester fidèle au texte affiché.
+  getSelectionText() {
+    const range = this.getSelectionRange();
+    if (!range || !range.end) return "";
+    const nodes = Array.from(this.captionEl.childNodes);
+    const startIdx = nodes.indexOf(range.start.el);
+    const endIdx = nodes.indexOf(range.end.el);
+    if (startIdx === -1 || endIdx === -1) return "";
+    return nodes.slice(startIdx, endIdx + 1).map((n) => n.textContent).join("").trim();
+  }
+
+  _clearSelection() {
+    for (const w of this.words) w.el.classList.remove("selected");
+    this.selectionStartIndex = null;
+    this.selectionEndIndex = null;
+    this.onSelectionChange(null);
+  }
+
+  _handleWordSelect(index) {
+    if (this.selectionStartIndex === null) {
+      this.selectionStartIndex = index;
+    } else if (this.selectionEndIndex === null) {
+      if (index >= this.selectionStartIndex) {
+        this.selectionEndIndex = index;
+      } else {
+        this.selectionStartIndex = index;
+      }
+    } else {
+      for (const w of this.words) w.el.classList.remove("selected");
+      this.selectionStartIndex = index;
+      this.selectionEndIndex = null;
+    }
+
+    for (let i = 0; i < this.words.length; i++) {
+      const inRange = this.selectionEndIndex !== null
+        ? i >= this.selectionStartIndex && i <= this.selectionEndIndex
+        : i === this.selectionStartIndex;
+      this.words[i].el.classList.toggle("selected", inRange);
+    }
+
+    this.onSelectionChange(this.getSelectionRange());
   }
 
   load(fragments) {
     this.fragments = fragments;
     this.index = -1;
+
+    // Position cumulée de chaque fragment dans la durée totale du cours (somme des
+    // durées de tous les fragments qui le précèdent dans l'ordre de lecture), pour
+    // afficher un temps écoulé/total global plutôt que seulement local au fragment.
+    this.cumulativeOffsets = [];
+    let sum = 0;
+    for (const f of fragments) {
+      this.cumulativeOffsets.push(sum);
+      sum += Math.max(0, Number(f.end) - Number(f.start)) || 0;
+    }
+    this.totalDuration = sum;
   }
 
   get total() {
@@ -34,6 +111,7 @@ export class Player {
     this.audio.src = mediaUrl(fragment.source);
     this._renderCaptions(fragment);
     this.onFragmentChange(index, this.total, fragment);
+    this.onGlobalProgress(this.cumulativeOffsets[index] || 0, this.totalDuration);
 
     if (autoplay) {
       this.audio.play().catch(() => {});
@@ -61,17 +139,24 @@ export class Player {
     this.captionEl.innerHTML = "";
     this.activeWordIndex = -1;
     this.words = [];
+    this.selectionStartIndex = null;
+    this.selectionEndIndex = null;
 
     const concepts = fragment.concepts || [];
     const texte = (fragment.texte || "").trim();
 
+    const onWordClick = (index) => {
+      if (this.selectionMode) this._handleWordSelect(index);
+      else this.seekTo(this.words[index].start);
+    };
+
     if (!texte) {
       // repli : pas de texte complet disponible, on affiche les concepts isolés
-      this.words = concepts.map((concept) => {
+      this.words = concepts.map((concept, index) => {
         const span = document.createElement("span");
         span.className = "word";
         span.textContent = concept.title;
-        span.addEventListener("click", () => this.seekTo(Number(concept.start)));
+        span.addEventListener("click", () => onWordClick(index));
         this.captionEl.appendChild(span);
         return { el: span, start: Number(concept.start), end: Number(concept.end) };
       });
@@ -83,7 +168,8 @@ export class Player {
         const span = document.createElement("span");
         span.className = "word";
         span.textContent = segment.text;
-        span.addEventListener("click", () => this.seekTo(Number(segment.concept.start)));
+        const index = this.words.length;
+        span.addEventListener("click", () => onWordClick(index));
         this.captionEl.appendChild(span);
         this.words.push({
           el: span,
@@ -133,6 +219,7 @@ export class Player {
     if (fragment) {
       const duration = Number(fragment.end) - Number(fragment.start) || this.audio.duration || 1;
       this.onProgress(t / duration);
+      this.onGlobalProgress((this.cumulativeOffsets[this.index] || 0) + t, this.totalDuration);
     }
   }
 
