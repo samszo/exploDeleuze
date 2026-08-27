@@ -170,8 +170,12 @@ L'endpoint de topologie interroge `fragments` avec un filtre `concepts = "<label
 
 ## Démarrage local
 
+**Activez le venv** pour la session de terminal — plus besoin de préfixer chaque commande par `./.venv/bin/` ensuite :
+
 ```bash
-python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate   # le prompt affiche (.venv) ; `deactivate` pour en sortir
+pip install -r requirements.txt
 
 # .env : DB_HOST, DB_USER, DB_PASS, DB_NAME, SRC_ROOT, OUT_DIR, MEILI_URL, MEILI_KEY
 
@@ -179,12 +183,14 @@ meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 &
 
 ./scripts/export_manifest.sh
 ./scripts/convert_batch.sh
-./.venv/bin/python3 scripts/mine_concept_phrases.py
-./.venv/bin/python3 scripts/export_meilisearch.py
+python3 scripts/mine_concept_phrases.py
+python3 scripts/export_meilisearch.py
 
-./.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000
+uvicorn api.main:app --host 0.0.0.0 --port 8000
 # ouvrir http://<ip-locale>:8000/
 ```
+
+> **L'activation ne persiste pas** — à refaire (`source .venv/bin/activate`) à chaque nouvelle fenêtre de terminal. Sur Debian/Ubuntu récents, `pip install` **hors venv** échoue avec `externally-managed-environment` (PEP 668, volontaire) : c'est le signe que le venv n'est pas activé (vérifiez le `(.venv)` dans le prompt) — jamais que vous devez ajouter `--break-system-packages`. Sans activer, la même commande fonctionne toujours en préfixant explicitement : `./.venv/bin/pip install -r requirements.txt`.
 
 ## Constats sur la qualité des données
 

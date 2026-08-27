@@ -188,12 +188,36 @@ sudo systemctl enable --now meilisearch
 sudo systemctl status meilisearch   <span class="c"># doit être "active (running)"</span></pre>
 
   <h2 id="code"><span class="num">4</span>Déploiement du code</h2>
-  <pre>sudo -u fluxconceptuel git clone &lt;url-du-dépôt&gt; /opt/flux-conceptuel-auto/app</pre>
-  <p>(à défaut d'un dépôt git accessible depuis le VPS, <code>rsync</code> depuis la machine de développement fonctionne tout aussi bien — voir la commande au <a href="#donnees">§5</a>)</p>
+  <p>Le dépôt (<code>github.com/samszo/exploDeleuze</code>) est un monorepo — Flux Conceptuel Auto vit dans le sous-dossier <code>exploreConceptsInCar/</code>, à côté d'autres projets sans rapport. On clone le dépôt entier puis on fait pointer <code>app/</code> vers le bon sous-dossier :</p>
+  <pre>sudo -u fluxconceptuel git clone https://github.com/samszo/exploDeleuze.git /opt/flux-conceptuel-auto/repo
+sudo -u fluxconceptuel ln -s /opt/flux-conceptuel-auto/repo/exploreConceptsInCar /opt/flux-conceptuel-auto/app</pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Si <code>/opt/flux-conceptuel-auto/app</code> est introuvable</div>
+    <p>Soit cette étape n'a pas encore été exécutée, soit le dépôt a été cloné sans le lien symbolique — l'app se trouve alors dans <code>/opt/flux-conceptuel-auto/repo/exploreConceptsInCar/</code>, pas directement dans <code>repo/</code>. Le reste de ce guide suppose que <code>app/</code> pointe (clone direct ou via ce lien) sur le dossier qui contient <code>api/</code>, <code>web/</code>, <code>scripts/</code>, <code>requirements.txt</code>.</p>
+  </div>
+
+  <p>(à défaut d'un accès à ce dépôt depuis le VPS, <code>rsync</code> depuis la machine de développement fonctionne tout aussi bien — voir la commande au <a href="#donnees">§5</a> ; dans ce cas, rsyncez directement vers <code>/opt/flux-conceptuel-auto/app/</code>, pas besoin du lien symbolique)</p>
   <pre>cd /opt/flux-conceptuel-auto/app
 sudo -u fluxconceptuel python3 -m venv .venv
 sudo -u fluxconceptuel ./.venv/bin/pip install -r requirements.txt
 sudo -u fluxconceptuel ./.venv/bin/pip install gunicorn</pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Erreur <code>error: externally-managed-environment</code> ?</div>
+    <p>Debian bloque volontairement <code>pip install</code> sur le Python système (PEP 668). Ce n'est jamais l'appel <code>./.venv/bin/pip</code> ci-dessus qui la déclenche — c'est un <code>pip install</code> tapé sans ce préfixe, donc sur le pip système. Ne contournez pas avec <code>--break-system-packages</code> : vérifiez plutôt que <code>.venv/</code> existe (<code>ls .venv/bin/pip</code>) et rejouez la commande telle quelle. Si <code>.venv/bin/pip</code> est absent après <code>python3 -m venv .venv</code>, le paquet <code>python3-venv</code> manque (<code>sudo apt install python3-venv</code>, puis recréez le venv).</p>
+  </div>
+
+  <p><strong>Activer le venv plutôt que préfixer chaque commande.</strong> Ce guide préfixe systématiquement par <code>./.venv/bin/</code> parce que chaque <code>sudo -u fluxconceptuel &lt;commande&gt;</code> ouvre un shell séparé et non interactif — une activation ne survivrait pas d'une commande à l'autre. Pour une session de travail manuelle plus longue (par exemple pour rejouer le pipeline de la <a href="#donnees">§5</a>), ouvrez plutôt un vrai shell sous cet utilisateur et activez une fois pour toute la session :</p>
+  <pre>sudo -u fluxconceptuel -s
+cd /opt/flux-conceptuel-auto/app
+source .venv/bin/activate   <span class="c"># le prompt affiche (.venv) ; plus besoin de préfixer ensuite</span>
+./scripts/export_manifest.sh
+./scripts/convert_batch.sh
+python3 scripts/mine_concept_phrases.py
+python3 scripts/export_meilisearch.py
+exit                        <span class="c"># quitte le shell fluxconceptuel (désactive au passage)</span></pre>
+  <p>Les services systemd (<a href="#systemd">§6</a>) n'ont besoin d'aucune activation : <code>ExecStart</code> appelle directement le binaire du venv (<code>.venv/bin/gunicorn</code>), sans passer par un shell interactif.</p>
 
   <p>Créez le <code>.env</code> (jamais commité — permissions restrictives) :</p>
   <pre>sudo -u fluxconceptuel tee .env > /dev/null &lt;&lt;'EOF'
@@ -308,8 +332,9 @@ curl -I https://flux.exemple.tld/audio/&lt;un-hash&gt;.opus
 
   <h2 id="maintenance"><span class="num">9</span>Maintenance</h2>
   <h3>Mettre à jour le code</h3>
-  <pre>cd /opt/flux-conceptuel-auto/app
+  <pre>cd /opt/flux-conceptuel-auto/repo   <span class="c"># le clone du monorepo, pas le lien app/</span>
 sudo -u fluxconceptuel git pull
+cd /opt/flux-conceptuel-auto/app
 sudo -u fluxconceptuel ./.venv/bin/pip install -r requirements.txt
 sudo systemctl restart flux-api</pre>
 

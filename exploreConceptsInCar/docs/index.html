@@ -94,6 +94,7 @@ pre .k{color:var(--code-accent)}
 .callout .c2::before{bottom:-6px;left:-6px}.callout .c2::after{bottom:-6px;right:-6px}
 .callout-label{font:600 11px var(--font-body);letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
 .callout p{margin:6px 0}
+.callout.warn .callout-label{color:#c96a3a}
 
 .diagram{border:1px solid var(--line);padding:28px 22px;margin:26px 0;overflow-x:auto}
 .d-row{display:flex;justify-content:center;gap:16px;flex-wrap:nowrap;min-width:600px}
@@ -255,7 +256,10 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
   </ul>
 
   <h2 id="local">Démarrage local</h2>
-  <pre>python3 -m venv .venv &amp;&amp; ./.venv/bin/pip install -r requirements.txt
+  <p><strong>Activez le venv</strong> pour la session de terminal — plus besoin de préfixer chaque commande par <code>./.venv/bin/</code> ensuite :</p>
+  <pre>python3 -m venv .venv
+source .venv/bin/activate   <span class="c"># le prompt affiche (.venv) ; `deactivate` pour en sortir</span>
+pip install -r requirements.txt
 
 <span class="c"># .env : DB_HOST, DB_USER, DB_PASS, DB_NAME, SRC_ROOT, OUT_DIR, MEILI_URL, MEILI_KEY</span>
 
@@ -263,11 +267,15 @@ meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 &amp;
 
 ./scripts/export_manifest.sh
 ./scripts/convert_batch.sh
-./.venv/bin/python3 scripts/mine_concept_phrases.py
-./.venv/bin/python3 scripts/export_meilisearch.py
+python3 scripts/mine_concept_phrases.py
+python3 scripts/export_meilisearch.py
 
-./.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000
+uvicorn api.main:app --host 0.0.0.0 --port 8000
 <span class="c"># ouvrir http://&lt;ip-locale&gt;:8000/</span></pre>
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">L'activation ne persiste pas</div>
+    <p>À refaire (<code>source .venv/bin/activate</code>) à chaque nouvelle fenêtre de terminal. Sur Debian/Ubuntu récents, <code>pip install</code> <strong>hors venv</strong> échoue avec <code>externally-managed-environment</code> (PEP 668, volontaire) : c'est le signe que le venv n'est pas activé (vérifiez le <code>(.venv)</code> dans le prompt) — jamais que vous devez ajouter <code>--break-system-packages</code>. Sans activer, la même commande fonctionne toujours en préfixant explicitement : <code>./.venv/bin/pip install -r requirements.txt</code>.</p>
+  </div>
   <p>Pour la mise en production, voir <a href="deployment.html">Installation sur un VPS Debian</a>.</p>
 
   <h2 id="qualite">Constats sur la qualité des données</h2>
