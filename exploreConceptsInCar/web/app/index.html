@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flux Conceptuel — Hors-ligne</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<meta name="description" content="Télécharger les séances de cours (transcriptions et audio) pour les écouter et les fouiller hors connexion.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flux Conceptuel">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="topbar-back" id="btnBack" hidden aria-label="Retour">‹</button>
+  <div class="topbar-title" id="topTitle">Flux Conceptuel</div>
+  <div class="topbar-net" id="netBadge" title="État de la connexion">
+    <span class="dot"></span><span class="net-label">…</span>
+  </div>
+</header>
+
+<main id="app" class="app"><!-- vues rendues ici --></main>
+
+<nav class="tabbar">
+  <a class="tab" href="#/" data-tab="home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H10v6H4a1 1 0 0 1-1-1z"/></svg>
+    <span>Catalogue</span>
+  </a>
+  <a class="tab" href="#/downloads" data-tab="downloads">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10m0 0l-4-4m4 4l4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+    <span>Hors-ligne</span>
+  </a>
+  <a class="tab" href="#/search" data-tab="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <span>Recherche</span>
+  </a>
+  <a class="tab" href="#/storage" data-tab="storage">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6M9 11h6"/></svg>
+    <span>Espace</span>
+  </a>
+</nav>
+
+<!-- Lecteur audio persistant, réutilisé d'une vue à l'autre -->
+<div class="player" id="player" hidden>
+  <div class="player-mini" id="playerMini">
+    <div class="player-mini-txt">
+      <div class="player-mini-title" id="pmTitle">—</div>
+      <div class="player-mini-sub" id="pmSub">—</div>
+    </div>
+    <button class="player-mini-btn" id="pmToggle" aria-label="Lecture / pause">▶</button>
+  </div>
+  <div class="player-full" id="playerFull" hidden>
+    <button class="player-close" id="pfClose" aria-label="Réduire le lecteur">⌄</button>
+    <div class="pf-eyebrow" id="pfSeance">—</div>
+    <div class="pf-text" id="pfText">—</div>
+    <div class="pf-concepts" id="pfConcepts"></div>
+    <input class="pf-seek" id="pfSeek" type="range" min="0" max="1000" value="0" step="1" aria-label="Position de lecture">
+    <div class="pf-time"><span id="pfCur">00:00</span><span id="pfDur">00:00</span></div>
+    <div class="pf-controls">
+      <button id="pfPrev" aria-label="Fragment précédent">⏮</button>
+      <button id="pfBack" aria-label="Reculer de 10 secondes">−10</button>
+      <button class="pf-play" id="pfToggle" aria-label="Lecture / pause">▶</button>
+      <button id="pfFwd" aria-label="Avancer de 10 secondes">+10</button>
+      <button id="pfNext" aria-label="Fragment suivant">⏭</button>
+    </div>
+    <button class="pf-list-toggle" id="pfListToggle">Fragments de la séance</button>
+    <ol class="pf-list" id="pfList" hidden></ol>
+  </div>
+  <audio id="audio" preload="metadata"></audio>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

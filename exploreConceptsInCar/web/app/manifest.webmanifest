@@ -1,0 +1,17 @@
+{
+  "name": "Flux Conceptuel — Hors-ligne",
+  "short_name": "Flux Conceptuel",
+  "description": "Télécharger les séances de cours (métadonnées, transcriptions et audio) pour les écouter et les fouiller hors connexion.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1216",
+  "theme_color": "#0f1216",
+  "categories": ["education", "books", "music"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

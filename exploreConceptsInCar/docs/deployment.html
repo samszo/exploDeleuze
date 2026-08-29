@@ -129,6 +129,8 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
       <li><a href="#verif">Vérification</a></li>
       <li><a href="#maintenance">Maintenance</a></li>
       <li><a href="#securite">Sécurité — récapitulatif</a></li>
+      <li><a href="#macos">Annexe — pile locale sur macOS</a></li>
+      <li><a href="#pwa">Annexe — l'application hors-ligne (PWA)</a></li>
     </ol>
   </div>
 
@@ -155,7 +157,7 @@ sudo ufw enable</pre>
 
   <h2 id="meili"><span class="num">3</span>Installation de Meilisearch</h2>
   <pre>curl -L https://install.meilisearch.com | sh
-sudo mv ./meilisearch /usr/local/bin/meilisearch
+sudo install -m 0755 ./meilisearch /usr/local/bin/meilisearch
 sudo mkdir -p /var/lib/meilisearch
 sudo chown fluxconceptuel:fluxconceptuel /var/lib/meilisearch</pre>
 
@@ -177,7 +179,8 @@ User=fluxconceptuel
 Group=fluxconceptuel
 Environment=MEILI_MASTER_KEY=REMPLACER_PAR_LA_CLE_GENEREE
 Environment=MEILI_ENV=production
-ExecStart=/usr/local/bin/meilisearch --db-path /var/lib/meilisearch --http-addr 127.0.0.1:7700 --no-analytics
+WorkingDirectory=/var/lib/meilisearch
+ExecStart=/usr/local/bin/meilisearch --db-path /var/lib/meilisearch --http-addr 127.0.0.1:7700 --no-analytics --dump-dir /var/lib/meilisearch/dumps --snapshot-dir /var/lib/meilisearch/snapshots
 Restart=on-failure
 RestartSec=5
 
@@ -186,6 +189,11 @@ WantedBy=multi-user.target</pre>
   <pre>sudo systemctl daemon-reload
 sudo systemctl enable --now meilisearch
 sudo systemctl status meilisearch   <span class="c"># doit être "active (running)"</span></pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Si le service échoue avec <code>Permission denied (os error 13)</code></div>
+    <p>Meilisearch crée <code>dumps/</code> et <code>snapshots/</code> dans son répertoire de travail : d'où le <code>WorkingDirectory</code> et les chemins <code>--dump-dir</code>/<code>--snapshot-dir</code> ci-dessus. Si vous placez le <code>--db-path</code> ailleurs que <code>/var/lib/meilisearch</code> (autre disque, <code>/mnt/…</code>), adaptez ces trois chemins et assurez-vous que <code>fluxconceptuel</code> possède le dossier et peut traverser tous ses parents (<code>namei -l &lt;chemin&gt;</code> pour vérifier, <code>chown -R fluxconceptuel:fluxconceptuel</code> sur le dossier Meilisearch).</p>
+  </div>
 
   <h2 id="code"><span class="num">4</span>Déploiement du code</h2>
   <p>Le dépôt (<code>github.com/samszo/exploDeleuze</code>) est un monorepo — Flux Conceptuel Auto vit dans le sous-dossier <code>exploreConceptsInCar/</code>, à côté d'autres projets sans rapport. On clone le dépôt entier puis on fait pointer <code>app/</code> vers le bon sous-dossier :</p>
@@ -202,6 +210,11 @@ sudo -u fluxconceptuel ln -s /opt/flux-conceptuel-auto/repo/exploreConceptsInCar
 sudo -u fluxconceptuel python3 -m venv .venv
 sudo -u fluxconceptuel ./.venv/bin/pip install -r requirements.txt
 sudo -u fluxconceptuel ./.venv/bin/pip install gunicorn</pre>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Ne jamais copier <code>.venv/</code> ni <code>.env</code> depuis la machine de dev</div>
+    <p>Un environnement virtuel n'est pas portable : ses binaires et extensions compilées sont liés à l'OS, l'architecture et la version de Python de la machine où il a été créé. Un <code>.venv</code> rsyncé d'un Mac vers le VPS produit des erreurs <code>status=203/EXEC</code> sur <code>gunicorn</code> (binaires Mach-O au lieu d'ELF). Si vous synchronisez le code par <code>rsync</code>, excluez ces deux entrées (<code>--exclude .venv --exclude .env</code>) et recréez-les sur le VPS : <code>.venv</code> avec les commandes ci-dessus, <code>.env</code> avec le bloc <code>tee</code> plus bas. Pour repartir propre : <code>sudo rm -rf .venv</code> (en root, pas en <code>fluxconceptuel</code> — les fichiers copiés appartiennent souvent à un autre utilisateur).</p>
+  </div>
 
   <div class="callout warn"><div class="c2"></div>
     <div class="callout-label">Erreur <code>error: externally-managed-environment</code> ?</div>
@@ -233,6 +246,7 @@ DB_NAME=
 SRC_ROOT=
 EOF
 sudo chmod 600 .env</pre>
+  <p><code>OUT_DIR</code> (lu par l'API comme <code>StaticFiles(directory=...)</code>) et tous les chemins du <code>.env</code> sont des chemins <strong>sur le VPS</strong> — si vous partez d'un <code>.env</code> de dev, remplacez chaque chemin. Un chemin qui n'existe pas fait planter <code>flux-api</code> au démarrage (<code>RuntimeError: Directory '...' does not exist</code>). <code>MEILI_KEY</code> doit être identique à la <code>MEILI_MASTER_KEY</code> du service Meilisearch (<a href="#meili">§3</a>).</p>
 
   <h2 id="donnees"><span class="num">5</span>Où vivent les données (source vs diffusion)</h2>
   <p>Omeka S reste la source de vérité et n'a pas besoin d'être sur ce VPS. Deux façons de peupler la couche de diffusion :</p>
@@ -307,6 +321,13 @@ sudo systemctl status flux-api</pre>
         Require all granted
     &lt;/Directory&gt;
 
+    <span class="c"># PWA hors-ligne (web/app/, servie sur /app/) : type MIME du manifeste
+    # et pas de cache sur le service worker</span>
+    AddType application/manifest+json .webmanifest
+    &lt;Files sw.js&gt;
+        Header set Cache-Control "no-cache"
+    &lt;/Files&gt;
+
     ErrorLog ${APACHE_LOG_DIR}/flux-conceptuel-error.log
     CustomLog ${APACHE_LOG_DIR}/flux-conceptuel-access.log combined
 &lt;/VirtualHost&gt;</pre>
@@ -321,6 +342,11 @@ sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
   <pre>sudo apt install -y certbot python3-certbot-apache
 sudo certbot --apache -d flux.exemple.tld</pre>
   <p><code>certbot</code> crée automatiquement le VirtualHost 443 correspondant (<code>SSLEngine on</code> et chemins de certificat) et programme le renouvellement automatique (vérifiez avec <code>sudo systemctl status certbot.timer</code>).</p>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Après certbot : reporter <code>ProxyPass</code> et <code>Alias</code> dans le VHost <code>:443</code></div>
+    <p>certbot duplique le VHost <code>:80</code> vers un fichier <code>...-le-ssl.conf</code> mais ne garantit pas que toutes les directives suivent. Vérifiez que le VHost <code>*:443</code> contient bien <code>DocumentRoot .../web</code>, les blocs <code>ProxyPass /api/</code> + <code>ProxyPassReverse</code>, l'<code>Alias /audio/</code> et son <code>&lt;Directory&gt;</code> — sinon <code>/</code> renvoie <em>Forbidden</em> et <code>/api/</code> un 404. Deux détails qui mordent : utilisez <code>http://127.0.0.1:8000/</code> et non <code>http://localhost:8000/</code> dans <code>ProxyPass</code> (<code>localhost</code> peut résoudre en <code>::1</code> alors que gunicorn n'écoute qu'en IPv4 → 502/503) ; et si vous posez un <code>RequestHeader set X-Forwarded-Proto</code>, mettez <code>"https"</code>, pas <code>"http"</code>.</p>
+  </div>
 
   <h2 id="verif"><span class="num">8</span>Vérification</h2>
   <pre>curl https://flux.exemple.tld/api/health
@@ -362,6 +388,90 @@ sudo tail -f /var/log/apache2/flux-conceptuel-error.log</pre>
     <li>L'app tourne sous un compte système dédié sans shell, pas en root.</li>
     <li>HTTPS obligatoire — sans quoi la reconnaissance vocale sera bloquée par le navigateur.</li>
   </ul>
+
+  <h2 id="macos"><span class="num">A</span>Annexe — pile locale sur macOS</h2>
+  <p>Variante pour faire tourner toute la couche de diffusion (Meilisearch + API + client web) sur son Mac — pour développer, prévisualiser ou tester avant de pousser sur le VPS. Pas de <code>systemd</code>, pas de reverse-proxy, pas de HTTPS : on lance deux processus au premier plan et on ouvre <code>http://localhost:8000/</code>. L'API sert elle-même <code>web/</code> à la racine (voir <code>api/main.py</code>), donc une seule adresse, même origine, aucun CORS à gérer.</p>
+
+  <h3>A.1 — Prérequis</h3>
+  <pre>brew install meilisearch python@3.13 ffmpeg   <span class="c"># ffmpeg seulement si le pipeline audio tourne ici</span></pre>
+
+  <h3>A.2 — Code, venv, dépendances</h3>
+  <pre>git clone https://github.com/samszo/exploDeleuze.git
+cd exploDeleuze/exploreConceptsInCar
+python3 -m venv .venv
+./.venv/bin/pip install -r requirements.txt</pre>
+  <p><code>gunicorn</code> est inutile ici : en local on utilise le serveur de développement <code>uvicorn --reload</code>.</p>
+
+  <h3>A.3 — <code>.env</code> (chemins <em>de ce Mac</em>, en absolu)</h3>
+  <pre>tee .env > /dev/null &lt;&lt;EOF
+MEILI_URL=http://127.0.0.1:7700
+MEILI_KEY=
+OUT_DIR=$(pwd)/audios
+
+<span class="c"># uniquement si le pipeline d'export tourne sur ce Mac (§5, option A)</span>
+DB_HOST=
+DB_USER=
+DB_PASS=
+DB_NAME=
+SRC_ROOT=
+EOF</pre>
+  <p><code>MEILI_KEY</code> reste vide : sans clé, Meilisearch n'est acceptable que sur <code>127.0.0.1</code> (voir l'encadré du <a href="#meili">§3</a>) — ce qui est exactement le cas ici.</p>
+
+  <h3>A.4 — Peupler les données</h3>
+  <p>Comme au <a href="#donnees">§5</a>. Soit le pipeline complet (accès à la base Omeka S requis, <code>DB_*</code> + <code>SRC_ROOT</code> renseignés) :</p>
+  <pre>source .venv/bin/activate
+./scripts/export_manifest.sh
+./scripts/convert_batch.sh
+python3 scripts/mine_concept_phrases.py
+python3 scripts/export_meilisearch.py</pre>
+  <p>Soit, si <code>audios/</code> et <code>data/</code> sont déjà là (générés ailleurs), seulement l'export vers Meilisearch — Meilisearch doit tourner (A.5) :</p>
+  <pre>./.venv/bin/python3 scripts/export_meilisearch.py</pre>
+
+  <h3>A.5 — Lancer la pile (deux terminaux)</h3>
+  <p>Terminal 1 — Meilisearch (laisser tourner) :</p>
+  <pre>cd exploDeleuze/exploreConceptsInCar
+meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 --no-analytics</pre>
+  <p>Terminal 2 — l'API (laisser tourner) :</p>
+  <pre>cd exploDeleuze/exploreConceptsInCar
+./.venv/bin/uvicorn api.main:app --reload --port 8000</pre>
+  <p>Puis ouvrir <strong><code>http://localhost:8000/</code></strong> — le client web, la recherche, la lecture audio et la topologie fonctionnent. <code>--reload</code> redémarre l'API à chaque modification de <code>api/</code>. Découverte des endpoints : <code>http://localhost:8000/docs</code>.</p>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Reconnaissance vocale et accès depuis un téléphone</div>
+    <p>La reco vocale du navigateur exige une origine sécurisée : elle marche sur <code>http://localhost:8000/</code> (traité comme sûr) mais <strong>pas</strong> sur <code>http://&lt;ip-du-mac&gt;:8000/</code> depuis un autre appareil. Pour tester depuis un téléphone avec le micro, il faut du HTTPS — utilisez la vraie mise en production (VPS), ou ajoutez localement un reverse-proxy à certificat de confiance (Caddy, ou <code>mkcert</code> + Apache/nginx) devant le port 8000.</p>
+  </div>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Ne pas réutiliser ce <code>.venv</code> / <code>.env</code> sur le VPS</div>
+    <p>Le <code>.venv</code> créé ici est spécifique à macOS (binaires Mach-O) et provoquera <code>status=203/EXEC</code> sur le serveur ; le <code>.env</code> contient des chemins <code>/Users/...</code>. Sur le VPS, recréez les deux (voir <a href="#code">§4</a>). Si vous synchronisez par <code>rsync</code> : <code>--exclude .venv --exclude .env</code>.</p>
+  </div>
+
+  <h2 id="pwa"><span class="num">B</span>Annexe — l'application hors-ligne (PWA)</h2>
+  <p><code>web/app/</code> est une <em>Progressive Web App</em> installable qui télécharge une séance entière (transcriptions + audio) sur le téléphone pour l'écouter et la fouiller sans connexion. Voir <code>web/app/README.md</code> pour le détail fonctionnel.</p>
+
+  <h3>B.1 — Rien de spécial à installer</h3>
+  <p>Ce sont des fichiers statiques dans <code>web/app/</code>, or <code>web/</code> est déjà le <code>DocumentRoot</code> (<a href="#apache">§7</a>). Après un <code>git pull</code> sur le VPS, l'app est servie sur <strong><code>https://&lt;domaine&gt;/app/</code></strong>. Elle cible l'API de la même origine — pas de configuration, pas de CORS.</p>
+
+  <h3>B.2 — Deux réglages Apache</h3>
+  <p>Dans le VirtualHost (celui en <code>:443</code> après certbot), ajoutez le type MIME du manifeste et coupez le cache du service worker :</p>
+  <pre>AddType application/manifest+json .webmanifest
+&lt;Files sw.js&gt;
+    Header set Cache-Control "no-cache"
+&lt;/Files&gt;</pre>
+  <pre>sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
+  <p>Sans le type MIME, Chrome ignore le manifeste (l'app reste utilisable mais non « installable »). Le <code>no-cache</code> sur <code>sw.js</code> évite qu'un ancien service worker reste collé après une mise à jour.</p>
+
+  <h3>B.3 — Vérification</h3>
+  <pre>curl -sI https://&lt;domaine&gt;/app/ | head -1
+<span class="c"># HTTP/2 200</span>
+curl -sI https://&lt;domaine&gt;/app/manifest.webmanifest | grep -i content-type
+<span class="c"># content-type: application/manifest+json</span></pre>
+  <p>Puis sur un téléphone : ouvrir <code>/app/</code> dans Chrome, « Ajouter à l'écran d'accueil », télécharger une séance, activer le mode avion, vérifier lecture + recherche.</p>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Le service worker exige HTTPS</div>
+    <p>Le démarrage hors-ligne (coquille en cache) ne fonctionne que sur une origine sécurisée : le HTTPS du VPS, ou <code>http://localhost</code> en dev. Sur <code>http://&lt;ip-locale&gt;:8000/app/</code> l'enregistrement échoue silencieusement — l'app marche en ligne, mais pas hors-ligne. Le téléchargement et la lecture depuis IndexedDB, eux, ne dépendent pas du service worker.</p>
+  </div>
 
 </main>
 

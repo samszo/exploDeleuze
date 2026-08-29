@@ -1,0 +1,183 @@
+/* Flux Conceptuel — PWA hors-ligne. Langage visuel « Industry » repris du
+   client Android Auto (web/index.html) : fond nuit, acier #5980a6, or #e8c15a
+   pour le concept vivant. Layout téléphone, portrait, une colonne. */
+
+:root{
+  --bg:#0f1216;
+  --bg-2:#12171d;
+  --panel:#161d25;
+  --line:rgba(148,188,227,.16);
+  --line-strong:rgba(148,188,227,.34);
+  --text:#e8ecf0;
+  --dim:#8fa0b0;
+  --label:#94bce3;
+  --wire:#5d7893;
+  --steel:#5980a6;
+  --steel-hover:#749dc4;
+  --steel-wash:rgba(148,188,227,.12);
+  --gold:#e8c15a;
+  --gold-wash:rgba(232,193,90,.12);
+  --bad:#c96a5a;
+  --good:#7fae7a;
+  --font-head:"Barlow Condensed",system-ui,-apple-system,sans-serif;
+  --font-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --top-h:52px;
+  --tab-h:60px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--font-body);
+  font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:none;
+}
+button{font-family:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+input{font-family:inherit}
+:focus-visible{outline:2px solid var(--steel-hover);outline-offset:2px}
+
+/* ---------- barre du haut ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:calc(var(--top-h) + env(safe-area-inset-top,0px));
+  padding-top:env(safe-area-inset-top,0px);
+  display:flex;align-items:center;gap:8px;padding-left:6px;padding-right:14px;
+  background:var(--bg-2);border-bottom:1px solid var(--line);z-index:20;
+}
+.topbar-back{font-size:30px;line-height:1;width:40px;height:40px;color:var(--label);flex:none}
+.topbar-title{
+  flex:1;min-width:0;font-family:var(--font-head);font-weight:600;font-size:19px;
+  letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.topbar-net{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);flex:none}
+.topbar-net .dot{width:8px;height:8px;border-radius:50%;background:var(--wire)}
+.topbar-net.online .dot{background:var(--good)}
+.topbar-net.offline .dot{background:var(--bad)}
+
+/* ---------- zone de contenu ---------- */
+.app{
+  padding:calc(var(--top-h) + env(safe-area-inset-top,0px) + 14px) 16px
+         calc(var(--tab-h) + var(--safe-b) + 90px);
+  min-height:100%;
+}
+.view{animation:fade .16s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}}
+
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--label);margin:0 0 10px}
+h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line-height:1.05;margin:2px 0 4px}
+.screen-sub{color:var(--dim);font-size:14px;margin:0 0 18px}
+.muted{color:var(--dim)}
+.empty{color:var(--dim);padding:28px 4px;text-align:center}
+.spinner{width:22px;height:22px;border:2px solid var(--line-strong);border-top-color:var(--steel-hover);
+  border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- listes (thèmes / séances / résultats) ---------- */
+.row{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  padding:15px 6px;border-bottom:1px solid var(--line);
+}
+.row:active{background:var(--steel-wash)}
+.row-n{font-family:var(--font-head);font-weight:600;font-size:13px;color:var(--wire);width:26px;flex:none}
+.row-main{flex:1;min-width:0}
+.row-title{font-family:var(--font-head);font-weight:600;font-size:19px;line-height:1.12;color:var(--text)}
+.row-meta{font-size:13px;color:var(--dim);margin-top:3px}
+.row-chevron{color:var(--wire);font-size:20px;flex:none}
+.row-badge{flex:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--good);border:1px solid rgba(127,174,122,.5);padding:3px 7px;border-radius:2px}
+
+/* ---------- carte séance ---------- */
+.card{border:1px solid var(--line);padding:18px 16px;margin:0 0 16px}
+.card-title{font-family:var(--font-head);font-weight:600;font-size:24px;line-height:1.08;margin:6px 0 6px;text-wrap:balance}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.tag{font-size:12px;color:#cfe0ef;border:1px solid var(--line-strong);padding:4px 9px}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:54px;padding:0 18px;font-family:var(--font-head);font-weight:600;
+  font-size:18px;letter-spacing:.08em;text-transform:uppercase;
+}
+.btn-primary{background:var(--steel);color:#0f1216}
+.btn-primary:active{background:var(--steel-hover)}
+.btn-primary:disabled{opacity:.45}
+.btn-outline{border:1px solid var(--line-strong);color:#cfe0ef}
+.btn-outline:active{background:var(--steel-wash)}
+.btn-danger{border:1px solid rgba(201,106,90,.55);color:#e7a99d}
+.btn-danger:active{background:rgba(201,106,90,.14)}
+.btn-sm{min-height:42px;font-size:14px;width:auto;padding:0 14px}
+
+/* ---------- barre de progression ---------- */
+.progress{margin:14px 0 4px}
+.progress-track{height:6px;background:var(--steel-wash);overflow:hidden}
+.progress-fill{height:100%;background:var(--steel);width:0%;transition:width .2s linear}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:7px}
+
+/* ---------- recherche ---------- */
+.search-field{display:flex;gap:8px;margin-bottom:14px}
+.search-field input{
+  flex:1;min-width:0;height:48px;padding:0 14px;background:var(--panel);
+  border:1px solid var(--line-strong);color:var(--text);font-size:16px;
+}
+.seg{display:flex;border:1px solid var(--line-strong);margin-bottom:16px}
+.seg button{flex:1;padding:10px 6px;font-size:13px;letter-spacing:.04em;color:var(--dim)}
+.seg button.on{background:var(--steel-wash);color:var(--label)}
+.hit-text mark{background:var(--gold-wash);color:var(--gold);padding:0 1px}
+.hit .row-meta{margin-top:5px}
+
+/* ---------- pastilles concepts ---------- */
+.concepts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.concept{font-size:12px;color:#cfe0ef;border:1px solid var(--line);padding:3px 8px}
+.concept.live{color:var(--gold);border-color:var(--gold);background:var(--gold-wash)}
+
+/* ---------- espace disque ---------- */
+.gauge{height:10px;background:var(--steel-wash);margin:12px 0;overflow:hidden}
+.gauge-fill{height:100%;background:var(--steel)}
+.kv{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.kv .k{color:var(--dim)}
+
+/* ---------- lecteur ---------- */
+.player{position:fixed;left:0;right:0;z-index:30;
+  bottom:calc(var(--tab-h) + var(--safe-b));
+  background:var(--bg-2);border-top:1px solid var(--line-strong)}
+.player-mini{display:flex;align-items:center;gap:12px;height:var(--tab-h);padding:0 12px 0 16px}
+.player-mini-txt{flex:1;min-width:0}
+.player-mini-title{font-family:var(--font-head);font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-mini-sub{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-mini-btn{font-size:20px;width:44px;height:44px;flex:none;color:var(--label)}
+
+.player-full{position:fixed;inset:0;bottom:0;background:var(--bg);z-index:40;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 20px calc(var(--safe-b) + 22px);
+  display:flex;flex-direction:column;gap:14px;overflow:auto}
+.player-close{align-self:flex-end;font-size:26px;width:44px;height:44px;color:var(--dim)}
+.pf-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--label)}
+.pf-text{font-size:19px;line-height:1.5;color:var(--text);flex:none}
+.pf-concepts{display:flex;flex-wrap:wrap;gap:6px}
+.pf-seek{width:100%;accent-color:var(--steel-hover)}
+.pf-time{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:-6px}
+.pf-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.pf-controls button{font-size:15px;height:48px;padding:0 10px;color:#cfe0ef;border:1px solid var(--line);min-width:52px}
+.pf-controls .pf-play{background:var(--steel);color:#0f1216;border-color:var(--steel);font-size:20px;min-width:68px}
+.pf-list-toggle{margin-top:8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);align-self:flex-start}
+.pf-list{list-style:none;margin:4px 0 0;padding:0;border-top:1px solid var(--line)}
+.pf-list li{padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px;display:flex;gap:10px}
+.pf-list li.on{color:var(--gold)}
+.pf-list .t{color:var(--wire);font-variant-numeric:tabular-nums;flex:none}
+
+/* ---------- barre d'onglets ---------- */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;height:calc(var(--tab-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);display:flex;background:var(--bg-2);
+  border-top:1px solid var(--line);z-index:25;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--dim);font-size:10px;letter-spacing:.04em}
+.tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--label)}
+
+/* toasts */
+.toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + var(--safe-b) + 76px);transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--line-strong);color:var(--text);
+  padding:10px 16px;font-size:14px;z-index:50;max-width:90vw;text-align:center}

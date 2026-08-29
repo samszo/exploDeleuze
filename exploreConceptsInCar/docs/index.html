@@ -142,6 +142,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
       <li><a href="#pipeline">Le pipeline de données</a></li>
       <li><a href="#api">L'API</a></li>
       <li><a href="#client">Le client web</a></li>
+      <li><a href="#pwa">L'app hors-ligne (PWA)</a></li>
       <li><a href="#local">Démarrage local</a></li>
       <li><a href="#qualite">Qualité des données</a></li>
     </ol>
@@ -194,7 +195,12 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
 │   └── concept_phrases.json     <span class="dim">concepts composés minés (généré, non commité)</span>
 ├── meilisearch/data/             <span class="dim">stockage Meilisearch (généré, non commité)</span>
 ├── api/main.py                   <span class="dim">API FastAPI</span>
-├── web/index.html                 <span class="dim">client (Android Auto / navigateur mobile)</span>
+├── web/
+│   ├── index.html                <span class="dim">client (Android Auto / navigateur mobile)</span>
+│   └── app/                      <span class="dim">PWA hors-ligne — servie sur /app/</span>
+│       ├── index.html · app.css · app.js
+│       ├── sw.js                 <span class="dim">service worker (coquille en cache)</span>
+│       └── manifest.webmanifest · icon*.svg
 └── docs/                         <span class="dim">ce document</span></div>
 
   <h2 id="pipeline">Le pipeline de données, étape par étape</h2>
@@ -254,6 +260,18 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
     <li><strong>Voix</strong> — Web Speech API du navigateur (HTTPS généralement requis), commandes « ouvre… », « cherche… », « agence X avec Y ».</li>
     <li><strong>Historique</strong> — fragments écoutés et topologies enregistrées, dans <code>localStorage</code>, pas de compte utilisateur.</li>
   </ul>
+
+  <h2 id="pwa">L'application hors-ligne (PWA)</h2>
+  <p><code>web/app/</code> — une <em>Progressive Web App</em> installable, servie à la même origine que l'API (donc joignable sur <code>/app/</code>). Elle répond à un besoin différent du client Android Auto : <strong>télécharger une séance entière sur le téléphone</strong> (métadonnées, transcriptions et fichiers <code>.opus</code>) pour l'écouter et la fouiller <strong>sans aucune connexion</strong> — en zone blanche, en avion, à l'étranger.</p>
+  <ul>
+    <li><strong>Catalogue</strong> — thèmes → séances via l'API ; une pastille marque les séances déjà disponibles hors-ligne.</li>
+    <li><strong>Téléchargement</strong> — <code>GET /api/seances/{id}</code> puis chaque <code>.opus</code> ; tout est rangé dans <strong>IndexedDB</strong> (les blobs audio compris). Barre de progression, reprise après coupure, annulation.</li>
+    <li><strong>Lecteur hors-ligne</strong> — lecture continue des fragments d'une séance depuis les blobs stockés (<code>URL.createObjectURL</code>), enchaînement automatique, contrôles écran verrouillé (Media Session API).</li>
+    <li><strong>Recherche hors-ligne</strong> — plein texte sur les séances téléchargées, insensible aux accents, extraits surlignés ; bascule « tout le corpus » quand une connexion est là (<code>/api/search</code>).</li>
+    <li><strong>Espace</strong> — quota du navigateur, poids par séance, suppression unitaire ou totale ; demande de stockage persistant.</li>
+    <li><strong>Coquille en cache</strong> — un <em>service worker</em> (<code>web/app/sw.js</code>) met en cache HTML/CSS/JS/icônes : l'app démarre même hors-ligne. Les données ne passent pas par lui, elles vivent dans IndexedDB.</li>
+  </ul>
+  <p>Aucune dépendance externe, aucun build : quatre fichiers statiques (<code>index.html</code>, <code>app.css</code>, <code>app.js</code>, <code>sw.js</code>) + le manifeste et les icônes. Détails d'installation et de service : <code>web/app/README.md</code> et <a href="deployment.html#pwa">§B de l'installation VPS</a>.</p>
 
   <h2 id="local">Démarrage local</h2>
   <p><strong>Activez le venv</strong> pour la session de terminal — plus besoin de préfixer chaque commande par <code>./.venv/bin/</code> ensuite :</p>
