@@ -728,6 +728,9 @@ async function openTheme(theme){
 async function openSeance(id, fragId){
   try{
     var s = await api("/api/seances/"+id);
+    // Ordre de lecture = id (idTrans) croissant, PAS start : un cours s'étale
+    // sur plusieurs disques BnF et start repart de 0 à chaque disque.
+    if (s && s.fragments) s.fragments.sort(function(a,b){ return a.id - b.id; });
     state.seance = s;
     state.fragIndex = fragId ? Math.max(0, s.fragments.findIndex(function(f){return f.id===fragId;})) : 0;
     state.screen = "player";
