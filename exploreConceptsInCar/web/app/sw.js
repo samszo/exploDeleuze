@@ -1,9 +1,13 @@
 /* Service worker — met en cache la coquille de l'app (HTML/CSS/JS/icônes)
- * pour un démarrage 100% hors-ligne. Les données de séances (JSON + audio)
- * ne passent PAS par ici : l'app les stocke elle-même dans IndexedDB via
- * l'écran de téléchargement. On ne touche donc jamais à /api/ ni /audio/.
+ * pour un démarrage hors-ligne. Les données de séances (JSON + audio) ne
+ * passent PAS par ici : l'app les stocke dans IndexedDB via l'écran de
+ * téléchargement. On n'intercepte jamais /api/ ni /audio/.
+ *
+ * Stratégie : RÉSEAU D'ABORD pour la coquille (petits fichiers, l'app est en
+ * général en ligne au premier lancement), cache en secours. Ça évite qu'un
+ * déploiement reste invisible derrière un vieux cache.
  */
-const CACHE = 'flux-shell-v2';
+const CACHE = 'flux-shell-v3';
 const SHELL = [
   './',
   './index.html',
@@ -17,7 +21,13 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      // `cache: 'reload'` : on court-circuite le cache HTTP du navigateur,
+      // sinon l'install peut re-mettre en cache d'anciens fichiers.
+      .then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -32,26 +42,22 @@ self.addEventListener('fetch', (e) => {
   const { request } = e;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  const sameOrigin = url.origin === self.location.origin;
+  if (url.origin !== self.location.origin) return;                 // Google, CDN éventuels : laisser passer
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/audio/')) return;
 
-  // Navigation → coquille en cache d'abord (offline-first), réseau en secours.
-  if (request.mode === 'navigate') {
-    e.respondWith(
-      caches.match('./index.html').then((cached) => cached || fetch(request).catch(() => caches.match('./index.html')))
-    );
-    return;
-  }
+  const isNav = request.mode === 'navigate';
+  const inApp = url.pathname.startsWith('/app/') || url.pathname === '/app';
+  if (!isNav && !inApp) return;
 
-  // Assets de l'app (web/app/…) → cache-first, avec remplissage paresseux.
-  if (sameOrigin && url.pathname.includes('/app/')) {
-    e.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request).then((res) => {
-        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(request, copy)); }
+  e.respondWith(
+    fetch(request)
+      .then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(isNav ? './index.html' : request, copy));
+        }
         return res;
-      }).catch(() => cached))
-    );
-    return;
-  }
-
-  // Tout le reste (/api, /audio, polices…) : réseau direct, non mis en cache ici.
+      })
+      .catch(() => caches.match(request).then((c) => c || caches.match('./index.html')))
+  );
 });

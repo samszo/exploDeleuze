@@ -902,11 +902,20 @@ window.addEventListener('offline', () => { refreshNet(); toast('Hors connexion �
 
 /* ------------------------------------------------------- service worker */
 if ('serviceWorker' in navigator) {
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // un nouveau service worker a pris la main → recharger une fois pour
+    // servir la coquille à jour (sinon un déploiement reste invisible).
+    if (reloading) return;
+    reloading = true;
+    location.reload();
+  });
   navigator.serviceWorker.register('./sw.js').then((reg) => {
+    reg.update?.();
     reg.addEventListener('updatefound', () => {
       const nw = reg.installing;
       nw?.addEventListener('statechange', () => {
-        if (nw.state === 'installed' && navigator.serviceWorker.controller) toast('Nouvelle version — rouvrez l\'app');
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) toast('Mise à jour…');
       });
     });
   }).catch(() => {});

@@ -457,18 +457,25 @@ meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 --no-analyti
   <h3>B.1 — Rien de spécial à installer</h3>
   <p>Ce sont des fichiers statiques dans <code>web/app/</code>, or <code>web/</code> est déjà le <code>DocumentRoot</code> (<a href="#apache">§7</a>). Après un <code>git pull</code> sur le VPS, l'app est servie sur <strong><code>https://&lt;domaine&gt;/app/</code></strong>. Elle cible l'API de la même origine — pas de configuration, pas de CORS.</p>
 
-  <h3>B.2 — Deux réglages Apache</h3>
-  <p>Dans le VirtualHost (celui en <code>:443</code> après certbot), ajoutez le type MIME du manifeste et coupez le cache du service worker :</p>
+  <h3>B.2 — Réglages Apache</h3>
+  <p>Dans le VirtualHost <code>:443</code> : type MIME du manifeste, et <strong>revalidation systématique de la coquille</strong> (petits fichiers, l'ETag évite le re-téléchargement inutile — mais le navigateur revérifie à chaque fois, donc un déploiement est vu immédiatement) :</p>
   <pre>AddType application/manifest+json .webmanifest
-&lt;Files sw.js&gt;
+&lt;Directory /opt/flux-conceptuel-auto/app/web/app/&gt;
+    Require all granted
     Header set Cache-Control "no-cache"
-&lt;/Files&gt;</pre>
-  <pre>sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
-  <p>Sans le type MIME, Chrome ignore le manifeste (l'app reste utilisable mais non « installable »). Le <code>no-cache</code> sur <code>sw.js</code> évite qu'un ancien service worker reste collé après une mise à jour.</p>
+&lt;/Directory&gt;</pre>
+  <pre>sudo a2enmod headers
+sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
+  <p>Sans le type MIME, Chrome ignore le manifeste (l'app reste utilisable mais non « installable »). Le <code>no-cache</code> sur tout <code>web/app/</code> (couplé à la stratégie « réseau d'abord » du service worker) garantit qu'un <code>git pull</code> est visible au rechargement suivant, sans purge manuelle.</p>
+
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">Un ancien service worker sert encore l'ancienne version ?</div>
+    <p>Symptômes : après déploiement, l'app n'est toujours pas installable, ou un nouveau bouton n'apparaît pas. Le service worker <code>v2</code> (ou antérieur) met en cache la coquille en <em>cache-first</em> et ne la rafraîchit jamais. Le <code>sw.js</code> livré ensuite (<code>flux-shell-v3</code>) corrige ça — il réinstalle en court-circuitant le cache HTTP (<code>cache:&nbsp;'reload'</code>) et passe en <em>réseau d'abord</em> ; l'app force alors un rechargement quand le nouveau worker prend la main. Pour les appareils déjà bloqués : Chrome → réglages du site → <em>Effacer les données</em>, ou DevTools <code>chrome://inspect</code> → <em>Application</em> → <em>Service Workers</em> → <em>Unregister</em>, puis recharger deux fois.</p>
+  </div>
 
   <div class="callout warn"><div class="c2"></div>
     <div class="callout-label">« Non installable » — icônes PNG requises</div>
-    <p>Chrome n'affiche « Installer / Ajouter à l'écran d'accueil » que si le manifeste liste au moins une icône <strong>PNG 192×192 et une 512×512</strong> — une icône SVG seule ne suffit pas. Le dépôt fournit <code>icon-192.png</code>, <code>icon-512.png</code> et <code>icon-maskable-512.png</code> (régénérables depuis <code>icon.svg</code> avec <code>rsvg-convert -w 512 -h 512 icon.svg -o icon-512.png</code>). Après déploiement, ouvrir DevTools → Application → Manifest sur le téléphone (ou <code>chrome://inspect</code>) pour voir la raison exacte si le bouton reste absent. Les clients déjà « installés » avec l'ancien service worker se mettent à jour au prochain lancement (la version du cache est passée à <code>flux-shell-v2</code>).</p>
+    <p>Chrome n'affiche « Installer / Ajouter à l'écran d'accueil » que si le manifeste liste au moins une icône <strong>PNG 192×192 et une 512×512</strong> — une icône SVG seule ne suffit pas. Le dépôt fournit <code>icon-192.png</code>, <code>icon-512.png</code> et <code>icon-maskable-512.png</code> (régénérables depuis <code>icon.svg</code> avec <code>rsvg-convert -w 512 -h 512 icon.svg -o icon-512.png</code>). Après déploiement, ouvrir DevTools → Application → Manifest sur le téléphone (ou <code>chrome://inspect</code>) pour voir la raison exacte si le bouton reste absent. <strong>Si le manifeste vu par le navigateur ne montre pas les PNG</strong>, c'est le service worker qui sert un ancien cache — voir l'encadré ci-dessus.</p>
   </div>
 
   <h3>B.3 — Vérification</h3>
