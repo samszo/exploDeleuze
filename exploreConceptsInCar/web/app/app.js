@@ -901,24 +901,13 @@ window.addEventListener('online', () => { refreshNet(); toast('Connexion rétabl
 window.addEventListener('offline', () => { refreshNet(); toast('Hors connexion — contenu téléchargé seulement'); });
 
 /* ------------------------------------------------------- service worker */
+/* Enregistrement simple, sans rechargement automatique. La stratégie
+ * « réseau d'abord » du SW + l'en-tête `Cache-Control: no-cache` sur /app/
+ * suffisent à ce qu'un déploiement soit pris en compte au chargement suivant.
+ * (Un rechargement forcé sur `controllerchange` provoquait une boucle après
+ * vidage du cache — à ne pas réintroduire.) */
 if ('serviceWorker' in navigator) {
-  let reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    // un nouveau service worker a pris la main → recharger une fois pour
-    // servir la coquille à jour (sinon un déploiement reste invisible).
-    if (reloading) return;
-    reloading = true;
-    location.reload();
-  });
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
-    reg.update?.();
-    reg.addEventListener('updatefound', () => {
-      const nw = reg.installing;
-      nw?.addEventListener('statechange', () => {
-        if (nw.state === 'installed' && navigator.serviceWorker.controller) toast('Mise à jour…');
-      });
-    });
-  }).catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 /* --------------------------------------------------------------- boot */
