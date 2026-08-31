@@ -507,6 +507,9 @@ curl -sI https://&lt;domaine&gt;/app/manifest.webmanifest | grep -i content-type
 curl -s "https://&lt;domaine&gt;/api/signalements/export?key=&lt;SIGNAL_EXPORT_KEY&gt;"   <span class="c"># [] au départ</span></pre>
   <p><code>signalements/</code> est dans le <code>.gitignore</code> — sauvegardez ce dossier avec le reste (<a href="#maintenance">§9</a>).</p>
 
+  <h3>B.5 — Export Zotero</h3>
+  <p>Le lecteur propose « Enregistrer dans Zotero » : le fragment courant devient un item <code>audioRecording</code> (texte transcrit + fichier <code>.opus</code> en pièce jointe), rattaché à un item « cours » dédupliqué sur le lien catalogue BnF. <strong>Rien à configurer côté serveur</strong> — l'API Zotero (<code>api.zotero.org</code>) gère le CORS, la PWA l'appelle directement. L'utilisateur saisit une fois son <em>User ID</em> Zotero et une <strong>clé API avec droit d'écriture</strong> (<code>zotero.org/settings/keys</code>), stockés localement dans le navigateur.</p>
+
 </main>
 
 <footer class="wrap">

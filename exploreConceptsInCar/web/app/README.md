@@ -19,6 +19,7 @@ local* plutôt que *voix en voiture*.
 | **Lecteur** | lecture continue des fragments, enchaînement auto, ±10 s, contrôles écran verrouillé (Media Session) |
 | **Compte** | connexion via un fournisseur tiers (Google) — icône compte dans la barre du haut |
 | **Signalements** | connecté, 5 boutons dans le lecteur : corriger la transcription, signaler une référence à une personne / œuvre / date / lieu, à l'instant courant du fragment |
+| **Export Zotero** | « Enregistrer dans Zotero » dans le lecteur : crée un item `audioRecording` pour la séance (dédupliqué sur le lien BnF) + un item pour le fragment courant, avec le texte transcrit et le fichier `.opus` en pièce jointe |
 
 ## Comment ça marche
 
@@ -70,11 +71,19 @@ local* plutôt que *voix en voiture*.
 Ouvrir `/app/` dans Chrome → menu → « Ajouter à l'écran d'accueil ».
 L'app s'ouvre alors en plein écran, avec son icône.
 
-## À faire
+## Export Zotero
 
-- **Export Zotero** d'un extrait (item `audioRecording` + pièce jointe audio) —
-  le code de référence `../../../mobilapp/fluxconceptuel/js/zotero.js` est
-  réutilisable ; le blob audio du fragment courant est déjà dans IndexedDB.
+Porté de `mobilapp/fluxconceptuel/js/{zotero,md5}.js`, intégré dans `app.js`
+(`ZoteroAuth`, `md5ArrayBuffer`, module `Zotero`). L'API Zotero
+(`api.zotero.org`) gère le CORS → appels directs depuis le navigateur.
+
+- Identifiants (`userId` + clé API **avec droit d'écriture**) saisis une fois,
+  stockés dans IndexedDB (`meta` clé `zotero`).
+- L'audio exporté est le **fragment courant entier** (fichier `.opus` déjà en
+  IndexedDB si la séance est téléchargée, sinon récupéré en ligne) — pas de
+  découpe côté client contrairement à l'app de référence.
+- Protocole d'upload de fichier Zotero en 4 étapes (création de l'attachment,
+  autorisation, envoi S3, confirmation) ; MD5 requis, d'où `md5ArrayBuffer`.
 
 ## Limites connues
 

@@ -201,7 +201,8 @@ h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line
   letter-spacing:.04em;text-transform:uppercase}
 .pf-report-actions .pr-send{background:var(--steel);color:#0f1216;border-color:var(--steel)}
 
-.pf-list-toggle{margin-top:8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);align-self:flex-start}
+.pf-tools{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px}
+.pf-list-toggle{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);align-self:flex-start}
 .pf-list{list-style:none;margin:4px 0 0;padding:0;border-top:1px solid var(--line)}
 .pf-list li{padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px;display:flex;gap:10px}
 .pf-list li.on{color:var(--gold)}

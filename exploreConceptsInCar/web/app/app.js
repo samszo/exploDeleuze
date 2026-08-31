@@ -383,6 +383,180 @@ async function searchOnline(q) {
 }
 
 /* =================================================================
+ *  ZOTERO — enregistrer un fragment comme extrait dans une bibliothèque
+ *  Zotero (item audioRecording + pièce jointe audio). Porté de
+ *  mobilapp/fluxconceptuel/js/{zotero,md5}.js. L'API Zotero gère le CORS,
+ *  donc appels directs depuis le navigateur.
+ * ================================================================= */
+const ZoteroAuth = {
+  async get() { return idbGet('meta', 'zotero'); },
+  async save(userId, apiKey) {
+    const a = { k: 'zotero', userId: String(userId).trim(), apiKey: String(apiKey).trim() };
+    await idbPut('meta', a);
+    return a;
+  },
+  async clear() { return idbDelete('meta', 'zotero'); },
+};
+
+/* MD5 sur ArrayBuffer (SubtleCrypto ne fournit pas MD5, exigé par l'upload Zotero). */
+function md5ArrayBuffer(buffer) {
+  const rotl = (x, c) => (x << c) | (x >>> (32 - c));
+  const K = new Int32Array([
+    -680876936, -389564586, 606105819, -1044525330, -176418897, 1200080426, -1473231341, -45705983,
+    1770035416, -1958414417, -42063, -1990404162, 1804603682, -40341101, -1502002290, 1236535329,
+    -165796510, -1069501632, 643717713, -373897302, -701558691, 38016083, -660478335, -405537848,
+    568446438, -1019803690, -187363961, 1163531501, -1444681467, -51403784, 1735328473, -1926607734,
+    -378558, -2022574463, 1839030562, -35309556, -1530992060, 1272893353, -155497632, -1094730640,
+    681279174, -358537222, -722521979, 76029189, -640364487, -421815835, 530742520, -995338651,
+    -198630844, 1126891415, -1416354905, -57434055, 1700485571, -1894986606, -1051523, -2054922799,
+    1873313359, -30611744, -1560198380, 1309151649, -145523070, -1120210379, 718787259, -343485551,
+  ]);
+  const S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21];
+  const msgLen = buffer.byteLength;
+  const paddedLen = Math.ceil((msgLen + 9) / 64) * 64;
+  const bytes = new Uint8Array(paddedLen);
+  bytes.set(new Uint8Array(buffer));
+  bytes[msgLen] = 0x80;
+  const view = new DataView(bytes.buffer);
+  view.setUint32(paddedLen - 8, (msgLen * 8) >>> 0, true);
+  view.setUint32(paddedLen - 4, Math.floor(msgLen / 0x20000000), true);
+  let a0 = 1732584193, b0 = -271733879, c0 = -1732584194, d0 = 271733878;
+  for (let cs = 0; cs < paddedLen; cs += 64) {
+    const M = new Int32Array(16);
+    for (let j = 0; j < 16; j++) M[j] = view.getInt32(cs + j * 4, true);
+    let A = a0, B = b0, C = c0, D = d0;
+    for (let i = 0; i < 64; i++) {
+      let F, g;
+      if (i < 16) { F = (B & C) | (~B & D); g = i; }
+      else if (i < 32) { F = (D & B) | (~D & C); g = (5 * i + 1) % 16; }
+      else if (i < 48) { F = B ^ C ^ D; g = (3 * i + 5) % 16; }
+      else { F = C ^ (B | ~D); g = (7 * i) % 16; }
+      F = (F + A + K[i] + M[g]) | 0;
+      A = D; D = C; C = B;
+      B = (B + rotl(F, S[i])) | 0;
+    }
+    a0 = (a0 + A) | 0; b0 = (b0 + B) | 0; c0 = (c0 + C) | 0; d0 = (d0 + D) | 0;
+  }
+  const out = new Uint8Array(16), ov = new DataView(out.buffer);
+  ov.setInt32(0, a0, true); ov.setInt32(4, b0, true); ov.setInt32(8, c0, true); ov.setInt32(12, d0, true);
+  return [...out].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+const Zotero = (() => {
+  const API = 'https://api.zotero.org';
+  const H = (auth, extra = {}) => ({ 'Zotero-API-Version': '3', 'Zotero-API-Key': auth.apiKey, ...extra });
+
+  async function check(auth) {
+    const r = await fetch(`${API}/users/${auth.userId}/items?limit=1`, { headers: H(auth) });
+    return r.ok;
+  }
+
+  async function findOrCreateCourseItem(auth, s) {
+    if (s.source) {
+      const r = await fetch(`${API}/users/${auth.userId}/items?q=${encodeURIComponent(s.theme || '')}&itemType=audioRecording`, { headers: H(auth) });
+      if (r.ok) {
+        const items = await r.json();
+        const hit = items.find((it) => it.data && it.data.url && it.data.url === s.source);
+        if (hit) return hit.key;
+      }
+    }
+    const payload = [{
+      itemType: 'audioRecording',
+      title: `${s.theme || 'Cours'} — Cours ${s.num ?? ''} (${s.date || ''})`.trim(),
+      date: s.date || '',
+      url: s.source || '',
+      libraryCatalog: 'Catalogue BnF',
+      extra: `Promotion ${s.promo || '—'} · Thème : ${s.theme || '—'}`,
+      creators: [{ creatorType: 'author', name: 'Gilles Deleuze' }],
+    }];
+    const r = await fetch(`${API}/users/${auth.userId}/items`, {
+      method: 'POST', headers: H(auth, { 'Content-Type': 'application/json' }), body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error(`création de l'item du cours (HTTP ${r.status})`);
+    const res = await r.json();
+    const ok = res.successful && res.successful['0'];
+    if (!ok) throw new Error('réponse inattendue (item du cours)');
+    return ok.key;
+  }
+
+  async function createExtractItem(auth, { title, date, runningTime, label, url, courseItemKey, source }) {
+    const payload = {
+      itemType: 'audioRecording', title, date: date || '', runningTime: runningTime || '',
+      label: label || '', url: url || '', libraryCatalog: source || '',
+      creators: [{ creatorType: 'author', name: 'Gilles Deleuze' }],
+    };
+    if (courseItemKey) payload.relations = { 'dc:relation': [`http://zotero.org/users/${auth.userId}/items/${courseItemKey}`] };
+    const r = await fetch(`${API}/users/${auth.userId}/items`, {
+      method: 'POST', headers: H(auth, { 'Content-Type': 'application/json' }), body: JSON.stringify([payload]),
+    });
+    if (!r.ok) throw new Error(`création de l'item de l'extrait (HTTP ${r.status})`);
+    const res = await r.json();
+    const ok = res.successful && res.successful['0'];
+    if (!ok) throw new Error('réponse inattendue (item de l\'extrait)');
+    return ok.key;
+  }
+
+  const strToBytes = (str) => { const b = new Uint8Array(str.length); for (let i = 0; i < str.length; i++) b[i] = str.charCodeAt(i) & 0xff; return b; };
+
+  async function uploadAttachment(auth, parentKey, blob, filename) {
+    const buf = await blob.arrayBuffer();
+    const md5 = md5ArrayBuffer(buf);
+    const create = await fetch(`${API}/users/${auth.userId}/items`, {
+      method: 'POST', headers: H(auth, { 'Content-Type': 'application/json' }),
+      body: JSON.stringify([{
+        itemType: 'attachment', linkMode: 'imported_file', title: filename, filename,
+        contentType: blob.type || 'audio/ogg', parentItem: parentKey, tags: [],
+      }]),
+    });
+    if (!create.ok) throw new Error(`création de la pièce jointe (HTTP ${create.status})`);
+    const cr = await create.json();
+    const created = cr.successful && cr.successful['0'];
+    if (!created) throw new Error('réponse inattendue (pièce jointe)');
+    const itemKey = created.key;
+
+    const authRes = await fetch(`${API}/users/${auth.userId}/items/${itemKey}/file`, {
+      method: 'POST',
+      headers: H(auth, { 'Content-Type': 'application/x-www-form-urlencoded', 'If-None-Match': '*' }),
+      body: new URLSearchParams({ md5, filename, filesize: String(buf.byteLength), mtime: String(Date.now()) }),
+    });
+    if (!authRes.ok) throw new Error(`autorisation d'upload (HTTP ${authRes.status})`);
+    const ad = await authRes.json();
+    if (ad.exists) return { itemKey, alreadyStored: true };
+
+    const body = new Blob([strToBytes(ad.prefix || ''), buf, strToBytes(ad.suffix || '')]);
+    const up = await fetch(ad.url, { method: 'POST', headers: { 'Content-Type': ad.contentType }, body });
+    if (!up.ok) throw new Error(`envoi du fichier (HTTP ${up.status})`);
+
+    const reg = await fetch(`${API}/users/${auth.userId}/items/${itemKey}/file`, {
+      method: 'POST',
+      headers: H(auth, { 'Content-Type': 'application/x-www-form-urlencoded', 'If-None-Match': '*' }),
+      body: new URLSearchParams({ upload: ad.uploadKey }),
+    });
+    if (!reg.ok) throw new Error(`confirmation d'upload (HTTP ${reg.status})`);
+    return { itemKey, uploaded: true };
+  }
+
+  /* Orchestration : un fragment (déjà téléchargé ou récupéré) → Zotero. */
+  async function exportFragment(auth, { seance, fragment, blob, lien }) {
+    const win = `${fmtHMS(fragment.start)} → ${fmtHMS(fragment.end)}`;
+    const courseKey = await findOrCreateCourseItem(auth, seance);
+    const extractKey = await createExtractItem(auth, {
+      title: `${seance.theme || 'Cours'} — Séance ${seance.num ?? ''} — ${fmtHMS(fragment.start)}`,
+      date: seance.date, runningTime: win, label: fragment.texte || '',
+      url: lien, courseItemKey: courseKey, source: seance.source,
+    });
+    const stem = (fragment.audio_file || 'extrait').replace(/\.[^.]+$/, '');
+    await uploadAttachment(auth, extractKey, blob, `${stem}.opus`);
+    return extractKey;
+  }
+
+  return { check, exportFragment };
+})();
+
+/* =================================================================
  *  LECTEUR
  * ================================================================= */
 const Player = (() => {
@@ -397,6 +571,8 @@ const Player = (() => {
     report: $('#pfReport'), reportBtns: $('#pfReportBtns'), reportForm: $('#pfReportForm'),
     prTitle: $('#prTitle'), prCorr: $('#prCorr'), prRemplacer: $('#prRemplacer'), prPar: $('#prPar'),
     prTexte: $('#prTexte'), prSurTout: $('#prSurTout'), prErr: $('#prErr'),
+    zoteroBtn: $('#pfZotero'), zoteroForm: $('#pfZoteroForm'),
+    zoUser: $('#zoUser'), zoKey: $('#zoKey'), zoErr: $('#zoErr'),
   };
   const REPORT_LABELS = {
     correction: 'Corriger la transcription', personne: 'Référence à une personne',
@@ -445,8 +621,41 @@ const Player = (() => {
       .map((c, k) => `<span class="concept${k === 0 ? ' live' : ''}">${esc(c)}</span>`).join('');
     renderList();
     closeReportForm();
+    els.zoteroForm.hidden = true;
     refreshReport();
     updateMediaSession(fr);
+  }
+
+  /* --- Zotero : exporter le fragment courant comme extrait --- */
+  async function currentBlob() {
+    const fr = playlist[idx];
+    const rec = await idbGet('audio', fr.audio_file);
+    if (rec) return rec.blob;
+    if (!navigator.onLine) throw new Error('fragment non téléchargé, hors connexion');
+    const r = await fetch(audioURL(fr.audio_file));
+    if (!r.ok) throw new Error('audio HTTP ' + r.status);
+    return r.blob();
+  }
+  async function zoteroExport() {
+    const auth = await ZoteroAuth.get();
+    if (!auth) { els.zoteroForm.hidden = false; return; }
+    els.zoteroForm.hidden = true;
+    els.zoteroBtn.disabled = true;
+    const label = els.zoteroBtn.textContent;
+    els.zoteroBtn.textContent = 'Envoi vers Zotero…';
+    try {
+      const blob = await currentBlob();
+      await Zotero.exportFragment(auth, {
+        seance, fragment: playlist[idx], blob,
+        lien: redirectURI() + '#/seance/' + seance.id,
+      });
+      toast('Extrait enregistré dans Zotero');
+    } catch (e) {
+      toast('Zotero : ' + e.message);
+    } finally {
+      els.zoteroBtn.disabled = false;
+      els.zoteroBtn.textContent = label;
+    }
   }
 
   /* --- signalements (visibles seulement si connecté) --- */
@@ -555,6 +764,20 @@ const Player = (() => {
   });
   $('#prCancel').addEventListener('click', closeReportForm);
   $('#prSubmit').addEventListener('click', submitReport);
+  els.zoteroBtn.addEventListener('click', zoteroExport);
+  $('#zoConnect').addEventListener('click', async () => {
+    const u = els.zoUser.value.trim(), k = els.zoKey.value.trim();
+    if (!u || !k) { els.zoErr.textContent = 'User ID et clé API requis.'; els.zoErr.hidden = false; return; }
+    els.zoErr.hidden = true;
+    const auth = await ZoteroAuth.save(u, k);
+    if (!(await Zotero.check(auth))) {
+      await ZoteroAuth.clear();
+      els.zoErr.textContent = 'Identifiants Zotero refusés.'; els.zoErr.hidden = false;
+      return;
+    }
+    zoteroExport();
+  });
+  $('#zoCancel').addEventListener('click', () => { els.zoteroForm.hidden = true; });
 
   let saveTimer;
   function savePos() {
