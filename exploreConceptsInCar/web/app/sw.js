@@ -14,7 +14,6 @@ const SHELL = [
   './app.css',
   './app.js',
   './manifest.webmanifest',
-  './icon.svg',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
