@@ -331,7 +331,10 @@ def export_fragments(conn, client, phrase_idx, phrase_by_tokens):
         {
             "searchableAttributes": ["texte", "conf_titre", "conf_theme", "concepts"],
             "filterableAttributes": ["idConf", "conf_theme", "conf_promo", "concepts"],
-            "sortableAttributes": ["idConf", "start", "conf_date"],
+            # `id` (idTrans) : ordre de lecture des fragments d'un cours. Ne PAS
+            # trier par `start` — un cours s'étale sur plusieurs disques BnF
+            # (172/176 séances) et `start` repart de 0 à chaque disque.
+            "sortableAttributes": ["idConf", "id", "idFrag", "start", "conf_date"],
         }
     )
     push(client, index, docs)

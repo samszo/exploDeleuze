@@ -211,6 +211,11 @@ const isDownloaded = async (id) => !!(await idbGet('seances', Number(id)));
 const downloadedSeances = async () =>
   (await idbGetAll('seances')).sort((a, b) => (b.downloadedAt || 0) - (a.downloadedAt || 0));
 
+/* Ordre de lecture des fragments : `id` (idTrans) croissant, PAS `start` —
+ * un cours s'étale sur plusieurs disques BnF et `start` repart de 0 à chaque
+ * disque (voir api/main.py get_seance). */
+const byPlayOrder = (a, b) => a.id - b.id;
+
 async function getSeanceData(id) {
   id = Number(id);
   const local = await idbGet('seances', id);
@@ -218,12 +223,12 @@ async function getSeanceData(id) {
     const d = await db();
     const frags = await idbReq(d.transaction('fragments').objectStore('fragments')
       .index('idConf').getAll(IDBKeyRange.only(id)));
-    frags.sort((a, b) => a.start - b.start);
+    frags.sort(byPlayOrder);
     return { ...local, fragments: frags, _offline: true };
   }
   if (!navigator.onLine) { const e = new Error('offline'); e.offline = true; throw e; }
   const data = await apiGet('/api/seances/' + id);
-  data.fragments = (data.fragments || []).slice().sort((a, b) => a.start - b.start);
+  data.fragments = (data.fragments || []).slice().sort(byPlayOrder);
   return data;
 }
 

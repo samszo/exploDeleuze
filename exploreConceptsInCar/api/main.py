@@ -99,15 +99,20 @@ def list_seances(theme: str):
 
 @app.get("/api/seances/{id}")
 def get_seance(id: int):
-    """Détail d'une séance + la liste ordonnée de ses fragments transcrits."""
+    """Détail d'une séance + la liste ordonnée de ses fragments transcrits.
+
+    L'ordre de lecture est donné par `id` (idTrans) croissant, PAS par `start` :
+    un cours s'étale sur plusieurs disques BnF (172 des 176 séances), et `start`
+    repart de 0 à chaque disque. Trier par `start` entrelacerait les disques.
+    `id` (= `idFrag` dans les faits, ordre identique et vérifié sur tout le
+    corpus) suit disque → plage → timecode."""
     try:
         seance = dict(idx_conferences.get_document(id))
     except Exception:
         raise HTTPException(404, "séance introuvable")
-    frags = idx_fragments.search(
-        "", {"filter": f"idConf = {id}", "sort": ["start:asc"], "limit": 500}
-    )
-    seance["fragments"] = [enrich_fragment(h) for h in frags["hits"]]
+    frags = idx_fragments.search("", {"filter": f"idConf = {id}", "limit": 1000})
+    ordered = sorted(frags["hits"], key=lambda h: h["id"])
+    seance["fragments"] = [enrich_fragment(h) for h in ordered]
     return seance
 
 

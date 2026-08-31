@@ -122,7 +122,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
   <div class="wrap">
     <div class="eyebrow">Documentation du projet</div>
     <h1>Flux Conceptuel Auto</h1>
-    <p class="lede">Une application embarquée pour explorer, à la voix, les 176 séances de cours de Gilles Deleuze — recherche plein texte, lecture audio, et une carte de topologie de concepts calculée en direct depuis les co-occurrences réelles du corpus.</p>
+    <p class="lede">Un client web à utiliser en voiture (téléphone en paysage, piloté à la voix) pour explorer les 176 séances de cours de Gilles Deleuze — recherche plein texte, lecture audio, et une carte de topologie de concepts calculée en direct depuis les co-occurrences réelles du corpus.</p>
     <nav class="pagenav">
       <a href="index.html" class="current">Vue d'ensemble</a>
       <a href="deployment.html">Installation Debian</a>
@@ -196,7 +196,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
 ├── meilisearch/data/             <span class="dim">stockage Meilisearch (généré, non commité)</span>
 ├── api/main.py                   <span class="dim">API FastAPI</span>
 ├── web/
-│   ├── index.html                <span class="dim">client (Android Auto / navigateur mobile)</span>
+│   ├── index.html                <span class="dim">client web embarqué (téléphone en paysage, voix)</span>
 │   └── app/                      <span class="dim">PWA hors-ligne — servie sur /app/</span>
 │       ├── index.html · app.css · app.js
 │       ├── sw.js                 <span class="dim">service worker (coquille en cache)</span>
@@ -254,8 +254,12 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
   </table></div>
   <p>L'endpoint de topologie interroge <code>fragments</code> avec un filtre <code>concepts = "&lt;label&gt;"</code>, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.</p>
 
-  <h2 id="client">Le client web</h2>
+  <h2 id="client">Le client web embarqué</h2>
   <p><code>web/index.html</code> — une seule page, sans framework, servie à la même origine que l'API. Reprend l'identité visuelle <em>Industry</em> inversée nuit.</p>
+  <div class="callout"><div class="c2"></div>
+    <div class="callout-label">Ce n'est pas une app Android Auto</div>
+    <p>C'est une <strong>page web plein écran</strong>, pensée pour un téléphone posé au tableau de bord en paysage (1280×720) et piloté à la voix. Android Auto ne projette que des applications natives média / messagerie / navigation — jamais de page web ni de PWA. Une vraie présence sur l'écran de la voiture demanderait une app Android native (service <code>MediaLibrarySession</code> + ExoPlayer), non réalisée à ce jour.</p>
+  </div>
   <ul>
     <li><strong>Accueil / Thèmes / Séances / Lecteur</strong> — catalogue et lecture réels, navigation prev/suivant dans les fragments d'une séance.</li>
     <li><strong>Recherche</strong> — plein texte réel, clic sur un résultat → ouvre le fragment exact.</li>
@@ -265,7 +269,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
   </ul>
 
   <h2 id="pwa">L'application hors-ligne (PWA)</h2>
-  <p><code>web/app/</code> — une <em>Progressive Web App</em> installable, servie à la même origine que l'API (donc joignable sur <code>/app/</code>). Elle répond à un besoin différent du client Android Auto : <strong>télécharger une séance entière sur le téléphone</strong> (métadonnées, transcriptions et fichiers <code>.opus</code>) pour l'écouter et la fouiller <strong>sans aucune connexion</strong> — en zone blanche, en avion, à l'étranger.</p>
+  <p><code>web/app/</code> — une <em>Progressive Web App</em> installable, servie à la même origine que l'API (donc joignable sur <code>/app/</code>). Elle répond à un besoin différent du client web embarqué : <strong>télécharger une séance entière sur le téléphone</strong> (métadonnées, transcriptions et fichiers <code>.opus</code>) pour l'écouter et la fouiller <strong>sans aucune connexion</strong> — en zone blanche, en avion, à l'étranger.</p>
   <ul>
     <li><strong>Catalogue</strong> — thèmes → séances via l'API ; une pastille marque les séances déjà disponibles hors-ligne.</li>
     <li><strong>Téléchargement</strong> — <code>GET /api/seances/{id}</code> puis chaque <code>.opus</code> ; tout est rangé dans <strong>IndexedDB</strong> (les blobs audio compris). Barre de progression, reprise après coupure, annulation.</li>

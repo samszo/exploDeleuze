@@ -7,7 +7,7 @@
  * général en ligne au premier lancement), cache en secours. Ça évite qu'un
  * déploiement reste invisible derrière un vieux cache.
  */
-const CACHE = 'flux-shell-v8';
+const CACHE = 'flux-shell-v9';
 const SHELL = [
   './',
   './index.html',

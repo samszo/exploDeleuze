@@ -4,9 +4,10 @@ Application web installable (Android / navigateur) qui permet de **télécharger
 une séance de cours entière** — métadonnées, transcriptions et fichiers audio
 Opus — pour l'**écouter et la fouiller sans connexion**.
 
-C'est un complément du client Android Auto (`web/index.html`), pas un
-remplacement : même API, même identité visuelle, mais orientée *stockage
-local* plutôt que *voix en voiture*.
+C'est un complément du client web embarqué (`web/index.html` — une page
+paysage pour le téléphone posé au tableau de bord, **pas** une app Android
+Auto native), pas un remplacement : même API, même identité visuelle, mais
+orientée *stockage local* plutôt que *voix en voiture*.
 
 ## Ce qu'elle fait
 

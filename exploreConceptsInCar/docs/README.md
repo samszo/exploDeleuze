@@ -1,6 +1,6 @@
 # Flux Conceptuel Auto — documentation du projet
 
-Une application embarquée (Android Auto / navigateur mobile) pour explorer, à la voix, les 176 séances de cours de Gilles Deleuze : recherche plein texte dans les transcriptions, lecture audio, et une carte de topologie de concepts calculée à la volée à partir des co-occurrences réelles du corpus.
+Un client web à utiliser en voiture (téléphone en paysage sur le tableau de bord, piloté à la voix) pour explorer les 176 séances de cours de Gilles Deleuze : recherche plein texte dans les transcriptions, lecture audio, et une carte de topologie de concepts calculée à la volée à partir des co-occurrences réelles du corpus. Ce n'est **pas** une application Android Auto native — Android Auto ne projette pas de pages web.
 
 Ce document couvre l'architecture et le pipeline de données. Pour l'installation en production, voir [DEPLOYMENT.md](DEPLOYMENT.md).
 
@@ -89,7 +89,7 @@ exploreConceptsInCar/
 ├── api/
 │   └── main.py                  API FastAPI (thèmes, recherche, topologie, audio)
 ├── web/
-│   └── index.html                client (Android Auto / navigateur mobile)
+│   └── index.html                client web embarqué (téléphone en paysage, voix)
 └── docs/
     ├── README.md / index.html    ce document
     └── DEPLOYMENT.md / deployment.html   installation sur VPS Debian

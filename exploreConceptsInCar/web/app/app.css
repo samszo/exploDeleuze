@@ -1,6 +1,7 @@
 /* Flux Conceptuel — PWA hors-ligne. Langage visuel « Industry » repris du
-   client Android Auto (web/index.html) : fond nuit, acier #5980a6, or #e8c15a
-   pour le concept vivant. Layout téléphone, portrait, une colonne. */
+   client web embarqué (web/index.html, page paysage pour le téléphone posé au
+   tableau de bord) : fond nuit, acier #5980a6, or #e8c15a pour le concept
+   vivant. Layout téléphone, portrait, une colonne. */
 
 :root{
   --bg:#0f1216;
