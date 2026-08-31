@@ -1,29 +1,47 @@
 #!/usr/bin/env python3
 """
 API légère devant Meilisearch — la seule chose que l'app (voiture ou
-téléphone) appelle. Ne touche jamais à Omeka S ni à MySQL : tout ce qui est
-servi ici vient des index construits par scripts/export_meilisearch.py.
+téléphone) appelle. La lecture ne touche jamais à Omeka S ni à MySQL : tout ce
+qui est servi ici vient des index construits par scripts/export_meilisearch.py.
+
+Les signalements collaboratifs de la PWA (web/app/) sont écrits tels quels en
+JSON dans SIGNAL_DIR pour un import Omeka ultérieur — on ne fait que vérifier
+le jeton d'identité auprès du fournisseur tiers (Google) au passage.
 
 Lancer en dev :
     ./.venv/bin/uvicorn api.main:app --reload --port 8000
 
 Découverte interactive des endpoints : http://127.0.0.1:8000/docs
 """
+import json
 import os
+import time
+import uuid
 from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
+import httpx
 import meilisearch
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 load_dotenv()
 
 MEILI_URL = os.environ.get("MEILI_URL", "http://127.0.0.1:7700")
 MEILI_KEY = os.environ.get("MEILI_KEY") or None
 AUDIO_DIR = os.environ["OUT_DIR"]
+
+# --- signalements collaboratifs (voir web/app/) ---
+# Un fichier JSON par signalement, à réimporter plus tard dans Omeka S.
+SIGNAL_DIR = Path(os.environ.get("SIGNAL_DIR", "signalements"))
+SIGNAL_EXPORT_KEY = os.environ.get("SIGNAL_EXPORT_KEY") or None
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or None
+SIGNAL_TYPES = {"personne", "oeuvre", "date", "lieu", "correction"}
 
 client = meilisearch.Client(MEILI_URL, MEILI_KEY)
 idx_conferences = client.index("conferences")
@@ -195,6 +213,127 @@ def topology(
 @app.get("/api/health")
 def health():
     return {"status": "ok", "meilisearch": client.health()}
+
+
+# ---------- signalements collaboratifs ----------
+#
+# La PWA (web/app/) laisse un utilisateur connecté (auth tierce, Google pour
+# l'instant) signaler une correction de transcription ou une référence
+# (personne, œuvre, date, lieu) à un instant d'un fragment. On ne touche pas
+# Omeka S ici : chaque signalement est écrit tel quel en JSON dans SIGNAL_DIR,
+# pour un import ultérieur. L'identité (provider + sub + email + name) est
+# conservée pour rattacher/créer le compte Omeka au moment de cet import.
+
+
+class Signalement(BaseModel):
+    id_token: str                       # jeton d'identité du fournisseur (Google : id_token)
+    provider: str = "google"
+    idConf: int
+    idTrans: int
+    idFrag: Optional[int] = None
+    type: str
+    texte: str = ""
+    remplacer: Optional[str] = None
+    par: Optional[str] = None
+    surTout: bool = False
+    timecode: Optional[float] = None
+    lien: Optional[str] = None
+
+
+async def verify_identity(provider: str, token: str) -> dict:
+    """Valide le jeton auprès du fournisseur et renvoie {provider, sub, email, name}.
+    Google : appel à l'endpoint tokeninfo (validation complète côté Google)."""
+    if provider != "google":
+        raise HTTPException(400, f"fournisseur non géré : {provider}")
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(503, "auth Google non configurée (GOOGLE_CLIENT_ID absent)")
+    try:
+        async with httpx.AsyncClient(timeout=8) as h:
+            r = await h.get("https://oauth2.googleapis.com/tokeninfo", params={"id_token": token})
+        data = r.json()
+    except Exception:
+        raise HTTPException(502, "vérification du jeton impossible")
+    if r.status_code != 200 or "sub" not in data:
+        raise HTTPException(401, "jeton invalide")
+    if data.get("aud") != GOOGLE_CLIENT_ID:
+        raise HTTPException(401, "jeton émis pour une autre application")
+    if data.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
+        raise HTTPException(401, "émetteur inattendu")
+    if int(data.get("exp", 0)) < time.time():
+        raise HTTPException(401, "jeton expiré")
+    return {
+        "provider": "google",
+        "sub": data["sub"],
+        "email": data.get("email"),
+        "email_verified": data.get("email_verified") in ("true", True),
+        "name": data.get("name") or data.get("email"),
+    }
+
+
+@app.get("/api/auth/providers")
+def auth_providers():
+    """Fournisseurs d'authentification tierce activés (la PWA n'affiche que
+    ceux-là). Renvoie l'ID client public, jamais de secret."""
+    out = {}
+    if GOOGLE_CLIENT_ID:
+        out["google"] = {"client_id": GOOGLE_CLIENT_ID}
+    return out
+
+
+@app.post("/api/signalements")
+async def create_signalement(s: Signalement = Body(...)):
+    if s.type not in SIGNAL_TYPES:
+        raise HTTPException(400, f"type inconnu : {s.type}")
+    if s.type == "correction" and not (s.remplacer or "").strip():
+        raise HTTPException(400, "correction : 'remplacer' est requis")
+    if s.type != "correction" and not s.texte.strip():
+        raise HTTPException(400, "texte requis")
+
+    user = await verify_identity(s.provider, s.id_token)
+
+    texte = s.texte.strip()
+    if s.type == "correction" and not texte:
+        texte = f"Remplacer « {(s.remplacer or '').strip()} » par « {(s.par or '').strip()} »"
+        if s.surTout:
+            texte += " (toute la séance)"
+
+    now = datetime.now(timezone.utc)
+    rec = {
+        "id": uuid.uuid4().hex,
+        "created_at": now.isoformat(),
+        "user": user,
+        "idConf": s.idConf,
+        "idTrans": s.idTrans,
+        "idFrag": s.idFrag,
+        "type": s.type,
+        "texte": texte,
+        "remplacer": (s.remplacer or None),
+        "par": (s.par or None),
+        "surTout": s.surTout,
+        "timecode": s.timecode,
+        "lien": s.lien,
+    }
+    SIGNAL_DIR.mkdir(parents=True, exist_ok=True)
+    fname = f"{now.strftime('%Y%m%dT%H%M%S')}-{rec['id'][:8]}.json"
+    (SIGNAL_DIR / fname).write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"id": rec["id"], "status": "recorded", "file": fname}
+
+
+@app.get("/api/signalements/export")
+def export_signalements(key: str = Query(...)):
+    """Tous les signalements en un seul tableau JSON, pour l'import Omeka S.
+    Protégé par SIGNAL_EXPORT_KEY (défini dans le .env)."""
+    if not SIGNAL_EXPORT_KEY or key != SIGNAL_EXPORT_KEY:
+        raise HTTPException(403, "clé invalide")
+    if not SIGNAL_DIR.exists():
+        return []
+    out = []
+    for f in sorted(SIGNAL_DIR.glob("*.json")):
+        try:
+            out.append(json.loads(f.read_text(encoding="utf-8")))
+        except Exception:
+            continue
+    return out
 
 
 # Le prototype (web/index.html) est servi par ce même serveur, à la racine —

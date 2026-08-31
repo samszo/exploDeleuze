@@ -11,18 +11,33 @@
 <meta name="apple-mobile-web-app-title" content="Flux Conceptuel">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="stylesheet" href="./app.css">
 </head>
 <body>
 
 <header class="topbar">
   <button class="topbar-back" id="btnBack" hidden aria-label="Retour">‹</button>
+  <a class="topbar-home" id="btnHome" href="#/" aria-label="Revenir à l'accueil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H10v6H4a1 1 0 0 1-1-1z"/></svg>
+  </a>
   <div class="topbar-title" id="topTitle">Flux Conceptuel</div>
   <div class="topbar-net" id="netBadge" title="État de la connexion">
     <span class="dot"></span><span class="net-label">…</span>
   </div>
+  <button class="topbar-acct" id="btnAcct" aria-label="Compte">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+  </button>
 </header>
+
+<!-- Feuille « compte » (auth tierce) -->
+<div class="sheet" id="acctSheet" hidden>
+  <div class="sheet-body">
+    <button class="sheet-close" id="acctClose" aria-label="Fermer">✕</button>
+    <p class="eyebrow">Compte</p>
+    <div id="acctContent"></div>
+  </div>
+</div>
 
 <main id="app" class="app"><!-- vues rendues ici --></main>
 
@@ -67,6 +82,29 @@
       <button class="pf-play" id="pfToggle" aria-label="Lecture / pause">▶</button>
       <button id="pfFwd" aria-label="Avancer de 10 secondes">+10</button>
       <button id="pfNext" aria-label="Fragment suivant">⏭</button>
+    </div>
+    <div class="pf-report" id="pfReport" hidden>
+      <div class="pf-report-btns" id="pfReportBtns">
+        <button data-report="correction" aria-label="Corriger la transcription" title="Corriger la transcription">✎</button>
+        <button data-report="personne" aria-label="Référence à une personne" title="Personne">☺</button>
+        <button data-report="oeuvre" aria-label="Référence à une œuvre" title="Œuvre">▤</button>
+        <button data-report="date" aria-label="Référence à une date" title="Date / période">◷</button>
+        <button data-report="lieu" aria-label="Référence à un lieu" title="Lieu">⚑</button>
+      </div>
+      <div class="pf-report-form" id="pfReportForm" hidden>
+        <div class="pf-report-title" id="prTitle">—</div>
+        <div class="pf-report-corr" id="prCorr" hidden>
+          <input id="prRemplacer" type="text" placeholder="Remplacer…" autocomplete="off">
+          <input id="prPar" type="text" placeholder="Par…" autocomplete="off">
+        </div>
+        <textarea id="prTexte" rows="3" placeholder="Décrivez la référence…"></textarea>
+        <label class="pf-report-check"><input id="prSurTout" type="checkbox"> Dans toute la séance</label>
+        <div class="pf-report-err" id="prErr" hidden></div>
+        <div class="pf-report-actions">
+          <button id="prCancel">Annuler</button>
+          <button id="prSubmit" class="pr-send">Envoyer</button>
+        </div>
+      </div>
     </div>
     <button class="pf-list-toggle" id="pfListToggle">Fragments de la séance</button>
     <ol class="pf-list" id="pfList" hidden></ol>

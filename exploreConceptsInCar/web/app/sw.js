@@ -3,7 +3,7 @@
  * ne passent PAS par ici : l'app les stocke elle-même dans IndexedDB via
  * l'écran de téléchargement. On ne touche donc jamais à /api/ ni /audio/.
  */
-const CACHE = 'flux-shell-v1';
+const CACHE = 'flux-shell-v2';
 const SHELL = [
   './',
   './index.html',
@@ -11,7 +11,9 @@ const SHELL = [
   './app.js',
   './manifest.webmanifest',
   './icon.svg',
-  './icon-maskable.svg',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
 ];
 
 self.addEventListener('install', (e) => {

@@ -6,3 +6,4 @@ meilisearch/data/
 meilisearch/*.log
 __pycache__/
 data/
+signalements/

@@ -45,15 +45,34 @@ input{font-family:inherit}
   display:flex;align-items:center;gap:8px;padding-left:6px;padding-right:14px;
   background:var(--bg-2);border-bottom:1px solid var(--line);z-index:20;
 }
-.topbar-back{font-size:30px;line-height:1;width:40px;height:40px;color:var(--label);flex:none}
+.topbar-back{font-size:30px;line-height:1;width:34px;height:40px;color:var(--label);flex:none}
+.topbar-home{display:flex;align-items:center;justify-content:center;width:38px;height:40px;flex:none;color:var(--label)}
+.topbar-home svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+.topbar-home:active{color:var(--steel-hover)}
 .topbar-title{
   flex:1;min-width:0;font-family:var(--font-head);font-weight:600;font-size:19px;
   letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;
 }
 .topbar-net{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);flex:none}
 .topbar-net .dot{width:8px;height:8px;border-radius:50%;background:var(--wire)}
 .topbar-net.online .dot{background:var(--good)}
 .topbar-net.offline .dot{background:var(--bad)}
+.topbar-acct{width:38px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--label)}
+.topbar-acct svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.topbar-acct.connected{color:var(--gold)}
+
+/* feuille modale (compte) */
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(6,9,12,.72);display:flex;align-items:flex-end}
+.sheet-body{width:100%;background:var(--bg-2);border-top:1px solid var(--line-strong);
+  padding:18px 18px calc(var(--safe-b) + 22px);animation:sheetup .18s ease-out;position:relative}
+@keyframes sheetup{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-close{position:absolute;top:12px;right:12px;width:36px;height:36px;font-size:16px;color:var(--dim)}
+.sheet-body .acct-name{font-family:var(--font-head);font-weight:600;font-size:20px;margin:4px 0 2px}
+.sheet-body .acct-mail{color:var(--dim);font-size:13px;margin-bottom:16px}
+.sheet-body .btn{margin-top:4px}
+.btn-google{background:#fff;color:#1f1f1f;border:0}
+.btn-google:active{background:#e8e8e8}
 
 /* ---------- zone de contenu ---------- */
 .app{
@@ -160,6 +179,24 @@ h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line
 .pf-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
 .pf-controls button{font-size:15px;height:48px;padding:0 10px;color:#cfe0ef;border:1px solid var(--line);min-width:52px}
 .pf-controls .pf-play{background:var(--steel);color:#0f1216;border-color:var(--steel);font-size:20px;min-width:68px}
+/* signalements dans le lecteur */
+.pf-report{border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.pf-report-btns{display:flex;gap:8px}
+.pf-report-btns button{flex:1;height:44px;border:1px solid var(--line);color:#cfe0ef;font-size:17px}
+.pf-report-btns button:active,.pf-report-btns button.on{background:var(--gold-wash);border-color:var(--gold);color:var(--gold)}
+.pf-report-form{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.pf-report-title{font-size:13px;color:var(--label);letter-spacing:.04em}
+.pf-report-corr{display:flex;gap:8px}
+.pf-report-form input[type=text],.pf-report-form textarea{
+  width:100%;background:var(--panel);border:1px solid var(--line-strong);color:var(--text);
+  font-size:15px;padding:10px 12px}
+.pf-report-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim)}
+.pf-report-err{color:var(--bad);font-size:13px}
+.pf-report-actions{display:flex;gap:8px}
+.pf-report-actions button{flex:1;height:46px;border:1px solid var(--line);color:#cfe0ef;font-size:14px;
+  letter-spacing:.04em;text-transform:uppercase}
+.pf-report-actions .pr-send{background:var(--steel);color:#0f1216;border-color:var(--steel)}
+
 .pf-list-toggle{margin-top:8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);align-self:flex-start}
 .pf-list{list-style:none;margin:4px 0 0;padding:0;border-top:1px solid var(--line)}
 .pf-list li{padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px;display:flex;gap:10px}

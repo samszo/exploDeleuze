@@ -248,6 +248,9 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
     <tr><td><code>GET /api/topology?concept=</code></td><td>graphe de co-occurrence calculé à la volée</td></tr>
     <tr><td><code>GET /audio/{fichier}</code></td><td>fichiers <code>.opus</code>, requêtes <code>Range</code> supportées</td></tr>
     <tr><td><code>GET /api/health</code></td><td>vérifie la connexion à Meilisearch</td></tr>
+    <tr><td><code>GET /api/auth/providers</code></td><td>fournisseurs d'auth tierce activés (pour la PWA)</td></tr>
+    <tr><td><code>POST /api/signalements</code></td><td>signalement collaboratif → fichier JSON dans <code>SIGNAL_DIR</code></td></tr>
+    <tr><td><code>GET /api/signalements/export?key=</code></td><td>tous les signalements (clé <code>SIGNAL_EXPORT_KEY</code>)</td></tr>
   </table></div>
   <p>L'endpoint de topologie interroge <code>fragments</code> avec un filtre <code>concepts = "&lt;label&gt;"</code>, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.</p>
 
@@ -269,6 +272,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--text-dim);fon
     <li><strong>Lecteur hors-ligne</strong> — lecture continue des fragments d'une séance depuis les blobs stockés (<code>URL.createObjectURL</code>), enchaînement automatique, contrôles écran verrouillé (Media Session API).</li>
     <li><strong>Recherche hors-ligne</strong> — plein texte sur les séances téléchargées, insensible aux accents, extraits surlignés ; bascule « tout le corpus » quand une connexion est là (<code>/api/search</code>).</li>
     <li><strong>Espace</strong> — quota du navigateur, poids par séance, suppression unitaire ou totale ; demande de stockage persistant.</li>
+    <li><strong>Signalements</strong> — connecté via un fournisseur tiers (Google), l'utilisateur signale depuis le lecteur une correction de transcription ou une référence (personne / œuvre / date / lieu) à un instant du fragment. L'API écrit un fichier JSON par signalement (<code>SIGNAL_DIR</code>), à réimporter dans Omeka S — voir <a href="deployment.html#pwa">§B.4</a>.</li>
     <li><strong>Coquille en cache</strong> — un <em>service worker</em> (<code>web/app/sw.js</code>) met en cache HTML/CSS/JS/icônes : l'app démarre même hors-ligne. Les données ne passent pas par lui, elles vivent dans IndexedDB.</li>
   </ul>
   <p>Aucune dépendance externe, aucun build : quatre fichiers statiques (<code>index.html</code>, <code>app.css</code>, <code>app.js</code>, <code>sw.js</code>) + le manifeste et les icônes. Détails d'installation et de service : <code>web/app/README.md</code> et <a href="deployment.html#pwa">§B de l'installation VPS</a>.</p>

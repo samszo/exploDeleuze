@@ -10,6 +10,21 @@
  */
 'use strict';
 
+/* --- Fenêtre de rappel OAuth (popup de connexion Google) ---
+ * La popup revient sur cette même URL avec #id_token=… ; on renvoie le jeton
+ * à la fenêtre principale et on se ferme, sans démarrer l'app. */
+if (window.opener && /[#&](id_token|error)=/.test(location.hash)) {
+  const p = new URLSearchParams(location.hash.slice(1));
+  try {
+    window.opener.postMessage({
+      __fluxOAuth: 1, id_token: p.get('id_token'), error: p.get('error'), state: p.get('state'),
+    }, location.origin);
+  } catch (_) { /* rien à faire */ }
+  document.body && (document.body.textContent = 'Connexion… cette fenêtre va se fermer.');
+  window.close();
+  throw new Error('oauth-callback');   // stoppe le reste du script dans la popup
+}
+
 const API = '';                       // même origine que la page
 const AVG_FRAG_KB = 133;              // ~3,7 Go / 27 674 fragments — pour l'estimation d'avant téléchargement
 const DL_CONCURRENCY = 3;
@@ -118,7 +133,79 @@ async function apiGet(path) {
   if (!res.ok) throw Object.assign(new Error(path + ' → ' + res.status), { status: res.status });
   return res.json();
 }
+async function apiPost(path, body) {
+  const res = await fetch(API + path, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.detail || ('HTTP ' + res.status)), { status: res.status });
+  return data;
+}
 const audioURL = (file) => API + '/audio/' + encodeURIComponent(file);
+
+/* ------------------------------------------------------- auth (tierce) */
+/* Connexion via un fournisseur tiers (Google pour l'instant), flux OAuth2
+ * "implicit" dans une popup — aucun SDK externe. Le jeton d'identité est
+ * re-vérifié côté API à chaque signalement ; ici on ne s'en sert que pour
+ * afficher le nom et le joindre à l'envoi. */
+let authState = null;               // { provider, idToken, exp, profile:{sub,email,name} } | null | {…, expired:true}
+
+const b64url = (s) => {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  return decodeURIComponent(atob(s).split('').map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join(''));
+};
+const decodeJWT = (t) => { try { return JSON.parse(b64url(t.split('.')[1])); } catch { return null; } };
+const redirectURI = () => location.origin + location.pathname.replace(/index\.html$/, '');
+
+let _providers;
+async function authProviders() {
+  if (_providers) return _providers;
+  try { _providers = await apiGet('/api/auth/providers'); return _providers; }
+  catch { return {}; }          // pas de mise en cache d'un échec (hors-ligne au boot)
+}
+
+async function loadAuth() {
+  const rec = await idbGet('meta', 'auth');
+  if (!rec) { authState = null; return; }
+  authState = rec.exp * 1000 > Date.now() ? rec : { ...rec, expired: true };
+}
+
+async function signInGoogle(clientId) {
+  const nonce = crypto.randomUUID(), state = crypto.randomUUID();
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
+    client_id: clientId, redirect_uri: redirectURI(), response_type: 'id_token',
+    scope: 'openid email profile', nonce, state, prompt: 'select_account',
+  });
+  const popup = window.open(url, 'flux-oauth', 'width=480,height=680');
+  if (!popup) throw new Error('popup bloquée');
+  const token = await new Promise((resolve, reject) => {
+    const to = setTimeout(() => { done(); reject(new Error('délai dépassé')); }, 120000);
+    const iv = setInterval(() => { if (popup.closed) { done(); reject(new Error('fenêtre fermée')); } }, 500);
+    function done() { clearTimeout(to); clearInterval(iv); removeEventListener('message', onMsg); }
+    function onMsg(e) {
+      if (e.origin !== location.origin || !e.data || !e.data.__fluxOAuth) return;
+      done();
+      if (e.data.error) return reject(new Error(e.data.error));
+      if (e.data.state !== state) return reject(new Error('state invalide'));
+      resolve(e.data.id_token);
+    }
+    addEventListener('message', onMsg);
+  });
+  const payload = decodeJWT(token);
+  if (!payload || payload.nonce !== nonce) throw new Error('jeton invalide');
+  authState = {
+    provider: 'google', idToken: token, exp: payload.exp,
+    profile: { sub: payload.sub, email: payload.email, name: payload.name || payload.email },
+  };
+  await idbPut('meta', { k: 'auth', ...authState });
+  return authState;
+}
+
+async function signOut() {
+  await idbDelete('meta', 'auth');
+  authState = null;
+}
 
 const isDownloaded = async (id) => !!(await idbGet('seances', Number(id)));
 const downloadedSeances = async () =>
@@ -176,10 +263,12 @@ async function downloadSeance(id, onProgress) {
     const seanceRec = {
       id: data.id, titre: data.titre, theme: data.theme, num: data.num,
       date: data.date, promo: data.promo, sujets: data.sujets || [],
+      source: data.source || null, ref: data.ref || null,
       frag_count: frags.length, downloadedAt: Date.now(), bytes: state.bytes,
     };
     const fragRecs = frags.map((f) => ({
-      id: f.id, idConf: f.idConf, start: f.start, end: f.end, texte: f.texte,
+      id: f.id, idConf: f.idConf, idFrag: f.idFrag ?? null,
+      start: f.start, end: f.end, texte: f.texte,
       concepts: f.concepts || [], audio_file: f.audio_file, fold: fold(f.texte),
     }));
     await idbBulk({ seances: [seanceRec], fragments: fragRecs });
@@ -305,7 +394,16 @@ const Player = (() => {
     pfSeance: $('#pfSeance'), pfText: $('#pfText'), pfConcepts: $('#pfConcepts'),
     seek: $('#pfSeek'), cur: $('#pfCur'), dur: $('#pfDur'), toggle: $('#pfToggle'),
     list: $('#pfList'), listToggle: $('#pfListToggle'),
+    report: $('#pfReport'), reportBtns: $('#pfReportBtns'), reportForm: $('#pfReportForm'),
+    prTitle: $('#prTitle'), prCorr: $('#prCorr'), prRemplacer: $('#prRemplacer'), prPar: $('#prPar'),
+    prTexte: $('#prTexte'), prSurTout: $('#prSurTout'), prErr: $('#prErr'),
   };
+  const REPORT_LABELS = {
+    correction: 'Corriger la transcription', personne: 'Référence à une personne',
+    oeuvre: 'Référence à une œuvre', date: 'Référence à une date ou une période',
+    lieu: 'Référence à un lieu',
+  };
+  let reportType = null;
 
   function openFull() { full.hidden = false; renderList(); }
   function closeFull() { full.hidden = true; }
@@ -346,7 +444,62 @@ const Player = (() => {
     els.pfConcepts.innerHTML = (fr.concepts || []).slice(0, 12)
       .map((c, k) => `<span class="concept${k === 0 ? ' live' : ''}">${esc(c)}</span>`).join('');
     renderList();
+    closeReportForm();
+    refreshReport();
     updateMediaSession(fr);
+  }
+
+  /* --- signalements (visibles seulement si connecté) --- */
+  function refreshReport() {
+    els.report.hidden = !(authState && !authState.expired && idx >= 0);
+  }
+  function openReportForm(type) {
+    reportType = type;
+    els.prTitle.textContent = `${REPORT_LABELS[type]} — à ${fmtHMS(audio.currentTime)}`;
+    els.prCorr.hidden = type !== 'correction';
+    els.prTexte.hidden = type === 'correction';
+    els.prErr.hidden = true;
+    els.prTexte.value = ''; els.prRemplacer.value = ''; els.prPar.value = ''; els.prSurTout.checked = false;
+    $$('button', els.reportBtns).forEach((b) => b.classList.toggle('on', b.dataset.report === type));
+    els.reportForm.hidden = false;
+  }
+  function closeReportForm() {
+    reportType = null;
+    els.reportForm.hidden = true;
+    $$('button', els.reportBtns).forEach((b) => b.classList.remove('on'));
+  }
+  async function submitReport() {
+    if (!reportType || !authState) return;
+    if (authState.expired) { els.prErr.textContent = 'Session expirée — reconnectez-vous (icône compte).'; els.prErr.hidden = false; return; }
+    const fr = playlist[idx];
+    const body = {
+      id_token: authState.idToken, provider: authState.provider,
+      idConf: seance.id, idTrans: fr.id, idFrag: fr.idFrag ?? null,
+      type: reportType, timecode: Math.round(audio.currentTime * 10) / 10,
+      lien: redirectURI() + '#/seance/' + seance.id,
+    };
+    if (reportType === 'correction') {
+      body.remplacer = els.prRemplacer.value.trim();
+      body.par = els.prPar.value.trim();
+      body.surTout = els.prSurTout.checked;
+      if (!body.remplacer) { els.prErr.textContent = 'Indiquez le texte à remplacer.'; els.prErr.hidden = false; return; }
+      body.texte = `Remplacer « ${body.remplacer} » par « ${body.par} »` + (body.surTout ? ' (toute la séance)' : '');
+    } else {
+      body.texte = els.prTexte.value.trim();
+      body.surTout = els.prSurTout.checked;
+      if (!body.texte) { els.prErr.textContent = 'Décrivez la référence.'; els.prErr.hidden = false; return; }
+    }
+    $('#prSubmit').disabled = true;
+    try {
+      await apiPost('/api/signalements', body);
+      closeReportForm();
+      toast('Signalement envoyé — merci');
+    } catch (e) {
+      els.prErr.textContent = 'Échec de l\'envoi : ' + e.message;
+      els.prErr.hidden = false;
+    } finally {
+      $('#prSubmit').disabled = false;
+    }
   }
 
   function renderList() {
@@ -396,6 +549,12 @@ const Player = (() => {
   els.list.addEventListener('click', (e) => {
     const li = e.target.closest('li'); if (li) load(Number(li.dataset.i), true);
   });
+  els.reportBtns.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-report]');
+    if (b) (reportType === b.dataset.report ? closeReportForm() : openReportForm(b.dataset.report));
+  });
+  $('#prCancel').addEventListener('click', closeReportForm);
+  $('#prSubmit').addEventListener('click', submitReport);
 
   let saveTimer;
   function savePos() {
@@ -406,7 +565,7 @@ const Player = (() => {
     }, 400);
   }
 
-  return { start, isActive: () => idx >= 0 };
+  return { start, isActive: () => idx >= 0, refreshReport };
 })();
 
 /* =================================================================
@@ -697,6 +856,39 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 $('#btnBack').addEventListener('click', () => { if (history.length > 1) history.back(); else location.hash = '#/'; });
+$('#topTitle').addEventListener('click', () => { location.hash = '#/'; });
+
+/* ------------------------------------------------------- compte / auth */
+function refreshAcctBadge() {
+  $('#btnAcct').classList.toggle('connected', !!(authState && !authState.expired));
+}
+async function renderAcct() {
+  const provs = await authProviders();
+  const c = $('#acctContent');
+  if (authState && !authState.expired) {
+    c.innerHTML = `<div class="acct-name">${esc(authState.profile.name || 'Connecté')}</div>
+      <div class="acct-mail">${esc(authState.profile.email || '')} · via ${esc(authState.provider)}</div>
+      <button class="btn btn-outline" id="acctOut">Se déconnecter</button>`;
+    $('#acctOut').onclick = async () => { await signOut(); refreshAcctBadge(); Player.refreshReport(); renderAcct(); };
+  } else if (provs.google) {
+    c.innerHTML = `<p class="muted" style="margin-bottom:14px">${authState?.expired
+      ? 'Session expirée — reconnectez-vous.'
+      : 'Connectez-vous pour signaler une correction ou une référence dans une transcription. Votre identité sert à créditer le signalement et à retrouver votre compte lors de l\'import.'}</p>
+      <button class="btn btn-google" id="acctGoogle">Se connecter avec Google</button>`;
+    $('#acctGoogle').onclick = async () => {
+      try {
+        await signInGoogle(provs.google.client_id);
+        refreshAcctBadge(); Player.refreshReport(); renderAcct();
+        toast('Connecté : ' + (authState.profile.name || authState.profile.email));
+      } catch (e) { toast('Connexion : ' + e.message); }
+    };
+  } else {
+    c.innerHTML = `<p class="muted">Aucun fournisseur d'authentification n'est configuré côté serveur.</p>`;
+  }
+}
+$('#btnAcct').addEventListener('click', () => { $('#acctSheet').hidden = false; renderAcct(); });
+$('#acctClose').addEventListener('click', () => { $('#acctSheet').hidden = true; });
+$('#acctSheet').addEventListener('click', (e) => { if (e.target === $('#acctSheet')) $('#acctSheet').hidden = true; });
 
 /* ------------------------------------------------------- connectivité */
 function refreshNet() {
@@ -723,4 +915,5 @@ if ('serviceWorker' in navigator) {
 /* --------------------------------------------------------------- boot */
 refreshNet();
 try { navigator.storage?.persist?.(); } catch (_) {}
+loadAuth().then(() => { refreshAcctBadge(); Player.refreshReport(); }).catch(() => {});
 route();

@@ -238,6 +238,11 @@ MEILI_URL=http://127.0.0.1:7700
 MEILI_KEY=REMPLACER_PAR_LA_CLE_GENEREE
 OUT_DIR=/opt/flux-conceptuel-auto/app/audios
 
+<span class="c"># signalements de la PWA (§B) — laisser vide pour désactiver la fonction</span>
+GOOGLE_CLIENT_ID=
+SIGNAL_DIR=/opt/flux-conceptuel-auto/app/signalements
+SIGNAL_EXPORT_KEY=REMPLACER_PAR_UNE_CHAINE_ALEATOIRE
+
 <span class="c"># uniquement nécessaire si le pipeline d'export tourne sur CE serveur (§5, option A)</span>
 DB_HOST=
 DB_USER=
@@ -461,6 +466,11 @@ meilisearch --db-path ./meilisearch/data --http-addr 127.0.0.1:7700 --no-analyti
   <pre>sudo apache2ctl configtest &amp;&amp; sudo systemctl reload apache2</pre>
   <p>Sans le type MIME, Chrome ignore le manifeste (l'app reste utilisable mais non « installable »). Le <code>no-cache</code> sur <code>sw.js</code> évite qu'un ancien service worker reste collé après une mise à jour.</p>
 
+  <div class="callout warn"><div class="c2"></div>
+    <div class="callout-label">« Non installable » — icônes PNG requises</div>
+    <p>Chrome n'affiche « Installer / Ajouter à l'écran d'accueil » que si le manifeste liste au moins une icône <strong>PNG 192×192 et une 512×512</strong> — une icône SVG seule ne suffit pas. Le dépôt fournit <code>icon-192.png</code>, <code>icon-512.png</code> et <code>icon-maskable-512.png</code> (régénérables depuis <code>icon.svg</code> avec <code>rsvg-convert -w 512 -h 512 icon.svg -o icon-512.png</code>). Après déploiement, ouvrir DevTools → Application → Manifest sur le téléphone (ou <code>chrome://inspect</code>) pour voir la raison exacte si le bouton reste absent. Les clients déjà « installés » avec l'ancien service worker se mettent à jour au prochain lancement (la version du cache est passée à <code>flux-shell-v2</code>).</p>
+  </div>
+
   <h3>B.3 — Vérification</h3>
   <pre>curl -sI https://&lt;domaine&gt;/app/ | head -1
 <span class="c"># HTTP/2 200</span>
@@ -472,6 +482,23 @@ curl -sI https://&lt;domaine&gt;/app/manifest.webmanifest | grep -i content-type
     <div class="callout-label">Le service worker exige HTTPS</div>
     <p>Le démarrage hors-ligne (coquille en cache) ne fonctionne que sur une origine sécurisée : le HTTPS du VPS, ou <code>http://localhost</code> en dev. Sur <code>http://&lt;ip-locale&gt;:8000/app/</code> l'enregistrement échoue silencieusement — l'app marche en ligne, mais pas hors-ligne. Le téléchargement et la lecture depuis IndexedDB, eux, ne dépendent pas du service worker.</p>
   </div>
+
+  <h3>B.4 — Signalements collaboratifs</h3>
+  <p>Connecté (Google pour l'instant), un utilisateur peut signaler depuis le lecteur une <strong>correction</strong> de transcription ou une <strong>référence</strong> (personne, œuvre, date, lieu) à un instant précis d'un fragment. L'API n'écrit pas dans Omeka S : chaque signalement devient un fichier JSON dans <code>SIGNAL_DIR</code>, à réimporter plus tard. L'identité (<code>provider</code> + <code>sub</code> + <code>email</code> + <code>name</code>) est conservée pour rattacher ou créer le compte Omeka au moment de l'import.</p>
+  <ul>
+    <li><code>GET /api/auth/providers</code> — fournisseurs activés (la PWA n'affiche que ceux-là)</li>
+    <li><code>POST /api/signalements</code> — vérifie le jeton auprès du fournisseur, écrit <code>SIGNAL_DIR/&lt;date&gt;-&lt;id&gt;.json</code></li>
+    <li><code>GET /api/signalements/export?key=…</code> — tous les signalements en un tableau JSON (protégé par <code>SIGNAL_EXPORT_KEY</code>)</li>
+  </ul>
+  <p><strong>Configuration Google</strong> (console Google Cloud → <em>Identifiants</em> → <em>ID client OAuth 2.0</em>, type <em>Application Web</em>) :</p>
+  <ul>
+    <li>Origine JavaScript autorisée : <code>https://&lt;domaine&gt;</code></li>
+    <li>URI de redirection autorisé : <code>https://&lt;domaine&gt;/app/</code> (exactement — barre oblique finale comprise ; ajoutez <code>http://localhost:8000/app/</code> pour tester en local)</li>
+    <li>Reportez l'<em>ID client</em> (public, aucun secret nécessaire avec le flux <em>implicit</em>) dans <code>GOOGLE_CLIENT_ID</code> du <code>.env</code>, puis <code>sudo systemctl restart flux-api</code></li>
+  </ul>
+  <pre>ls -ld /opt/flux-conceptuel-auto/app/signalements       <span class="c"># créé au 1er signalement, doit appartenir à fluxconceptuel</span>
+curl -s "https://&lt;domaine&gt;/api/signalements/export?key=&lt;SIGNAL_EXPORT_KEY&gt;"   <span class="c"># [] au départ</span></pre>
+  <p><code>signalements/</code> est dans le <code>.gitignore</code> — sauvegardez ce dossier avec le reste (<a href="#maintenance">§9</a>).</p>
 
 </main>
 
