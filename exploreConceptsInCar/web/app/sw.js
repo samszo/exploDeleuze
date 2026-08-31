@@ -7,7 +7,7 @@
  * général en ligne au premier lancement), cache en secours. Ça évite qu'un
  * déploiement reste invisible derrière un vieux cache.
  */
-const CACHE = 'flux-shell-v3';
+const CACHE = 'flux-shell-v4';
 const SHELL = [
   './',
   './index.html',
@@ -31,11 +31,16 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+    await self.clients.claim();
+    // Un client déjà ouvert tourne encore avec l'ancienne coquille (ancien
+    // app.js, sans logique de mise à jour) : on le recharge nous-mêmes pour
+    // qu'il reparte sur les fichiers frais.
+    const wins = await self.clients.matchAll({ type: 'window' });
+    for (const w of wins) { try { await w.navigate(w.url); } catch (_) { /* ignore */ } }
+  })());
 });
 
 self.addEventListener('fetch', (e) => {
