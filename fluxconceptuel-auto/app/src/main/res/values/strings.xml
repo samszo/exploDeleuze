@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Flux Conceptuel</string>
+    <string name="app_name_long">Flux Conceptuel — Cours de Gilles Deleuze</string>
+
+    <string name="tab_themes">Thèmes</string>
+    <string name="tab_resume">Reprendre</string>
+    <string name="node_all_seances">Toutes les séances</string>
+
+    <string name="playback_channel_name">Lecture</string>
+    <string name="err_network">Contenu indisponible — vérifiez la connexion</string>
+
+    <string name="phone_title">Flux Conceptuel</string>
+    <string name="phone_subtitle">Explorez les cours de Gilles Deleuze depuis Android Auto, ou ici même.</string>
+    <string name="phone_hint">Branchez le téléphone à la voiture (Android Auto) : l\'app apparaît dans la liste Média. Ou dites « joue machine de guerre sur Flux Conceptuel ».</string>
+</resources>
