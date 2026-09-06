@@ -178,6 +178,16 @@ body {
   background: #26262f;
 }
 
+.history-remove {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
 .course-num {
   flex: 0 0 auto;
   width: 2.2rem;

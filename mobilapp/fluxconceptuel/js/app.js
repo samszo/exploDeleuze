@@ -2,6 +2,7 @@ import { fetchConferences, fetchTranscriptions, fetchSearchResults, signalerFrag
 import { login, logout, getAuth } from "./auth.js";
 import { getZoteroAuth, saveZoteroAuth, findOrCreateCourseItem, createExtractItem, uploadAttachment } from "./zotero.js";
 import { extractAudioRange } from "./audioExtract.js";
+import { saveProgress, getProgress, removeProgress, getRecentHistory } from "./history.js";
 import { Player } from "./player.js";
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
@@ -95,6 +96,7 @@ const player = new Player(audioEl, captionsEl, {
     setIcon(btnShare, "share-nodes");
     closeReportPanel();
     exitSelectionMode();
+    if (currentConf && currentConf.id != null) saveProgress(currentConf.id, fragment.idTrans, 0);
   },
   onProgress: (ratio) => {
     progressFillEl.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
@@ -130,15 +132,34 @@ const player = new Player(audioEl, captionsEl, {
   },
 });
 
+function saveCurrentProgress() {
+  const fragment = player.fragments[player.index];
+  if (currentConf && currentConf.id != null && fragment) {
+    saveProgress(currentConf.id, fragment.idTrans, audioEl.currentTime);
+  }
+}
+
 audioEl.addEventListener("play", () => setIcon(btnPlay, "pause"));
-audioEl.addEventListener("pause", () => setIcon(btnPlay, "play"));
+audioEl.addEventListener("pause", () => {
+  setIcon(btnPlay, "play");
+  saveCurrentProgress();
+});
+
+// l'utilisateur quitte l'onglet/l'appli en cours de lecture (sans passer par pause)
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && !viewPlayer.classList.contains("hidden")) saveCurrentProgress();
+});
 
 btnPlay.addEventListener("click", () => player.toggle());
 btnPrev.addEventListener("click", () => player.goTo(player.index - 1));
 btnNext.addEventListener("click", () => player.goTo(player.index + 1));
 btnBack.addEventListener("click", () => {
   audioEl.pause();
+  // l'évènement "pause" natif (qui sauvegarde aussi) est asynchrone : on sauvegarde
+  // explicitement ici pour ne pas rafraîchir la liste avant que ce soit fait.
+  saveCurrentProgress();
   showList();
+  renderCourseList(search.value.trim());
 });
 
 // URI du fragment au format Media Fragments (https://www.w3.org/TR/media-frags/) :
@@ -526,8 +547,34 @@ function groupByTheme(list) {
   return groups;
 }
 
+function renderHistorySection() {
+  const recent = getRecentHistory()
+    .map((entry) => ({ ...entry, conf: conferences.find((c) => c.id === entry.idConf) }))
+    .filter((entry) => entry.conf)
+    .slice(0, 5);
+  if (!recent.length) return;
+
+  const section = d3.select(courseGroups).insert("section", ":first-child").attr("class", "theme-group");
+  section.append("h3").text("Reprendre l'écoute");
+  const li = section.append("ul").attr("class", "course-list").selectAll("li").data(recent).enter()
+    .append("li").attr("class", "course-card")
+    .on("click", (e, d) => openCourse(d.conf, { jumpToIdTrans: d.idTrans, resumePosition: d.position }));
+  li.append("span").attr("class", "course-num").text((d) => d.conf.num);
+  const divLi = li.append("div").attr("class", "course-info");
+  divLi.append("span").attr("class", "course-promo").text((d) => `${d.conf.theme}`);
+  divLi.append("span").attr("class", "course-stats").text((d) => `Reprendre à ${formatTime(d.position)}`);
+  li.append("button").attr("class", "history-remove").attr("aria-label", "Retirer de l'historique")
+    .html('<i class="fa-solid fa-xmark" aria-hidden="true"></i>')
+    .on("click", (e, d) => {
+      e.stopPropagation();
+      removeProgress(d.idConf);
+      renderCourseList(search.value.trim());
+    });
+}
+
 function renderCourseCards(list) {
   courseGroups.innerHTML = "";
+  renderHistorySection();
 
   if (list.length === 0) {
     courseGroups.innerHTML = '<p class="status">Aucun cours ne correspond à cette recherche.</p>';
@@ -674,6 +721,7 @@ function playStandaloneFragment(fragment) {
   fragmentCounterEl.textContent = "Chargement…";
   captionsEl.innerHTML = "";
   currentConf = {
+    id: fragment.idConf,
     theme: fragment.theme || "Extrait trouvé",
     num: fragment.num || "",
     created: "",
@@ -685,7 +733,18 @@ function playStandaloneFragment(fragment) {
   player.goTo(0);
 }
 
-async function openCourse(conf, { jumpToIdTrans } = {}) {
+// Positionne la lecture une fois les métadonnées du fragment chargées (nécessaire :
+// modifier currentTime avant que le navigateur les ait lues est ignoré/écrasé).
+function resumeAudioAt(position) {
+  if (!position) return;
+  const onLoaded = () => {
+    audioEl.currentTime = position;
+    audioEl.removeEventListener("loadedmetadata", onLoaded);
+  };
+  audioEl.addEventListener("loadedmetadata", onLoaded);
+}
+
+async function openCourse(conf, { jumpToIdTrans, resumePosition } = {}) {
   courseTitleEl.textContent = `${conf.theme} — Cours ${conf.num}`;
   courseMetaEl.textContent = `${dateCours(new Date(conf.created))}`;
   fragmentCounterEl.textContent = "Chargement…";
@@ -696,10 +755,23 @@ async function openCourse(conf, { jumpToIdTrans } = {}) {
   try {
     const fragments = await fetchTranscriptions(conf.id);
     player.load(fragments);
-    const startIndex = jumpToIdTrans
-      ? Math.max(0, fragments.findIndex((f) => String(f.idTrans) === String(jumpToIdTrans)))
+
+    let effectiveJump = jumpToIdTrans;
+    let effectivePosition = resumePosition;
+    if (!effectiveJump) {
+      // pas de lien profond explicite : propose de reprendre où l'écoute s'était arrêtée
+      const saved = getProgress(conf.id);
+      if (saved) {
+        effectiveJump = saved.idTrans;
+        effectivePosition = saved.position;
+      }
+    }
+
+    const startIndex = effectiveJump
+      ? Math.max(0, fragments.findIndex((f) => String(f.idTrans) === String(effectiveJump)))
       : 0;
     player.goTo(startIndex);
+    resumeAudioAt(effectivePosition);
   } catch (err) {
     fragmentCounterEl.textContent = "Impossible de charger ce cours.";
     console.error(err);
