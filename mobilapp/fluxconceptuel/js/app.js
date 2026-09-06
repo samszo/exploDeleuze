@@ -597,6 +597,7 @@ function renderCourseCards(list) {
       d.sujets = JSON.parse(d.sujets);
       return d.sujets ? d.sujets.map(s=>s.label).join(" - ") : "";
     });
+    divLi.filter((d) => d.extrait).append("p").attr("class", "course-excerpt").text((d) => d.extrait);
     const stats = divLi.append("span").attr("class","course-stats").text(d=>{
       return `${d.nbFrag} fragments · ${d.nbConcept} concepts -> `;
     });

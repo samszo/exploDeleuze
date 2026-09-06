@@ -1,4 +1,4 @@
-const CACHE = "flux-conceptuel-v17";
+const CACHE = "flux-conceptuel-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,7 +7,7 @@ const APP_SHELL = [
   "./css/style.css",
   "./css/fontawesome.min.css",
   "./webfonts/fa-solid-900.woff2",
-  "./js/app.js?v=17",
+  "./js/app.js?v=18",
   "./js/api.js",
   "./js/auth.js",
   "./js/player.js",
