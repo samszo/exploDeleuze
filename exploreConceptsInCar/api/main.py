@@ -243,6 +243,7 @@ class Signalement(BaseModel):
     surTout: bool = False
     timecode: Optional[float] = None
     lien: Optional[str] = None
+    selection: Optional[str] = None      # séquence de mots du fragment liée au signalement
 
 
 async def verify_identity(provider: str, token: str) -> dict:
@@ -293,6 +294,8 @@ async def create_signalement(s: Signalement = Body(...)):
         raise HTTPException(400, "correction : 'remplacer' est requis")
     if s.type != "correction" and not s.texte.strip():
         raise HTTPException(400, "texte requis")
+    if not (s.selection or "").strip():
+        raise HTTPException(400, "sélectionnez la séquence de mots concernée dans le texte")
 
     user = await verify_identity(s.provider, s.id_token)
 
@@ -317,11 +320,41 @@ async def create_signalement(s: Signalement = Body(...)):
         "surTout": s.surTout,
         "timecode": s.timecode,
         "lien": s.lien,
+        "selection": (s.selection or "").strip() or None,
     }
     SIGNAL_DIR.mkdir(parents=True, exist_ok=True)
     fname = f"{now.strftime('%Y%m%dT%H%M%S')}-{rec['id'][:8]}.json"
     (SIGNAL_DIR / fname).write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"id": rec["id"], "status": "recorded", "file": fname}
+
+
+@app.get("/api/signalements/fragment/{id_trans}")
+def signalements_for_fragment(id_trans: int):
+    """Signalements existants pour un fragment — affichés dans le lecteur au
+    fil de la lecture, publics (lecture seule, pas de vérification de jeton) :
+    contrairement à /mine, on ne renvoie que l'essentiel (jamais l'e-mail ou
+    le sub du fournisseur), seul le nom d'affichage pour l'attribution."""
+    if not SIGNAL_DIR.exists():
+        return []
+    out = []
+    for f in sorted(SIGNAL_DIR.glob("*.json"), reverse=True):
+        try:
+            rec = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if rec.get("idTrans") != id_trans:
+            continue
+        out.append({
+            "type": rec.get("type"),
+            "texte": rec.get("texte"),
+            "remplacer": rec.get("remplacer"),
+            "par": rec.get("par"),
+            "selection": rec.get("selection"),
+            "timecode": rec.get("timecode"),
+            "created_at": rec.get("created_at"),
+            "author": (rec.get("user") or {}).get("name"),
+        })
+    return out
 
 
 @app.get("/api/signalements/mine")

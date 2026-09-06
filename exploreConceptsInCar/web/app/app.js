@@ -217,6 +217,19 @@ async function fetchMyAnnotations() {
   }));
 }
 
+/* Signalements existants sur un fragment donné — affichés dans le lecteur,
+ * publics (pas besoin d'être connecté pour les voir, seulement pour en créer). */
+async function fetchFragmentSignalements(idTrans) {
+  return apiGet('/api/signalements/fragment/' + encodeURIComponent(idTrans));
+}
+
+/* Libellés des types de signalement — partagés entre le lecteur (fragment
+ * courant) et l'écran « Mes annotations ». Déclaré ici (avant les deux) pour
+ * éviter la duplication. */
+const ANNOTATION_TYPE_LABELS = {
+  correction: 'Correction', personne: 'Personne', oeuvre: 'Œuvre', date: 'Date / période', lieu: 'Lieu',
+};
+
 const isDownloaded = async (id) => !!(await idbGet('seances', Number(id)));
 const downloadedSeances = async () =>
   (await idbGetAll('seances')).sort((a, b) => (b.downloadedAt || 0) - (a.downloadedAt || 0));
@@ -624,8 +637,9 @@ const Player = (() => {
     seek: $('#pfSeek'), cur: $('#pfCur'), dur: $('#pfDur'), toggle: $('#pfToggle'),
     list: $('#pfList'), listToggle: $('#pfListToggle'),
     report: $('#pfReport'), reportBtns: $('#pfReportBtns'), reportForm: $('#pfReportForm'),
-    prTitle: $('#prTitle'), prCorr: $('#prCorr'), prRemplacer: $('#prRemplacer'), prPar: $('#prPar'),
+    prTitle: $('#prTitle'), prSelection: $('#prSelection'), prCorr: $('#prCorr'), prRemplacer: $('#prRemplacer'), prPar: $('#prPar'),
     prTexte: $('#prTexte'), prSurTout: $('#prSurTout'), prErr: $('#prErr'),
+    signalements: $('#pfSignalements'),
     zoteroBtn: $('#pfZotero'), zoteroForm: $('#pfZoteroForm'),
     zoUser: $('#zoUser'), zoKey: $('#zoKey'), zoErr: $('#zoErr'),
   };
@@ -635,6 +649,68 @@ const Player = (() => {
     lieu: 'Référence à un lieu',
   };
   let reportType = null;
+
+  /* --- sélection d'une séquence de mots dans le texte du fragment ---
+   * Requise pour créer un signalement : on veut savoir précisément à quel
+   * passage il se rapporte, pas seulement l'horodatage. Interaction en deux
+   * temps : on touche le premier mot du passage, puis le dernier (ou le même
+   * mot deux fois pour une sélection d'un seul mot). */
+  let textTokens = [];     // tous les tokens (mots + séparateurs), dans l'ordre du texte
+  let wordTokenIdx = [];   // wordTokenIdx[k] = position dans textTokens du k-ième mot
+  let selStart = null, selEnd = null;
+
+  function renderFragmentText(texte) {
+    textTokens = (texte || '').split(/(\s+)/);
+    wordTokenIdx = [];
+    let html = '';
+    textTokens.forEach((tok, ti) => {
+      if (tok === '') return;
+      if (/^\s+$/.test(tok)) { html += tok; return; }
+      const wi = wordTokenIdx.length;
+      wordTokenIdx.push(ti);
+      html += `<span class="word" data-w="${wi}">${esc(tok)}</span>`;
+    });
+    els.pfText.innerHTML = html;
+  }
+  function selectionText(a, b) {
+    if (a == null) return '';
+    const [lo, hi] = b == null || a <= b ? [a, b ?? a] : [b, a];
+    return textTokens.slice(wordTokenIdx[lo], wordTokenIdx[hi] + 1).join('');
+  }
+  function applySelectionHighlight() {
+    if (selStart == null) { $$('.word', els.pfText).forEach((w) => w.classList.remove('selected')); return; }
+    const lo = selEnd == null ? selStart : Math.min(selStart, selEnd);
+    const hi = selEnd == null ? selStart : Math.max(selStart, selEnd);
+    $$('.word', els.pfText).forEach((w) => {
+      const wi = Number(w.dataset.w);
+      w.classList.toggle('selected', wi >= lo && wi <= hi);
+    });
+  }
+  function updateSelectionUI() {
+    const txt = selectionText(selStart, selEnd);
+    if (!txt) {
+      els.prSelection.textContent = 'Touchez le premier mot du passage concerné, puis le dernier.';
+      els.prSelection.classList.remove('ok');
+    } else {
+      els.prSelection.textContent = `Séquence sélectionnée : « ${txt} »`;
+      els.prSelection.classList.add('ok');
+    }
+  }
+  function clearSelection() {
+    selStart = null; selEnd = null;
+    applySelectionHighlight();
+    updateSelectionUI();
+  }
+  els.pfText.addEventListener('click', (e) => {
+    if (!els.pfText.classList.contains('selecting')) return;
+    const w = e.target.closest('.word');
+    if (!w) return;
+    const wi = Number(w.dataset.w);
+    if (selStart == null || selEnd != null) { selStart = wi; selEnd = null; }
+    else { selEnd = wi; }
+    applySelectionHighlight();
+    updateSelectionUI();
+  });
 
   function openFull() { full.hidden = false; renderList(); }
   function closeFull() { full.hidden = true; }
@@ -682,14 +758,36 @@ const Player = (() => {
     els.pfSeance.textContent = `${seance.theme || ''} · séance ${seance.num ?? '—'} · ${fmtHMS(fr.start)}`;
     els.pmTitle.textContent = seance.titre || 'Séance';
     els.pmSub.textContent = `Fragment ${i + 1} / ${playlist.length} · ${fmtHMS(fr.start)}`;
-    els.pfText.textContent = fr.texte || '';
+    renderFragmentText(fr.texte);
     els.pfConcepts.innerHTML = (fr.concepts || []).slice(0, 12)
       .map((c, k) => `<span class="concept${k === 0 ? ' live' : ''}">${esc(c)}</span>`).join('');
     renderList();
     closeReportForm();
     els.zoteroForm.hidden = true;
     refreshReport();
+    refreshFragmentSignalements();
     updateMediaSession(fr);
+  }
+
+  /* --- signalements existants sur le fragment affiché --- */
+  async function refreshFragmentSignalements() {
+    const fr = playlist[idx];
+    if (!fr || !navigator.onLine) { els.signalements.hidden = true; return; }   // pas mis en cache hors-ligne
+    let items;
+    try { items = await fetchFragmentSignalements(fr.id); }
+    catch (_) { els.signalements.hidden = true; return; }
+    if (playlist[idx] !== fr) return;   // le fragment a changé pendant l'appel
+    if (!items.length) { els.signalements.hidden = true; els.signalements.innerHTML = ''; return; }
+    els.signalements.hidden = false;
+    els.signalements.innerHTML = `<div class="pf-signalements-title">${items.length} signalement${items.length > 1 ? 's' : ''} sur ce fragment</div>`
+      + items.map((s) => `
+        <div class="pf-signalement">
+          <span><span class="pf-signalement-type">${esc(ANNOTATION_TYPE_LABELS[s.type] || s.type)} — </span>${esc(
+            s.type === 'correction' ? `Remplacer « ${s.remplacer || ''} » par « ${s.par || ''} »` : (s.texte || '')
+          )}</span>
+          ${s.selection ? `<span class="pf-signalement-sel">« ${esc(s.selection)} »</span>` : ''}
+          ${s.author ? `<span class="pf-signalement-author">signalé par ${esc(s.author)}</span>` : ''}
+        </div>`).join('');
   }
 
   /* --- Zotero : exporter le fragment courant comme extrait --- */
@@ -736,22 +834,33 @@ const Player = (() => {
     els.prErr.hidden = true;
     els.prTexte.value = ''; els.prRemplacer.value = ''; els.prPar.value = ''; els.prSurTout.checked = false;
     $$('button', els.reportBtns).forEach((b) => b.classList.toggle('on', b.dataset.report === type));
+    els.pfText.classList.add('selecting');
+    clearSelection();
     els.reportForm.hidden = false;
   }
   function closeReportForm() {
     reportType = null;
     els.reportForm.hidden = true;
+    els.pfText.classList.remove('selecting');
+    clearSelection();
     $$('button', els.reportBtns).forEach((b) => b.classList.remove('on'));
   }
   async function submitReport() {
     if (!reportType || !authState) return;
     if (authState.expired) { els.prErr.textContent = 'Session expirée — reconnectez-vous (icône compte).'; els.prErr.hidden = false; return; }
+    const selection = selectionText(selStart, selEnd);
+    if (!selection.trim()) {
+      els.prErr.textContent = 'Sélectionnez la séquence de mots concernée dans le texte.';
+      els.prErr.hidden = false;
+      return;
+    }
     const fr = playlist[idx];
     const body = {
       id_token: authState.idToken, provider: authState.provider,
       idConf: seance.id, idTrans: fr.id, idFrag: fr.idFrag ?? null,
       type: reportType, timecode: Math.round(audio.currentTime * 10) / 10,
       lien: redirectURI() + '#/seance/' + seance.id,
+      selection,
     };
     if (reportType === 'correction') {
       body.remplacer = els.prRemplacer.value.trim();
@@ -769,6 +878,7 @@ const Player = (() => {
       await apiPost('/api/signalements', body);
       closeReportForm();
       toast('Signalement envoyé — merci');
+      refreshFragmentSignalements();
     } catch (e) {
       els.prErr.textContent = 'Échec de l\'envoi : ' + e.message;
       els.prErr.hidden = false;
@@ -1181,10 +1291,6 @@ async function viewStorage() {
   });
   app.replaceChildren(v);
 }
-
-const ANNOTATION_TYPE_LABELS = {
-  correction: 'Correction', personne: 'Personne', oeuvre: 'Œuvre', date: 'Date / période', lieu: 'Lieu',
-};
 
 async function viewAnnotations() {
   setActiveTab(''); setTop('Mes annotations'); showBack(true);

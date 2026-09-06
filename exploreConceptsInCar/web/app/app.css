@@ -179,6 +179,18 @@ h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line
 .pf-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--label)}
 .pf-text{font-size:19px;line-height:1.5;color:var(--text);flex:none}
 .pf-concepts{display:flex;flex-wrap:wrap;gap:6px}
+/* mots sélectionnables du texte (sélection de la séquence liée à un signalement) */
+.pf-text .word{transition:background .1s,color .1s}
+.pf-text.selecting .word{cursor:pointer;border-radius:2px}
+.pf-text.selecting .word:active{background:var(--steel-wash)}
+.pf-text .word.selected{background:var(--gold-wash);color:var(--gold)}
+/* signalements existants sur le fragment affiché */
+.pf-signalements{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px;margin-top:-2px}
+.pf-signalements-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--label)}
+.pf-signalement{font-size:13px;line-height:1.4;color:var(--text);display:flex;flex-direction:column;gap:2px}
+.pf-signalement-type{font-family:var(--font-head);font-weight:600;color:var(--gold);margin-right:6px}
+.pf-signalement-sel{color:var(--dim);font-style:italic}
+.pf-signalement-author{color:var(--dim);font-size:12px}
 .pf-seek{width:100%;accent-color:var(--steel-hover)}
 .pf-time{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:-6px}
 .pf-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
@@ -191,6 +203,8 @@ h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line
 .pf-report-btns button:active,.pf-report-btns button.on{background:var(--gold-wash);border-color:var(--gold);color:var(--gold)}
 .pf-report-form{margin-top:12px;display:flex;flex-direction:column;gap:10px}
 .pf-report-title{font-size:13px;color:var(--label);letter-spacing:.04em}
+.pf-report-selection{font-size:13px;color:var(--dim);font-style:italic}
+.pf-report-selection.ok{color:var(--gold);font-style:normal}
 .pf-report-corr{display:flex;gap:8px}
 .pf-report-form input[type=text],.pf-report-form textarea{
   width:100%;background:var(--panel);border:1px solid var(--line-strong);color:var(--text);
