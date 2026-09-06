@@ -324,6 +324,27 @@ async def create_signalement(s: Signalement = Body(...)):
     return {"id": rec["id"], "status": "recorded", "file": fname}
 
 
+@app.get("/api/signalements/mine")
+async def my_signalements(id_token: str = Query(...), provider: str = Query("google")):
+    """Signalements créés par l'utilisateur connecté — écran "Mes annotations"
+    de la PWA. Le jeton est revérifié auprès du fournisseur (comme à la
+    création) : pas de session côté serveur, on ne fait que filtrer les
+    fichiers de SIGNAL_DIR sur l'identité (provider, sub) qu'il porte."""
+    user = await verify_identity(provider, id_token)
+    if not SIGNAL_DIR.exists():
+        return []
+    out = []
+    for f in sorted(SIGNAL_DIR.glob("*.json"), reverse=True):
+        try:
+            rec = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        u = rec.get("user") or {}
+        if u.get("provider") == user["provider"] and u.get("sub") == user["sub"]:
+            out.append(rec)
+    return out
+
+
 @app.get("/api/signalements/export")
 def export_signalements(key: str = Query(...)):
     """Tous les signalements en un seul tableau JSON, pour l'import Omeka S.

@@ -207,9 +207,59 @@ async function signOut() {
   authState = null;
 }
 
+/* Signalements créés par l'utilisateur connecté — écran « Mes annotations ».
+ * GET (pas de session serveur) : le jeton d'identité est repassé en query et
+ * revérifié auprès du fournisseur, comme à la création d'un signalement. */
+async function fetchMyAnnotations() {
+  if (!authState || authState.expired) throw new Error('non connecté');
+  return apiGet('/api/signalements/mine?' + new URLSearchParams({
+    id_token: authState.idToken, provider: authState.provider,
+  }));
+}
+
 const isDownloaded = async (id) => !!(await idbGet('seances', Number(id)));
 const downloadedSeances = async () =>
   (await idbGetAll('seances')).sort((a, b) => (b.downloadedAt || 0) - (a.downloadedAt || 0));
+
+/* ------------------------------------------------ historique d'écoute */
+/* Une entrée par séance (fragment atteint + position), pour reprendre une
+ * lecture là où elle s'est arrêtée. Un aperçu de la séance (titre/thème/
+ * numéro/date) est dupliqué dans l'entrée : la séance n'est pas forcément
+ * téléchargée (lecture en ligne), donc l'écran « Historique » doit pouvoir
+ * s'afficher sans réseau ni requête supplémentaire. */
+const HISTORY_MAX = 20;
+
+async function saveProgress(seanceId, fragId, time, seanceInfo) {
+  if (seanceId == null || fragId == null) return;
+  const rec = (await idbGet('meta', 'history')) || { k: 'history', entries: {} };
+  rec.entries[seanceId] = {
+    fragId, time: Math.max(0, time || 0), at: Date.now(),
+    titre: seanceInfo?.titre, theme: seanceInfo?.theme, num: seanceInfo?.num, date: seanceInfo?.date,
+  };
+  const kept = Object.entries(rec.entries).sort((a, b) => b[1].at - a[1].at).slice(0, HISTORY_MAX);
+  rec.entries = Object.fromEntries(kept);
+  await idbPut('meta', rec);
+}
+async function getHistoryEntry(seanceId) {
+  const rec = await idbGet('meta', 'history');
+  return rec?.entries?.[seanceId] ?? null;
+}
+async function getHistory() {
+  const rec = await idbGet('meta', 'history');
+  if (!rec) return [];
+  return Object.entries(rec.entries)
+    .map(([seanceId, e]) => ({ seanceId: Number(seanceId), ...e }))
+    .sort((a, b) => b.at - a.at);
+}
+async function removeHistoryEntry(seanceId) {
+  const rec = await idbGet('meta', 'history');
+  if (!rec) return;
+  delete rec.entries[seanceId];
+  await idbPut('meta', rec);
+}
+async function clearHistoryAll() {
+  await idbDelete('meta', 'history');
+}
 
 /* Ordre de lecture des fragments : `id` (idTrans) croissant, PAS `start` —
  * un cours s'étale sur plusieurs disques BnF et `start` repart de 0 à chaque
@@ -589,20 +639,27 @@ const Player = (() => {
   function openFull() { full.hidden = false; renderList(); }
   function closeFull() { full.hidden = true; }
 
-  async function start(seanceId, fragId) {
+  async function start(seanceId, fragId, opts = {}) {
     let data;
     try { data = await getSeanceData(seanceId); }
     catch (e) { toast(e.offline ? 'Séance non téléchargée — hors connexion' : 'Lecture impossible'); return; }
     seance = data;
     offline = !!data._offline || !navigator.onLine;
     playlist = data.fragments;
+    let resumeTime = opts.resumeTime;
+    // pas de fragment explicite (ouverture normale d'une séance, pas un lien
+    // de recherche/historique) : reprendre où l'écoute s'était arrêtée.
+    if (fragId == null) {
+      const h = await getHistoryEntry(seanceId);
+      if (h) { fragId = h.fragId; resumeTime = h.time; }
+    }
     idx = fragId != null ? Math.max(0, playlist.findIndex((f) => f.id === Number(fragId))) : 0;
     root.hidden = false;
     openFull();
-    await load(idx, true);
+    await load(idx, true, resumeTime);
   }
 
-  async function load(i, autoplay) {
+  async function load(i, autoplay, resumeTime) {
     if (i < 0 || i >= playlist.length) return;
     idx = i;
     const fr = playlist[i];
@@ -616,6 +673,10 @@ const Player = (() => {
 
     audio.src = src;
     audio.load();
+    if (resumeTime) {
+      const onMeta = () => { audio.currentTime = resumeTime; audio.removeEventListener('loadedmetadata', onMeta); };
+      audio.addEventListener('loadedmetadata', onMeta);
+    }
     if (autoplay) audio.play().catch(() => {});
 
     els.pfSeance.textContent = `${seance.theme || ''} · séance ${seance.num ?? '—'} · ${fmtHMS(fr.start)}`;
@@ -789,7 +850,8 @@ const Player = (() => {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       if (idx < 0 || !seance) return;
-      idbPut('meta', { k: 'lastPlayed', seanceId: seance.id, fragId: playlist[idx]?.id, time: audio.currentTime, at: Date.now() });
+      saveProgress(seance.id, playlist[idx]?.id, audio.currentTime,
+        { titre: seance.titre, theme: seance.theme, num: seance.num, date: seance.date });
     }, 400);
   }
 
@@ -976,6 +1038,53 @@ async function viewDownloads(fromOffline) {
   app.replaceChildren(v);
 }
 
+async function viewHistorique() {
+  setActiveTab('historique'); setTop('Historique'); showBack(false);
+  const list = await getHistory();
+  const v = el('div', { className: 'view' });
+  v.innerHTML = `<p class="eyebrow">Écoutes</p>
+    <h1 class="screen-title">${list.length} séance${list.length > 1 ? 's' : ''} en cours</h1>
+    <p class="screen-sub">reprendre une lecture là où elle s'est arrêtée</p>
+    <div id="histActions"></div>
+    <div id="histList"></div>`;
+  if (list.length) {
+    $('#histActions', v).append(
+      el('button', {
+        className: 'btn btn-outline btn-sm', textContent: "Vider l'historique",
+        onclick: async () => {
+          if (!confirm("Vider tout l'historique d'écoute ?")) return;
+          await clearHistoryAll(); viewHistorique();
+        },
+      }),
+      el('div', { style: 'height:14px' }),
+    );
+  }
+  $('#histList', v).innerHTML = list.map((h) => `
+    <div class="row" data-open="${h.seanceId}" style="cursor:pointer">
+      <span class="row-main">
+        <span class="row-title">${esc(h.titre || 'Séance')}</span>
+        <span class="row-meta">${esc(h.theme || '')}${h.num != null ? ' · séance ' + h.num : ''} · reprendre à ${fmtHMS(h.time)}</span>
+        <span class="row-meta">${new Date(h.at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+      </span>
+      <button class="btn btn-outline btn-sm" data-del="${h.seanceId}">✕</button>
+    </div>`).join('') || '<p class="empty">Aucune écoute en cours pour le moment.</p>';
+  $('#histList', v).addEventListener('click', async (e) => {
+    const delId = e.target.closest('[data-del]')?.dataset.del;
+    if (delId) {
+      await removeHistoryEntry(Number(delId));
+      toast("Retiré de l'historique");
+      viewHistorique();
+      return;
+    }
+    const openId = e.target.closest('[data-open]')?.dataset.open;
+    if (openId) {
+      const h = list.find((x) => x.seanceId === Number(openId));
+      if (h) Player.start(h.seanceId, h.fragId, { resumeTime: h.time });
+    }
+  });
+  app.replaceChildren(v);
+}
+
 async function viewSearch() {
   setActiveTab('search'); setTop('Recherche'); showBack(false);
   const v = el('div', { className: 'view' });
@@ -1046,6 +1155,10 @@ async function viewStorage() {
     <p class="eyebrow">Séances</p>
     <div id="storeList"></div>`;
   const acts = $('#storeActions', v);
+  acts.append(el('button', {
+    className: 'btn btn-outline', textContent: 'Vérifier les mises à jour',
+    onclick: checkForUpdates,
+  }), el('div', { style: 'height:10px' }));
   if (!persisted && navigator.storage?.persist) {
     acts.append(el('button', {
       className: 'btn btn-outline', textContent: 'Demander un stockage persistant',
@@ -1069,6 +1182,47 @@ async function viewStorage() {
   app.replaceChildren(v);
 }
 
+const ANNOTATION_TYPE_LABELS = {
+  correction: 'Correction', personne: 'Personne', oeuvre: 'Œuvre', date: 'Date / période', lieu: 'Lieu',
+};
+
+async function viewAnnotations() {
+  setActiveTab(''); setTop('Mes annotations'); showBack(true);
+  if (!authState || authState.expired) {
+    const v = el('div', { className: 'view' });
+    v.innerHTML = `<p class="eyebrow">Mes annotations</p>
+      <p class="empty">${authState?.expired ? 'Session expirée — reconnectez-vous (icône compte).' : 'Connectez-vous (icône compte) pour voir vos signalements.'}</p>`;
+    return app.replaceChildren(v);
+  }
+  loading();
+  let items;
+  try { items = await fetchMyAnnotations(); }
+  catch (e) { return errorBox('Impossible de charger vos annotations.', viewAnnotations); }
+
+  const v = el('div', { className: 'view' });
+  v.innerHTML = `<p class="eyebrow">Signalements</p>
+    <h1 class="screen-title">${items.length} annotation${items.length > 1 ? 's' : ''}</h1>
+    <p class="screen-sub">corrections et références que vous avez signalées</p>
+    <div id="annoList"></div>`;
+  $('#annoList', v).innerHTML = items.map((a) => `
+    <div class="row" data-open="${a.idConf}" data-frag="${a.idTrans}" style="cursor:pointer">
+      <span class="row-main">
+        <span class="row-title">${esc(ANNOTATION_TYPE_LABELS[a.type] || a.type)}</span>
+        <span class="row-meta">${a.type === 'correction'
+          ? `Remplacer « ${esc(a.remplacer || '')} » par « ${esc(a.par || '')} »`
+          : esc(a.texte || '')}</span>
+        <span class="row-meta">${a.timecode != null ? 'à ' + fmtHMS(a.timecode) + ' · ' : ''}${fmtDate(a.created_at)}</span>
+      </span>
+      <span class="row-chevron">›</span>
+    </div>`).join('') || '<p class="empty">Aucune annotation pour le moment.</p>';
+  $('#annoList', v).addEventListener('click', (e) => {
+    const row = e.target.closest('[data-open]');
+    if (!row) return;
+    Player.start(Number(row.dataset.open), Number(row.dataset.frag));
+  });
+  app.replaceChildren(v);
+}
+
 /* ------------------------------------------------------------- routeur */
 function route() {
   const h = location.hash.replace(/^#/, '') || '/';
@@ -1078,8 +1232,10 @@ function route() {
   if (seg === 'theme') return viewTheme(decodeURIComponent(arg));
   if (seg === 'seance') return viewSeance(arg);
   if (seg === 'downloads') return viewDownloads();
+  if (seg === 'historique') return viewHistorique();
   if (seg === 'search') return viewSearch();
   if (seg === 'storage') return viewStorage();
+  if (seg === 'annotations') return viewAnnotations();
   return viewHome();
 }
 window.addEventListener('hashchange', route);
@@ -1096,7 +1252,9 @@ async function renderAcct() {
   if (authState && !authState.expired) {
     c.innerHTML = `<div class="acct-name">${esc(authState.profile.name || 'Connecté')}</div>
       <div class="acct-mail">${esc(authState.profile.email || '')} · via ${esc(authState.provider)}</div>
+      <button class="btn btn-outline" id="acctAnno">Mes annotations</button>
       <button class="btn btn-outline" id="acctOut">Se déconnecter</button>`;
+    $('#acctAnno').onclick = () => { $('#acctSheet').hidden = true; location.hash = '#/annotations'; };
     $('#acctOut').onclick = async () => { await signOut(); refreshAcctBadge(); Player.refreshReport(); renderAcct(); };
   } else if (provs.google) {
     c.innerHTML = `<p class="muted" style="margin-bottom:14px">${authState?.expired
@@ -1134,8 +1292,20 @@ window.addEventListener('offline', () => { refreshNet(); toast('Hors connexion �
  * suffisent à ce qu'un déploiement soit pris en compte au chargement suivant.
  * (Un rechargement forcé sur `controllerchange` provoquait une boucle après
  * vidage du cache — à ne pas réintroduire.) */
+let swReg = null;
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').then((reg) => { swReg = reg; }).catch(() => {});
+}
+
+/* Vérification manuelle (bouton dans « Espace ») : revalide le script du SW
+ * et reconstruit le cache de la coquille, puis recharge. C'est un
+ * rechargement déclenché par CE clic explicite — pas un rechargement
+ * automatique sur `controllerchange` (voir ci-dessus, délibérément évité). */
+async function checkForUpdates() {
+  if (!navigator.onLine) { toast('Vérification impossible hors connexion.'); return; }
+  toast('Vérification des mises à jour…');
+  try { if (swReg) await swReg.update(); } catch (_) { /* on recharge quand même : réseau d'abord */ }
+  location.reload();
 }
 
 /* --------------------------------------------------------------- boot */
