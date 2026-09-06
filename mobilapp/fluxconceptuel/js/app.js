@@ -36,6 +36,9 @@ const extractError = document.getElementById("extract-error");
 const extractSuccess = document.getElementById("extract-success");
 const zoteroLoginForm = document.getElementById("zotero-login-form");
 
+const updateBanner = document.getElementById("update-banner");
+const btnUpdate = document.getElementById("btn-update");
+
 const btnAuthToggle = document.getElementById("btn-auth-toggle");
 const loginForm = document.getElementById("login-form");
 const loginError = document.getElementById("login-error");
@@ -799,8 +802,60 @@ async function init() {
   }
 }
 
+// --- Vérification des mises à jour de l'application (service worker) ---
+//
+// Le service worker installe la nouvelle version en tâche de fond mais reste
+// "en attente" (voir sw.js) tant que l'utilisateur n'a pas confirmé, pour ne
+// pas changer le code qui tourne sous ses pieds sans prévenir. On propose la
+// mise à jour dès qu'une nouvelle version est prête, et on vérifie
+// régulièrement s'il y en a une (au chargement, au retour au premier plan,
+// puis toutes les heures pour un onglet resté ouvert longtemps).
+const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
+
+function showUpdateBanner(registration) {
+  updateBanner.classList.remove("hidden");
+  btnUpdate.onclick = () => {
+    btnUpdate.disabled = true;
+    if (registration.waiting) registration.waiting.postMessage("SKIP_WAITING");
+  };
+}
+
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  navigator.serviceWorker.register("sw.js").then((registration) => {
+    // Une version est peut-être déjà en attente (ex. onglet resté ouvert
+    // pendant l'installation d'une mise à jour précédente).
+    if (registration.waiting && navigator.serviceWorker.controller) {
+      showUpdateBanner(registration);
+    }
+
+    registration.addEventListener("updatefound", () => {
+      const installing = registration.installing;
+      if (!installing) return;
+      installing.addEventListener("statechange", () => {
+        // "installed" + un controller déjà actif = ce n'est pas la première
+        // installation mais bien une mise à jour d'une version déjà en cours.
+        if (installing.state === "installed" && navigator.serviceWorker.controller) {
+          showUpdateBanner(registration);
+        }
+      });
+    });
+
+    const checkForUpdate = () => registration.update().catch(() => {});
+    checkForUpdate();
+    setInterval(checkForUpdate, UPDATE_CHECK_INTERVAL_MS);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) checkForUpdate();
+    });
+  }).catch(() => {});
+
+  // Le nouveau service worker vient de prendre le contrôle (après SKIP_WAITING) :
+  // on recharge pour que la page utilise la nouvelle version du code.
+  let hasReloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (hasReloaded) return;
+    hasReloaded = true;
+    location.reload();
+  });
 }
 
 init();

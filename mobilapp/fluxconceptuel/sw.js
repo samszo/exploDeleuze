@@ -1,4 +1,4 @@
-const CACHE = "flux-conceptuel-v16";
+const CACHE = "flux-conceptuel-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,7 +7,7 @@ const APP_SHELL = [
   "./css/style.css",
   "./css/fontawesome.min.css",
   "./webfonts/fa-solid-900.woff2",
-  "./js/app.js?v=16",
+  "./js/app.js?v=17",
   "./js/api.js",
   "./js/auth.js",
   "./js/player.js",
@@ -25,7 +25,8 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
+  // Pas de skipWaiting() ici : la nouvelle version reste "en attente" tant que
+  // l'utilisateur n'a pas confirmé la mise à jour depuis l'application (voir app.js).
 });
 
 self.addEventListener("activate", (event) => {
@@ -35,6 +36,15 @@ self.addEventListener("activate", (event) => {
     )
   );
   self.clients.claim();
+});
+
+// Message envoyé par l'application quand l'utilisateur confirme la mise à jour :
+// active immédiatement le service worker en attente (au lieu d'attendre la
+// fermeture de tous les onglets).
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 // App shell : cache d'abord. API / audio Omeka-S : réseau uniquement (données et
