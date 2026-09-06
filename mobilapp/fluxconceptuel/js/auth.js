@@ -1,4 +1,4 @@
-import { OMK_BASE } from "./config.js";
+import { OMK_BASE } from "./config.js?v=19";
 
 const STORAGE_KEY = "flux-conceptuel-auth";
 
@@ -12,6 +12,7 @@ export async function login(email, keyIdentity, keyCredential) {
   if (!user) return null;
 
   const auth = {
+    id: user["o:id"],
     email,
     keyIdentity,
     keyCredential,

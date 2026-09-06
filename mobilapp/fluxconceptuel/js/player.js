@@ -1,4 +1,4 @@
-import { mediaUrl } from "./api.js";
+import { mediaUrl } from "./api.js?v=19";
 
 export class Player {
   constructor(audioEl, captionEl, callbacks = {}) {

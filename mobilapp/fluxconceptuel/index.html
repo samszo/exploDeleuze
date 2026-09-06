@@ -31,6 +31,12 @@
       </div>
       <span aria-hidden="true" style="font-size:2rem;line-height:1;"><a href="https://github.com/samszo/exploDeleuze/tree/main/mobilapp/fluxconceptuel" target="_blank"><img class="logo" src="./img/logo-github.png" /></a></span>
     </div>
+    <div class="home-actions">
+      <button id="btn-open-history" class="icon-btn" aria-label="Historique des écoutes"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></button>
+      <button id="btn-open-annotations" class="icon-btn hidden" aria-label="Mes annotations"><i class="fa-solid fa-note-sticky" aria-hidden="true"></i></button>
+      <button id="btn-check-update" class="icon-btn" aria-label="Vérifier les mises à jour"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></button>
+      <span id="update-check-status" class="status hidden"></span>
+    </div>
     <form id="search-form" class="search-form">
       <input id="search" type="search" placeholder="Rechercher un cours, un thème…" autocomplete="off">
       <button type="submit" class="search-btn" aria-label="Rechercher">Rechercher</button>
@@ -54,6 +60,26 @@
   <main id="course-groups" class="course-groups">
     <p class="status">Chargement des cours…</p>
   </main>
+</div>
+
+<div id="view-history" class="view hidden">
+  <header class="player-header">
+    <button id="btn-history-back" class="icon-btn" aria-label="Retour à la liste"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+    <div class="player-title">
+      <h2>Historique des écoutes</h2>
+    </div>
+  </header>
+  <main id="history-groups" class="course-groups"></main>
+</div>
+
+<div id="view-annotations" class="view hidden">
+  <header class="player-header">
+    <button id="btn-annotations-back" class="icon-btn" aria-label="Retour à la liste"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+    <div class="player-title">
+      <h2>Mes annotations</h2>
+    </div>
+  </header>
+  <main id="annotations-groups" class="course-groups"></main>
 </div>
 
 <div id="view-player" class="view hidden">
@@ -169,6 +195,6 @@
   <audio id="audio" preload="auto"></audio>
 </div>
 
-<script type="module" src="js/app.js?v=18"></script>
+<script type="module" src="js/app.js?v=19"></script>
 </body>
 </html>

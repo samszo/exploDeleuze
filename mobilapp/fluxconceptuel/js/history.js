@@ -43,6 +43,10 @@ export function removeProgress(idConf) {
   writeHistory(history);
 }
 
+export function clearHistory() {
+  writeHistory({});
+}
+
 // Historique trié du plus récent au plus ancien : [{ idConf, idTrans, position, updatedAt }]
 export function getRecentHistory() {
   return Object.entries(readHistory())

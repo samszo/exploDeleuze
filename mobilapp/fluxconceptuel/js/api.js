@@ -1,5 +1,5 @@
-import { OMK_BASE, API_BASE } from "./config.js";
-import { authQuery } from "./auth.js";
+import { OMK_BASE, API_BASE } from "./config.js?v=19";
+import { authQuery } from "./auth.js?v=19";
 
 export function mediaUrl(source) {
   return `${OMK_BASE}/${source}`;
@@ -51,6 +51,23 @@ export async function signalerFragment({ idConf, idTrans, type, texte, remplacer
   const data = await res.json();
   if (!res.ok || data.error) throw new Error(data.error || `signaler: HTTP ${res.status}`);
   return data;
+}
+
+// liste les signalements (corrections / références) créés par l'utilisateur
+// connecté : lit directement l'API cœur d'Omeka-S (pas besoin de passer par le
+// module, dcterms:type identifie déjà nos signalements parmi ses items).
+export async function fetchMesAnnotations(auth) {
+  const params = new URLSearchParams({
+    owner_id: auth.id,
+    sort_by: "created",
+    sort_order: "desc",
+    per_page: "100",
+  });
+  params.set("property[0][property]", "dcterms:type");
+  params.set("property[0][type]", "ex");
+  const res = await fetch(`${OMK_BASE}/api/items?${params.toString()}&${authQuery(auth)}`);
+  if (!res.ok) throw new Error(`mes annotations: HTTP ${res.status}`);
+  return res.json();
 }
 
 // relance la transcription d'un fragment avec un autre modèle (job Omeka).

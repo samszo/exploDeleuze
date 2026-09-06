@@ -1,4 +1,4 @@
-import { md5ArrayBuffer } from "./md5.js";
+import { md5ArrayBuffer } from "./md5.js?v=19";
 
 const ZOTERO_API = "https://api.zotero.org";
 const STORAGE_KEY = "flux-conceptuel-zotero";

@@ -1,16 +1,27 @@
-import { fetchConferences, fetchTranscriptions, fetchSearchResults, signalerFragment, relancerTranscription, mediaUrl } from "./api.js";
-import { login, logout, getAuth } from "./auth.js";
-import { getZoteroAuth, saveZoteroAuth, findOrCreateCourseItem, createExtractItem, uploadAttachment } from "./zotero.js";
-import { extractAudioRange } from "./audioExtract.js";
-import { saveProgress, getProgress, removeProgress, getRecentHistory } from "./history.js";
-import { Player } from "./player.js";
+import { fetchConferences, fetchTranscriptions, fetchSearchResults, fetchMesAnnotations, signalerFragment, relancerTranscription, mediaUrl } from "./api.js?v=19";
+import { login, logout, getAuth } from "./auth.js?v=19";
+import { getZoteroAuth, saveZoteroAuth, findOrCreateCourseItem, createExtractItem, uploadAttachment } from "./zotero.js?v=19";
+import { extractAudioRange } from "./audioExtract.js?v=19";
+import { saveProgress, getProgress, removeProgress, getRecentHistory, clearHistory } from "./history.js?v=19";
+import { Player } from "./player.js?v=19";
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 const viewList = document.getElementById("view-list");
 const viewPlayer = document.getElementById("view-player");
+const viewHistory = document.getElementById("view-history");
+const viewAnnotations = document.getElementById("view-annotations");
 const courseGroups = document.getElementById("course-groups");
+const historyGroups = document.getElementById("history-groups");
+const annotationsGroups = document.getElementById("annotations-groups");
 const searchForm = document.getElementById("search-form");
 const search = document.getElementById("search");
+
+const btnOpenHistory = document.getElementById("btn-open-history");
+const btnHistoryBack = document.getElementById("btn-history-back");
+const btnOpenAnnotations = document.getElementById("btn-open-annotations");
+const btnAnnotationsBack = document.getElementById("btn-annotations-back");
+const btnCheckUpdate = document.getElementById("btn-check-update");
+const updateCheckStatus = document.getElementById("update-check-status");
 
 const audioEl = document.getElementById("audio");
 const captionsEl = document.getElementById("captions");
@@ -164,6 +175,11 @@ btnBack.addEventListener("click", () => {
   showList();
   renderCourseList(search.value.trim());
 });
+
+btnOpenHistory.addEventListener("click", showHistory);
+btnHistoryBack.addEventListener("click", showList);
+btnOpenAnnotations.addEventListener("click", showAnnotations);
+btnAnnotationsBack.addEventListener("click", showList);
 
 // URI du fragment au format Media Fragments (https://www.w3.org/TR/media-frags/) :
 // fichier audio BnF/Gallica + horodatage cumulé #t=début,fin depuis le début de ce fichier.
@@ -385,6 +401,7 @@ function updateAuthUI() {
   btnAuthToggle.classList.toggle("hidden", connected);
   loginForm.classList.add("hidden");
   collabActions.classList.toggle("hidden", !connected);
+  btnOpenAnnotations.classList.toggle("hidden", !connected);
   if (!connected) closeReportPanel();
   if (connected) loggedInName.textContent = `Connecté : ${auth.name}`;
 }
@@ -528,14 +545,28 @@ search.addEventListener("search", () => {
   if (!search.value.trim()) renderCourseList("");
 });
 
+const ALL_VIEWS = [viewList, viewPlayer, viewHistory, viewAnnotations];
+
+function showView(view) {
+  for (const v of ALL_VIEWS) v.classList.toggle("hidden", v !== view);
+}
+
 function showList() {
-  viewPlayer.classList.add("hidden");
-  viewList.classList.remove("hidden");
+  showView(viewList);
 }
 
 function showPlayer() {
-  viewList.classList.add("hidden");
-  viewPlayer.classList.remove("hidden");
+  showView(viewPlayer);
+}
+
+function showHistory() {
+  showView(viewHistory);
+  renderHistoryPage();
+}
+
+function showAnnotations() {
+  showView(viewAnnotations);
+  renderAnnotationsPage();
 }
 
 function groupByTheme(list) {
@@ -575,6 +606,122 @@ function renderHistorySection() {
     });
 }
 
+// Page "Historique des écoutes" : liste complète (contrairement à la section
+// "Reprendre l'écoute" de la page d'accueil, limitée aux 5 plus récentes).
+function renderHistoryPage() {
+  historyGroups.innerHTML = "";
+
+  const recent = getRecentHistory()
+    .map((entry) => ({ ...entry, conf: conferences.find((c) => c.id === entry.idConf) }))
+    .filter((entry) => entry.conf);
+
+  if (!recent.length) {
+    historyGroups.innerHTML = '<p class="status">Aucun cours écouté pour le moment.</p>';
+    return;
+  }
+
+  const actions = d3.select(historyGroups).append("div").attr("class", "list-actions");
+  actions.append("button").attr("class", "auth-link").text("Vider l'historique")
+    .on("click", () => {
+      clearHistory();
+      renderHistoryPage();
+    });
+
+  const section = d3.select(historyGroups).append("section").attr("class", "theme-group");
+  const li = section.append("ul").attr("class", "course-list").selectAll("li").data(recent).enter()
+    .append("li").attr("class", "course-card")
+    .on("click", (e, d) => openCourse(d.conf, { jumpToIdTrans: d.idTrans, resumePosition: d.position }));
+  li.append("span").attr("class", "course-num").text((d) => d.conf.num);
+  const divLi = li.append("div").attr("class", "course-info");
+  divLi.append("span").attr("class", "course-promo").text((d) => `${d.conf.theme} — Cours ${d.conf.num}`);
+  divLi.append("span").attr("class", "course-sujets").text((d) => dateCours(new Date(d.conf.created)));
+  divLi.append("span").attr("class", "course-stats").text((d) =>
+    `Reprendre à ${formatTime(d.position)} · le ${new Date(d.updatedAt).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}`
+  );
+  li.append("button").attr("class", "history-remove").attr("aria-label", "Retirer de l'historique")
+    .html('<i class="fa-solid fa-xmark" aria-hidden="true"></i>')
+    .on("click", (e, d) => {
+      e.stopPropagation();
+      removeProgress(d.idConf);
+      renderHistoryPage();
+    });
+}
+
+// Page "Mes annotations" : signalements (corrections / références) créés par
+// l'utilisateur connecté, lus directement depuis l'API cœur d'Omeka-S.
+const ANNOTATION_TYPE_LABELS = {
+  correction: "Correction",
+  personne: "Personne",
+  oeuvre: "Œuvre",
+  date: "Date / période",
+  lieu: "Lieu",
+};
+
+function mapAnnotation(item) {
+  const val = (term) => item[term]?.[0]?.["@value"] ?? null;
+  const resourceId = (term) => item[term]?.[0]?.value_resource_id ?? null;
+  return {
+    id: item["o:id"],
+    titre: item["o:title"],
+    type: val("dcterms:type"),
+    texte: val("dcterms:description"),
+    remplacer: val("jdc:remplacer"),
+    par: val("jdc:par"),
+    timecode: val("dcterms:temporal"),
+    status: val("curation:status"),
+    idConf: resourceId("dcterms:isPartOf"),
+    idTrans: resourceId("dcterms:source"),
+    created: item["o:created"]?.["@value"] ?? null,
+  };
+}
+
+async function renderAnnotationsPage() {
+  annotationsGroups.innerHTML = "";
+  const auth = getAuth();
+  if (!auth || auth.id == null) {
+    annotationsGroups.innerHTML = '<p class="status error">Reconnectez-vous à Omeka S pour voir vos annotations.</p>';
+    return;
+  }
+
+  annotationsGroups.innerHTML = '<p class="status">Chargement…</p>';
+  let items;
+  try {
+    items = await fetchMesAnnotations(auth);
+  } catch (err) {
+    annotationsGroups.innerHTML = '<p class="status error">Impossible de charger les annotations.</p>';
+    console.error(err);
+    return;
+  }
+
+  const annotations = items.map(mapAnnotation);
+  annotationsGroups.innerHTML = "";
+  if (!annotations.length) {
+    annotationsGroups.innerHTML = '<p class="status">Aucune annotation pour le moment.</p>';
+    return;
+  }
+
+  const section = d3.select(annotationsGroups).append("section").attr("class", "theme-group");
+  const li = section.append("ul").attr("class", "course-list").selectAll("li").data(annotations).enter()
+    .append("li").attr("class", (d) => `course-card${d.idConf == null ? " annotation-unlinked" : ""}`)
+    .on("click", (e, d) => {
+      if (d.idConf == null) return;
+      const conf = conferences.find((c) => c.id === d.idConf);
+      if (!conf) return;
+      openCourse(conf, { jumpToIdTrans: d.idTrans });
+    });
+  const divLi = li.append("div").attr("class", "course-info");
+  const header = divLi.append("div").attr("class", "annotation-header");
+  header.append("span").attr("class", "annotation-type").text((d) => ANNOTATION_TYPE_LABELS[d.type] || d.type);
+  header.append("span").attr("class", "annotation-status").text((d) => d.status || "").filter((d) => !d.status).remove();
+  divLi.append("p").attr("class", "annotation-texte").text((d) =>
+    d.type === "correction" ? `Remplacer « ${d.remplacer} » par « ${d.par} »` : d.texte
+  );
+  divLi.append("span").attr("class", "course-stats").text((d) => {
+    const date = d.created ? new Date(d.created).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" }) : "";
+    return [d.timecode ? `à ${d.timecode}` : "", date].filter(Boolean).join(" · ");
+  });
+}
+
 function renderCourseCards(list) {
   courseGroups.innerHTML = "";
   renderHistorySection();
@@ -594,7 +741,10 @@ function renderCourseCards(list) {
     const divLi = li.append("div").attr("class","course-info");
     divLi.append("span").attr("class","course-promo").text(d=>dateCours(new Date(d.created)));
     divLi.append("span").attr("class","course-sujets").text(d=>{
-      d.sujets = JSON.parse(d.sujets);
+      // conferences est ré-affiché à chaque retour à la liste (historique,
+      // recherche vidée…) : parser une seule fois pour ne pas planter au
+      // second rendu (d.sujets serait alors déjà un tableau, pas du JSON).
+      if (typeof d.sujets === "string") d.sujets = JSON.parse(d.sujets);
       return d.sujets ? d.sujets.map(s=>s.label).join(" - ") : "";
     });
     divLi.filter((d) => d.extrait).append("p").attr("class", "course-excerpt").text((d) => d.extrait);
@@ -813,6 +963,8 @@ async function init() {
 // puis toutes les heures pour un onglet resté ouvert longtemps).
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
+let swRegistration = null;
+
 function showUpdateBanner(registration) {
   updateBanner.classList.remove("hidden");
   btnUpdate.onclick = () => {
@@ -821,8 +973,48 @@ function showUpdateBanner(registration) {
   };
 }
 
+function showUpdateCheckStatus(message, isError = false) {
+  updateCheckStatus.textContent = message;
+  updateCheckStatus.classList.toggle("error", isError);
+  updateCheckStatus.classList.remove("hidden");
+  clearTimeout(showUpdateCheckStatus.timer);
+  showUpdateCheckStatus.timer = setTimeout(() => updateCheckStatus.classList.add("hidden"), 4000);
+}
+
+// Vérification manuelle (bouton de la page d'accueil) : la vérification
+// automatique ci-dessous tourne déjà en tâche de fond, mais un bouton explicite
+// rassure l'utilisateur qui veut être sûr d'avoir la dernière version tout de
+// suite. registration.update() ne dit pas s'il a trouvé une nouvelle version :
+// on laisse le temps au listener "updatefound" de réagir, puis on affiche un
+// message "déjà à jour" seulement si aucun bandeau n'est apparu entre-temps.
+function checkForUpdatesManually() {
+  if (!swRegistration) {
+    showUpdateCheckStatus("Vérification impossible sur cet appareil.", true);
+    return;
+  }
+  btnCheckUpdate.disabled = true;
+  showUpdateCheckStatus("Vérification des mises à jour…");
+  swRegistration.update()
+    .then(() => {
+      setTimeout(() => {
+        btnCheckUpdate.disabled = false;
+        if (updateBanner.classList.contains("hidden")) {
+          showUpdateCheckStatus("Vous avez déjà la dernière version.");
+        }
+      }, 1500);
+    })
+    .catch(() => {
+      btnCheckUpdate.disabled = false;
+      showUpdateCheckStatus("Vérification impossible.", true);
+    });
+}
+
+btnCheckUpdate.addEventListener("click", checkForUpdatesManually);
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").then((registration) => {
+    swRegistration = registration;
+
     // Une version est peut-être déjà en attente (ex. onglet resté ouvert
     // pendant l'installation d'une mise à jour précédente).
     if (registration.waiting && navigator.serviceWorker.controller) {
