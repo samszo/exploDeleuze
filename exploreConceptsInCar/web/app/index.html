@@ -116,6 +116,14 @@
       <button class="pf-list-toggle" id="pfListToggle">Fragments de la séance</button>
       <button class="pf-list-toggle" id="pfZotero">Enregistrer dans Zotero</button>
     </div>
+    <div class="pf-report-form" id="pfZoteroSelect" hidden>
+      <div class="pf-report-title">Extrait à enregistrer dans Zotero</div>
+      <div class="pf-report-selection" id="zoSelection">Touchez le premier mot du passage à extraire, puis le dernier.</div>
+      <div class="pf-report-actions">
+        <button id="zoSelCancel">Annuler</button>
+        <button id="zoSelConfirm" class="pr-send" disabled>Confirmer l'extrait</button>
+      </div>
+    </div>
     <div class="pf-report-form" id="pfZoteroForm" hidden>
       <div class="pf-report-title">Connexion Zotero (une seule fois)</div>
       <input id="zoUser" type="text" placeholder="User ID Zotero" autocomplete="off" inputmode="numeric">

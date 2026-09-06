@@ -215,6 +215,7 @@ h1.screen-title{font-family:var(--font-head);font-weight:600;font-size:30px;line
 .pf-report-actions button{flex:1;height:46px;border:1px solid var(--line);color:#cfe0ef;font-size:14px;
   letter-spacing:.04em;text-transform:uppercase}
 .pf-report-actions .pr-send{background:var(--steel);color:#0f1216;border-color:var(--steel)}
+.pf-report-actions button:disabled{opacity:.45}
 
 .pf-tools{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px}
 .pf-list-toggle{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);align-self:flex-start}

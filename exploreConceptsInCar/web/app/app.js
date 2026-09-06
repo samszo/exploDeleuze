@@ -513,6 +513,55 @@ function md5ArrayBuffer(buffer) {
   return [...out].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/* Extrait une plage temporelle d'un fichier audio et l'encode en WAV (PCM 16
+ * bits), entièrement côté client (Web Audio API). Porté de
+ * mobilapp/fluxconceptuel/js/audioExtract.js. */
+function audioBufferToWav(buffer) {
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const bytesPerSample = 2;
+  const blockAlign = numChannels * bytesPerSample;
+  const dataLength = buffer.length * blockAlign;
+  const arrayBuffer = new ArrayBuffer(44 + dataLength);
+  const view = new DataView(arrayBuffer);
+  const writeString = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
+  writeString(0, 'RIFF'); view.setUint32(4, 36 + dataLength, true); writeString(8, 'WAVE');
+  writeString(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true); view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true); view.setUint16(32, blockAlign, true); view.setUint16(34, 16, true);
+  writeString(36, 'data'); view.setUint32(40, dataLength, true);
+  const channels = []; for (let ch = 0; ch < numChannels; ch++) channels.push(buffer.getChannelData(ch));
+  let offset = 44;
+  for (let i = 0; i < buffer.length; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const s = Math.max(-1, Math.min(1, channels[ch][i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      offset += 2;
+    }
+  }
+  return new Blob([arrayBuffer], { type: 'audio/wav' });
+}
+async function extractAudioRange(url, startSec, endSec) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioCtx();
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`audio: HTTP ${res.status}`);
+    const audioBuffer = await ctx.decodeAudioData(await res.arrayBuffer());
+    const sr = audioBuffer.sampleRate;
+    const s0 = Math.max(0, Math.floor(startSec * sr));
+    const s1 = Math.min(audioBuffer.length, Math.ceil(endSec * sr));
+    const frames = Math.max(1, s1 - s0);
+    const sliced = ctx.createBuffer(audioBuffer.numberOfChannels, frames, sr);
+    for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+      sliced.copyToChannel(audioBuffer.getChannelData(ch).subarray(s0, s1), ch);
+    }
+    return audioBufferToWav(sliced);
+  } finally {
+    ctx.close();
+  }
+}
+
 const Zotero = (() => {
   const API = 'https://api.zotero.org';
   const H = (auth, extra = {}) => ({ 'Zotero-API-Version': '3', 'Zotero-API-Key': auth.apiKey, ...extra });
@@ -607,17 +656,18 @@ const Zotero = (() => {
     return { itemKey, uploaded: true };
   }
 
-  /* Orchestration : un fragment (déjà téléchargé ou récupéré) → Zotero. */
-  async function exportFragment(auth, { seance, fragment, blob, lien }) {
-    const win = `${fmtHMS(fragment.start)} → ${fmtHMS(fragment.end)}`;
+  /* Orchestration : un extrait du fragment courant (déjà téléchargé ou
+   * récupéré, éventuellement découpé sur une sélection de mots) → Zotero. */
+  async function exportFragment(auth, { seance, fragment, blob, lien, label, win, ext = 'opus' }) {
+    const runningTime = win || `${fmtHMS(fragment.start)} → ${fmtHMS(fragment.end)}`;
     const courseKey = await findOrCreateCourseItem(auth, seance);
     const extractKey = await createExtractItem(auth, {
       title: `${seance.theme || 'Cours'} — Séance ${seance.num ?? ''} — ${fmtHMS(fragment.start)}`,
-      date: seance.date, runningTime: win, label: fragment.texte || '',
+      date: seance.date, runningTime, label: label ?? (fragment.texte || ''),
       url: lien, courseItemKey: courseKey, source: seance.source,
     });
     const stem = (fragment.audio_file || 'extrait').replace(/\.[^.]+$/, '');
-    await uploadAttachment(auth, extractKey, blob, `${stem}.opus`);
+    await uploadAttachment(auth, extractKey, blob, `${stem}.${ext}`);
     return extractKey;
   }
 
@@ -642,6 +692,7 @@ const Player = (() => {
     signalements: $('#pfSignalements'),
     zoteroBtn: $('#pfZotero'), zoteroForm: $('#pfZoteroForm'),
     zoUser: $('#zoUser'), zoKey: $('#zoKey'), zoErr: $('#zoErr'),
+    zoSelectPanel: $('#pfZoteroSelect'), zoSelection: $('#zoSelection'), zoSelConfirm: $('#zoSelConfirm'),
   };
   const REPORT_LABELS = {
     correction: 'Corriger la transcription', personne: 'Référence à une personne',
@@ -658,6 +709,7 @@ const Player = (() => {
   let textTokens = [];     // tous les tokens (mots + séparateurs), dans l'ordre du texte
   let wordTokenIdx = [];   // wordTokenIdx[k] = position dans textTokens du k-ième mot
   let selStart = null, selEnd = null;
+  let selectionCallback = null;   // (texte sélectionné, ou '') — mis à jour par le flux actif (signalement ou Zotero)
 
   function renderFragmentText(texte) {
     textTokens = (texte || '').split(/(\s+)/);
@@ -687,14 +739,7 @@ const Player = (() => {
     });
   }
   function updateSelectionUI() {
-    const txt = selectionText(selStart, selEnd);
-    if (!txt) {
-      els.prSelection.textContent = 'Touchez le premier mot du passage concerné, puis le dernier.';
-      els.prSelection.classList.remove('ok');
-    } else {
-      els.prSelection.textContent = `Séquence sélectionnée : « ${txt} »`;
-      els.prSelection.classList.add('ok');
-    }
+    if (selectionCallback) selectionCallback(selectionText(selStart, selEnd));
   }
   function clearSelection() {
     selStart = null; selEnd = null;
@@ -763,7 +808,9 @@ const Player = (() => {
       .map((c, k) => `<span class="concept${k === 0 ? ' live' : ''}">${esc(c)}</span>`).join('');
     renderList();
     closeReportForm();
+    closeZoteroSelect();
     els.zoteroForm.hidden = true;
+    pendingZoteroExtract = null;
     refreshReport();
     refreshFragmentSignalements();
     updateMediaSession(fr);
@@ -790,17 +837,67 @@ const Player = (() => {
         </div>`).join('');
   }
 
-  /* --- Zotero : exporter le fragment courant comme extrait --- */
-  async function currentBlob() {
-    const fr = playlist[idx];
-    const rec = await idbGet('audio', fr.audio_file);
-    if (rec) return rec.blob;
-    if (!navigator.onLine) throw new Error('fragment non téléchargé, hors connexion');
-    const r = await fetch(audioURL(fr.audio_file));
-    if (!r.ok) throw new Error('audio HTTP ' + r.status);
-    return r.blob();
+  /* --- Zotero : exporter un EXTRAIT (sélection de mots) du fragment courant ---
+   * Pas d'horodatage par mot dans les données de cette app (contrairement à
+   * mobilapp/fluxconceptuel, qui a des concepts avec start/end réels tirés du
+   * word_timestamps de Whisper) : la plage temporelle de l'extrait est donc
+   * estimée proportionnellement à la position des caractères sélectionnés
+   * dans le texte du fragment. Une approximation, pas une coupe exacte. */
+  let pendingZoteroExtract = null;   // { start, end, label } une fois la sélection confirmée
+
+  function estimateWordRangeTime(fr, a, b) {
+    const lo = Math.min(a, b), hi = Math.max(a, b);
+    const startChar = textTokens.slice(0, wordTokenIdx[lo]).join('').length;
+    const endChar = textTokens.slice(0, wordTokenIdx[hi] + 1).join('').length;
+    const totalChars = textTokens.join('').length || 1;
+    const duration = Math.max(0, Number(fr.end) - Number(fr.start)) || 0;
+    const start = duration * (startChar / totalChars);
+    const end = Math.min(duration || start + 0.3, Math.max(duration * (endChar / totalChars), start + 0.3));
+    return { start, end };
   }
-  async function zoteroExport() {
+
+  function openZoteroSelect() {
+    els.zoteroForm.hidden = true;
+    els.pfText.classList.add('selecting');
+    els.zoSelConfirm.disabled = true;
+    selectionCallback = (txt) => {
+      els.zoSelection.textContent = txt
+        ? `Extrait sélectionné : « ${txt} »`
+        : 'Touchez le premier mot du passage à extraire, puis le dernier.';
+      els.zoSelection.classList.toggle('ok', !!txt);
+      els.zoSelConfirm.disabled = !txt;
+    };
+    clearSelection();
+    els.zoSelectPanel.hidden = false;
+  }
+  function closeZoteroSelect() {
+    els.zoSelectPanel.hidden = true;
+    els.pfText.classList.remove('selecting');
+    selectionCallback = null;
+    clearSelection();
+  }
+  function confirmZoteroSelect() {
+    const fr = playlist[idx];
+    const txt = selectionText(selStart, selEnd);
+    if (!txt.trim() || !fr) return;
+    pendingZoteroExtract = { ...estimateWordRangeTime(fr, selStart, selEnd ?? selStart), label: txt };
+    closeZoteroSelect();
+    proceedZoteroExport();
+  }
+
+  async function extractedBlob(fr, range) {
+    const rec = await idbGet('audio', fr.audio_file);
+    if (rec) {
+      const src = URL.createObjectURL(rec.blob);
+      try { return await extractAudioRange(src, range.start, range.end); }
+      finally { URL.revokeObjectURL(src); }
+    }
+    if (!navigator.onLine) throw new Error('fragment non téléchargé, hors connexion');
+    return extractAudioRange(audioURL(fr.audio_file), range.start, range.end);
+  }
+
+  async function proceedZoteroExport() {
+    if (!pendingZoteroExtract) return;
     const auth = await ZoteroAuth.get();
     if (!auth) { els.zoteroForm.hidden = false; return; }
     els.zoteroForm.hidden = true;
@@ -808,12 +905,19 @@ const Player = (() => {
     const label = els.zoteroBtn.textContent;
     els.zoteroBtn.textContent = 'Envoi vers Zotero…';
     try {
-      const blob = await currentBlob();
+      const fr = playlist[idx];
+      const blob = await extractedBlob(fr, pendingZoteroExtract);
+      const absStart = Number(fr.start) + pendingZoteroExtract.start;
+      const absEnd = Number(fr.start) + pendingZoteroExtract.end;
       await Zotero.exportFragment(auth, {
-        seance, fragment: playlist[idx], blob,
+        seance, fragment: fr, blob,
         lien: redirectURI() + '#/seance/' + seance.id,
+        label: pendingZoteroExtract.label,
+        win: `${fmtHMS(absStart)} → ${fmtHMS(absEnd)}`,
+        ext: 'wav',
       });
       toast('Extrait enregistré dans Zotero');
+      pendingZoteroExtract = null;
     } catch (e) {
       toast('Zotero : ' + e.message);
     } finally {
@@ -835,6 +939,15 @@ const Player = (() => {
     els.prTexte.value = ''; els.prRemplacer.value = ''; els.prPar.value = ''; els.prSurTout.checked = false;
     $$('button', els.reportBtns).forEach((b) => b.classList.toggle('on', b.dataset.report === type));
     els.pfText.classList.add('selecting');
+    selectionCallback = (txt) => {
+      if (!txt) {
+        els.prSelection.textContent = 'Touchez le premier mot du passage concerné, puis le dernier.';
+        els.prSelection.classList.remove('ok');
+      } else {
+        els.prSelection.textContent = `Séquence sélectionnée : « ${txt} »`;
+        els.prSelection.classList.add('ok');
+      }
+    };
     clearSelection();
     els.reportForm.hidden = false;
   }
@@ -842,6 +955,7 @@ const Player = (() => {
     reportType = null;
     els.reportForm.hidden = true;
     els.pfText.classList.remove('selecting');
+    selectionCallback = null;
     clearSelection();
     $$('button', els.reportBtns).forEach((b) => b.classList.remove('on'));
   }
@@ -940,7 +1054,9 @@ const Player = (() => {
   });
   $('#prCancel').addEventListener('click', closeReportForm);
   $('#prSubmit').addEventListener('click', submitReport);
-  els.zoteroBtn.addEventListener('click', zoteroExport);
+  els.zoteroBtn.addEventListener('click', openZoteroSelect);
+  els.zoSelConfirm.addEventListener('click', confirmZoteroSelect);
+  $('#zoSelCancel').addEventListener('click', closeZoteroSelect);
   $('#zoConnect').addEventListener('click', async () => {
     const u = els.zoUser.value.trim(), k = els.zoKey.value.trim();
     if (!u || !k) { els.zoErr.textContent = 'User ID et clé API requis.'; els.zoErr.hidden = false; return; }
@@ -951,9 +1067,9 @@ const Player = (() => {
       els.zoErr.textContent = 'Identifiants Zotero refusés.'; els.zoErr.hidden = false;
       return;
     }
-    zoteroExport();
+    proceedZoteroExport();
   });
-  $('#zoCancel').addEventListener('click', () => { els.zoteroForm.hidden = true; });
+  $('#zoCancel').addEventListener('click', () => { els.zoteroForm.hidden = true; pendingZoteroExtract = null; });
 
   let saveTimer;
   function savePos() {
