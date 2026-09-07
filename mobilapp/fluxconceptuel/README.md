@@ -1,6 +1,6 @@
 # Flux Conceptuel
 
-Application mobile (PWA) d'exploration et d'écoute des cours de Gilles Deleuze enregistrés à l'université Paris 8. Elle consomme l'API JSON du module Omeka-S [ChaoticumSeminario](../../../../omk_deleuze/modules/ChaoticumSeminario) hébergé sur le même serveur Apache.
+Application mobile (PWA) d'exploration et d'écoute des cours de Gilles Deleuze enregistrés à l'université Paris 8. Elle consomme l'API JSON du module Omeka-S [ChaoticumSeminario](../../../omk_deleuze/modules/ChaoticumSeminario) hébergé sur le même serveur Apache.
 
 ## Présentation
 

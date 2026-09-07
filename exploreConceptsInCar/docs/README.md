@@ -13,6 +13,7 @@ Ce document couvre l'architecture et le pipeline de données. Pour l'installatio
 - [Le pipeline de données, étape par étape](#le-pipeline-de-données-étape-par-étape)
 - [L'API](#lapi)
 - [Le client web](#le-client-web)
+- [Le client web/app (PWA hors-ligne)](#le-client-webapp-pwa-hors-ligne)
 - [Démarrage local](#démarrage-local)
 - [Constats sur la qualité des données](#constats-sur-la-qualité-des-données)
 
@@ -89,7 +90,8 @@ exploreConceptsInCar/
 ├── api/
 │   └── main.py                  API FastAPI (thèmes, recherche, topologie, audio)
 ├── web/
-│   └── index.html                client web embarqué (téléphone en paysage, voix)
+│   ├── index.html                client web embarqué (téléphone en paysage, voix)
+│   └── app/                      PWA hors-ligne installable (voir web/app/README.md)
 └── docs/
     ├── README.md / index.html    ce document
     └── DEPLOYMENT.md / deployment.html   installation sur VPS Debian
@@ -157,6 +159,24 @@ Le classement par fréquence (`occurrence_count:desc` en dernière règle de tri
 
 L'endpoint de topologie interroge `fragments` avec un filtre `concepts = "<label>"`, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.
 
+### Signalements collaboratifs
+
+Un jeton d'identité tiers (Google, flux OAuth2 *implicit* côté client — voir
+[Le client web/app](#le-client-webapp-pwa-hors-ligne)) permet à un utilisateur
+connecté de signaler une correction ou une référence à un instant d'un
+fragment, sans jamais toucher Omeka S depuis l'API :
+
+| Endpoint | Auth | Rôle |
+|---|---|---|
+| `POST /api/signalements` | jeton (revérifié auprès du fournisseur) | crée un signalement — un fichier JSON dans `SIGNAL_DIR`, à réimporter plus tard dans Omeka S |
+| `GET /api/signalements/mine?id_token=&provider=` | jeton | signalements de l'utilisateur connecté (écran « Mes annotations ») |
+| `GET /api/signalements/fragment/{id_trans}` | publique | signalements existants sur un fragment (affichés dans le lecteur), sans l'identité du fournisseur — seulement le nom d'affichage |
+| `GET /api/signalements/export?key=` | clé d'export (`SIGNAL_EXPORT_KEY`) | tous les signalements en un tableau JSON, pour l'import Omeka S |
+
+Chaque signalement porte `selection` : la séquence de mots exacte du texte du
+fragment à laquelle il se rapporte (choisie par l'utilisateur avant l'envoi,
+requise — 400 sinon), pas seulement un horodatage.
+
 ## Le client web
 
 `web/index.html` — une seule page, sans framework, servie à la même origine que l'API (pas de CORS à gérer). Reprend l'identité visuelle *Industry* inversée nuit.
@@ -167,6 +187,17 @@ L'endpoint de topologie interroge `fragments` avec un filtre `concepts = "<label
 - **Voix** : Web Speech API du navigateur (si autorisée — généralement HTTPS requis), commandes « ouvre… », « cherche… », « agence X avec Y » (résout X et Y via `/api/concepts/resolve`).
 - **Historique** : fragments écoutés et topologies enregistrées, dans `localStorage` — pas de compte utilisateur.
 - Mise à l'échelle automatique de l'interface (canevas virtuel 1280×720) pour s'adapter à n'importe quel écran, avec message de rotation en portrait.
+
+## Le client web/app (PWA hors-ligne)
+
+`web/app/` — application installable (Android / navigateur), servie à la même origine que l'API (`/app/`), complémentaire du client ci-dessus : même API, même identité visuelle, mais orientée *stockage local* plutôt que *voix en voiture*. Détaillée dans [web/app/README.md](../web/app/README.md).
+
+- **Catalogue / Téléchargement / Lecteur hors-ligne** : une séance entière (métadonnées + transcriptions + audio Opus) téléchargée dans IndexedDB, écoutée et fouillée sans connexion.
+- **Écoutes** : historique d'écoute (position par séance, mémorisée localement) — reprendre exactement où on s'était arrêté.
+- **Compte / Mes annotations** : connexion à un fournisseur tiers (Google, OAuth2 *implicit*) pour signaler une correction ou une référence à un instant d'un fragment (après avoir sélectionné le passage concerné — premier et dernier mot), ou consulter ses propres signalements.
+- **Signalements sur un fragment** : ceux déjà créés par d'autres utilisateurs s'affichent dans le lecteur au fil de la lecture (public, en ligne uniquement).
+- **Export Zotero** : sélectionner le premier et le dernier mot d'un passage, découper l'audio correspondant côté client (Web Audio API) et l'enregistrer comme extrait dans une bibliothèque Zotero personnelle.
+- **Vérification des mises à jour** : bouton dans l'écran Espace, revalide la coquille auprès du réseau puis recharge — sans rechargement automatique en tâche de fond.
 
 ## Démarrage local
 

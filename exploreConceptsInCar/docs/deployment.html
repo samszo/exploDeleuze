@@ -494,7 +494,9 @@ curl -sI https://&lt;domaine&gt;/app/manifest.webmanifest | grep -i content-type
   <p>Connecté (Google pour l'instant), un utilisateur peut signaler depuis le lecteur une <strong>correction</strong> de transcription ou une <strong>référence</strong> (personne, œuvre, date, lieu) à un instant précis d'un fragment. L'API n'écrit pas dans Omeka S : chaque signalement devient un fichier JSON dans <code>SIGNAL_DIR</code>, à réimporter plus tard. L'identité (<code>provider</code> + <code>sub</code> + <code>email</code> + <code>name</code>) est conservée pour rattacher ou créer le compte Omeka au moment de l'import.</p>
   <ul>
     <li><code>GET /api/auth/providers</code> — fournisseurs activés (la PWA n'affiche que ceux-là)</li>
-    <li><code>POST /api/signalements</code> — vérifie le jeton auprès du fournisseur, écrit <code>SIGNAL_DIR/&lt;date&gt;-&lt;id&gt;.json</code></li>
+    <li><code>POST /api/signalements</code> — vérifie le jeton auprès du fournisseur, écrit <code>SIGNAL_DIR/&lt;date&gt;-&lt;id&gt;.json</code>. Requiert désormais <code>selection</code> (la séquence de mots du fragment concernée par le signalement), rejeté en 400 sinon.</li>
+    <li><code>GET /api/signalements/mine?id_token=&amp;provider=</code> — signalements de l'utilisateur connecté (jeton revérifié), pour l'écran « Mes annotations » de la PWA</li>
+    <li><code>GET /api/signalements/fragment/{id_trans}</code> — signalements existants sur un fragment, publique (aucun jeton), affichés dans le lecteur ; ne renvoie jamais l'e-mail ni l'identifiant du fournisseur, seulement le nom d'affichage</li>
     <li><code>GET /api/signalements/export?key=…</code> — tous les signalements en un tableau JSON (protégé par <code>SIGNAL_EXPORT_KEY</code>)</li>
   </ul>
   <p><strong>Configuration Google</strong> (console Google Cloud → <em>Identifiants</em> → <em>ID client OAuth 2.0</em>, type <em>Application Web</em>) :</p>

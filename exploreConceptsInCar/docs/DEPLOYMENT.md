@@ -135,6 +135,12 @@ MEILI_URL=http://127.0.0.1:7700
 MEILI_KEY=REMPLACER_PAR_LA_CLE_GENEREE
 OUT_DIR=/opt/flux-conceptuel-auto/app/audios
 
+# signalements collaboratifs de la PWA (web/app/, §9 pour le détail des
+# endpoints) — laisser vide pour désactiver la fonction
+GOOGLE_CLIENT_ID=
+SIGNAL_DIR=/opt/flux-conceptuel-auto/app/signalements
+SIGNAL_EXPORT_KEY=REMPLACER_PAR_UNE_CHAINE_ALEATOIRE
+
 # uniquement nécessaire si le pipeline d'export tourne sur CE serveur
 # (voir section 5, option A) — sinon laisser vide ou supprimer ces lignes
 DB_HOST=
@@ -145,6 +151,8 @@ SRC_ROOT=
 EOF
 sudo chmod 600 .env
 ```
+
+> **Signalements et authentification tierce (PWA `web/app/`)** : `GOOGLE_CLIENT_ID` vient de la console Google Cloud (*Identifiants* → *ID client OAuth 2.0*, type *Application Web*, origine JavaScript autorisée = `https://<domaine>`). `SIGNAL_DIR` reçoit un fichier JSON par signalement (créé au premier signalement, doit appartenir à `fluxconceptuel` — sauvegardez ce dossier, voir [§9](#9-maintenance)). `SIGNAL_EXPORT_KEY` protège `GET /api/signalements/export`. Sans `GOOGLE_CLIENT_ID`, la PWA fonctionne normalement mais n'affiche aucun bouton de connexion.
 
 ## 5. Où vivent les données (source vs diffusion)
 
