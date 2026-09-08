@@ -17,9 +17,10 @@ orientée *stockage local* plutôt que *voix en voiture*.
 | **Hors-ligne** | les séances stockées sur l'appareil, avec leur poids |
 | **Recherche** | plein texte, insensible aux accents, extraits surlignés — sur les séances téléchargées (hors-ligne) ou sur tout le corpus (en ligne, `/api/search`) |
 | **Écoutes** | historique d'écoute : la position atteinte dans chaque séance est mémorisée (IndexedDB) ; touche une entrée pour reprendre exactement où on s'était arrêté, ou la retire de l'historique |
-| **Espace** | quota du navigateur, poids par séance, suppression, stockage persistant, bouton « Vérifier les mises à jour » |
+| **Espace** | quota du navigateur, poids par séance, suppression, stockage persistant |
 | **Lecteur** | lecture continue des fragments, enchaînement auto, ±10 s, contrôles écran verrouillé (Media Session), signalements existants sur le fragment affiché |
 | **Compte** | connexion via un fournisseur tiers (Google) — icône compte dans la barre du haut, avec accès à « Mes annotations » une fois connecté |
+| **Paramètres** | icône engrenage à côté de l'icône compte : numéro de version (commit GitHub courant), lien vers le code source, lien vers la documentation, bouton « Vérifier les mises à jour » |
 | **Signalements** | connecté, 5 boutons dans le lecteur : corriger la transcription, signaler une référence à une personne / œuvre / date / lieu, à l'instant courant du fragment — la création exige de sélectionner d'abord le passage concerné (premier mot puis dernier mot du texte affiché) |
 | **Mes annotations** | tous les signalements créés par l'utilisateur connecté, lus directement depuis les fichiers JSON de signalements ; touche une entrée pour rouvrir la séance correspondante |
 | **Export Zotero** | « Enregistrer dans Zotero » dans le lecteur : sélectionner le premier et le dernier mot du passage à extraire, découper l'audio sur cet intervalle (Web Audio API, côté client), puis l'enregistrer — item `audioRecording` pour la séance (dédupliqué sur le lien BnF) + un item pour l'extrait, avec le texte sélectionné comme `Label` et la fenêtre temporelle réelle comme `Running time` |
@@ -39,6 +40,13 @@ orientée *stockage local* plutôt que *voix en voiture*.
 - **Lecture hors-ligne** : chaque fragment est joué depuis son blob
   (`URL.createObjectURL`), ce qui autorise le *seek*. Si la séance n'est pas
   téléchargée mais qu'il y a du réseau, lecture en streaming depuis `/audio/`.
+- **Lecture continue résiliente** : la lecture ne s'arrête jamais en silence —
+  seule une pause explicite de l'utilisateur l'interrompt. Une erreur audio
+  (fichier introuvable, décodage impossible) passe automatiquement au
+  fragment suivant ; un fragment non téléchargé sans réseau est retenté
+  automatiquement dès le retour de la connexion (évènement `online`), sans
+  action de l'utilisateur. Un compteur d'échecs consécutifs (5) évite une
+  boucle infinie si rien ne peut se charger durablement.
 - **Historique d'écoute** : une entrée par séance dans `meta` (clé `history`),
   `{fragId, time, at, titre, theme, num, date}` — le titre/thème/date de la
   séance sont dupliqués dans l'entrée (pas seulement l'id) pour que l'écran

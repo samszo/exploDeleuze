@@ -25,6 +25,9 @@
   <div class="topbar-net" id="netBadge" title="État de la connexion">
     <span class="dot"></span><span class="net-label">…</span>
   </div>
+  <button class="topbar-settings" id="btnSettings" aria-label="Paramètres">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+  </button>
   <button class="topbar-acct" id="btnAcct" aria-label="Compte">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
   </button>
@@ -36,6 +39,15 @@
     <button class="sheet-close" id="acctClose" aria-label="Fermer">✕</button>
     <p class="eyebrow">Compte</p>
     <div id="acctContent"></div>
+  </div>
+</div>
+
+<!-- Feuille « paramètres » -->
+<div class="sheet" id="settingsSheet" hidden>
+  <div class="sheet-body">
+    <button class="sheet-close" id="settingsClose" aria-label="Fermer">✕</button>
+    <p class="eyebrow">Paramètres</p>
+    <div id="settingsContent"></div>
   </div>
 </div>
 

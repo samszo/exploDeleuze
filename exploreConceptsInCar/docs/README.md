@@ -156,6 +156,7 @@ Le classement par fréquence (`occurrence_count:desc` en dernière règle de tri
 | `GET /api/topology?concept=` | **graphe de co-occurrence calculé à la volée** — pas de table pré-agrégée |
 | `GET /audio/{fichier}` | fichiers `.opus` statiques, requêtes `Range` supportées (scrubbing) |
 | `GET /api/health` | vérifie la connexion à Meilisearch |
+| `GET /api/version` | commit git courant + liens GitHub/documentation (écran Paramètres de la PWA) |
 
 L'endpoint de topologie interroge `fragments` avec un filtre `concepts = "<label>"`, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.
 
@@ -197,7 +198,7 @@ requise — 400 sinon), pas seulement un horodatage.
 - **Compte / Mes annotations** : connexion à un fournisseur tiers (Google, OAuth2 *implicit*) pour signaler une correction ou une référence à un instant d'un fragment (après avoir sélectionné le passage concerné — premier et dernier mot), ou consulter ses propres signalements.
 - **Signalements sur un fragment** : ceux déjà créés par d'autres utilisateurs s'affichent dans le lecteur au fil de la lecture (public, en ligne uniquement).
 - **Export Zotero** : sélectionner le premier et le dernier mot d'un passage, découper l'audio correspondant côté client (Web Audio API) et l'enregistrer comme extrait dans une bibliothèque Zotero personnelle.
-- **Vérification des mises à jour** : bouton dans l'écran Espace, revalide la coquille auprès du réseau puis recharge — sans rechargement automatique en tâche de fond.
+- **Paramètres** : icône engrenage à côté de l'icône compte — version (commit GitHub courant), lien vers le code source, lien vers la documentation, et le bouton « Vérifier les mises à jour » (revalide la coquille auprès du réseau puis recharge — sans rechargement automatique en tâche de fond).
 
 ## Démarrage local
 

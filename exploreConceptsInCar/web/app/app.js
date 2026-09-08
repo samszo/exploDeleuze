@@ -761,6 +761,8 @@ const Player = (() => {
   function closeFull() { full.hidden = true; }
 
   async function start(seanceId, fragId, opts = {}) {
+    if (onlineRetryHandler) { window.removeEventListener('online', onlineRetryHandler); onlineRetryHandler = null; }
+    consecutiveLoadFailures = 0;
     let data;
     try { data = await getSeanceData(seanceId); }
     catch (e) { toast(e.offline ? 'Séance non téléchargée — hors connexion' : 'Lecture impossible'); return; }
@@ -790,7 +792,14 @@ const Player = (() => {
     const rec = await idbGet('audio', fr.audio_file);
     if (rec) { objURL = URL.createObjectURL(rec.blob); src = objURL; }
     else if (navigator.onLine) src = audioURL(fr.audio_file);
-    else { toast('Fragment non téléchargé — hors connexion'); return; }
+    else {
+      // Hors connexion et fragment non téléchargé : plutôt que d'abandonner la
+      // lecture continue ici, on retente automatiquement dès que le réseau
+      // revient (l'utilisateur n'a rien à refaire lui-même).
+      toast('Fragment non téléchargé — reprise automatique dès le retour du réseau');
+      waitForOnlineThenRetry(i, autoplay);
+      return;
+    }
 
     audio.src = src;
     audio.load();
@@ -815,6 +824,49 @@ const Player = (() => {
     refreshFragmentSignalements();
     updateMediaSession(fr);
   }
+
+  /* --- résilience de la lecture continue : ne jamais s'arrêter en silence ---
+   * Le seul arrêt volontaire est l'utilisateur qui touche pause. Un souci
+   * réseau ou un fichier audio en erreur ne doit interrompre l'écoute que
+   * temporairement (retente / passe au fragment suivant), jamais la stopper
+   * sans explication ni tentative de reprise. */
+  let consecutiveLoadFailures = 0;
+  const MAX_CONSECUTIVE_FAILURES = 5;   // évite une boucle infinie si tout échoue durablement
+  let onlineRetryHandler = null;
+
+  function waitForOnlineThenRetry(i, autoplay) {
+    if (onlineRetryHandler) window.removeEventListener('online', onlineRetryHandler);
+    onlineRetryHandler = () => {
+      onlineRetryHandler = null;
+      if (idx === i) load(i, autoplay);   // toujours sur ce fragment : on retente
+    };
+    window.addEventListener('online', onlineRetryHandler, { once: true });
+  }
+
+  audio.addEventListener('error', () => {
+    if (idx < 0) return;   // pas de lecture en cours
+    consecutiveLoadFailures++;
+    if (consecutiveLoadFailures > MAX_CONSECUTIVE_FAILURES) {
+      toast('Lecture interrompue : trop d\'erreurs audio consécutives.');
+      consecutiveLoadFailures = 0;
+      return;
+    }
+    if (!navigator.onLine) {
+      // probablement une coupure réseau plutôt qu'un fichier défectueux :
+      // on retente ce même fragment au retour du réseau plutôt que de sauter
+      // un contenu qui aurait très bien pu se charger.
+      toast('Erreur audio (hors connexion) — reprise automatique dès le retour du réseau');
+      waitForOnlineThenRetry(idx, true);
+      return;
+    }
+    if (idx < playlist.length - 1) {
+      toast('Erreur audio sur ce fragment — passage au suivant');
+      load(idx + 1, true);
+    } else {
+      toast('Erreur audio sur le dernier fragment de la séance');
+    }
+  });
+  audio.addEventListener('playing', () => { consecutiveLoadFailures = 0; });
 
   /* --- signalements existants sur le fragment affiché --- */
   async function refreshFragmentSignalements() {
@@ -1381,10 +1433,6 @@ async function viewStorage() {
     <p class="eyebrow">Séances</p>
     <div id="storeList"></div>`;
   const acts = $('#storeActions', v);
-  acts.append(el('button', {
-    className: 'btn btn-outline', textContent: 'Vérifier les mises à jour',
-    onclick: checkForUpdates,
-  }), el('div', { style: 'height:10px' }));
   if (!persisted && navigator.storage?.persist) {
     acts.append(el('button', {
       className: 'btn btn-outline', textContent: 'Demander un stockage persistant',
@@ -1497,6 +1545,44 @@ async function renderAcct() {
 $('#btnAcct').addEventListener('click', () => { $('#acctSheet').hidden = false; renderAcct(); });
 $('#acctClose').addEventListener('click', () => { $('#acctSheet').hidden = true; });
 $('#acctSheet').addEventListener('click', (e) => { if (e.target === $('#acctSheet')) $('#acctSheet').hidden = true; });
+
+/* ------------------------------------------------------- paramètres */
+let _version;
+async function fetchVersion() {
+  if (_version !== undefined) return _version;
+  try { _version = await apiGet('/api/version'); } catch { _version = null; }
+  return _version;
+}
+async function renderSettings() {
+  const c = $('#settingsContent');
+  c.innerHTML = '<p class="muted"><span class="spinner"></span></p>';
+  const v = await fetchVersion();
+  c.innerHTML = '';
+  c.append(el('div', { className: 'kv' },
+    el('span', { className: 'k', textContent: 'Version' }),
+    v?.commit
+      ? el('a', { href: v.commit_url || '#', target: '_blank', rel: 'noopener', textContent: v.commit })
+      : el('span', { textContent: 'inconnue' }),
+  ));
+  c.append(el('div', { style: 'height:16px' }));
+  c.append(el('a', {
+    className: 'btn btn-outline', href: v?.repo_url || 'https://github.com/samszo/exploDeleuze',
+    target: '_blank', rel: 'noopener', textContent: 'Code source (GitHub)',
+  }));
+  c.append(el('div', { style: 'height:10px' }));
+  c.append(el('a', {
+    className: 'btn btn-outline', href: v?.docs_url || '#',
+    target: '_blank', rel: 'noopener', textContent: 'Documentation',
+  }));
+  c.append(el('div', { style: 'height:10px' }));
+  c.append(el('button', {
+    className: 'btn btn-outline', textContent: 'Vérifier les mises à jour',
+    onclick: checkForUpdates,
+  }));
+}
+$('#btnSettings').addEventListener('click', () => { $('#settingsSheet').hidden = false; renderSettings(); });
+$('#settingsClose').addEventListener('click', () => { $('#settingsSheet').hidden = true; });
+$('#settingsSheet').addEventListener('click', (e) => { if (e.target === $('#settingsSheet')) $('#settingsSheet').hidden = true; });
 
 /* ------------------------------------------------------- connectivité */
 function refreshNet() {

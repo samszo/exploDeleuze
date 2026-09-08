@@ -15,6 +15,7 @@ Découverte interactive des endpoints : http://127.0.0.1:8000/docs
 """
 import json
 import os
+import subprocess
 import time
 import uuid
 from collections import Counter
@@ -42,6 +43,25 @@ SIGNAL_DIR = Path(os.environ.get("SIGNAL_DIR", "signalements"))
 SIGNAL_EXPORT_KEY = os.environ.get("SIGNAL_EXPORT_KEY") or None
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or None
 SIGNAL_TYPES = {"personne", "oeuvre", "date", "lieu", "correction"}
+
+GITHUB_REPO = "https://github.com/samszo/exploDeleuze"
+
+
+def _current_commit() -> Optional[str]:
+    """Hash court du commit courant (dépôt monorepo exploDeleuze) — calculé une
+    fois au démarrage du process : un redémarrage (`systemctl restart flux-api`)
+    est de toute façon nécessaire pour qu'un déploiement soit pris en compte
+    (voir docs/DEPLOYMENT.md §9), donc pas besoin de le revérifier à chaque requête."""
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=os.path.dirname(__file__), stderr=subprocess.DEVNULL, timeout=3,
+        ).decode().strip() or None
+    except Exception:
+        return None
+
+
+CURRENT_COMMIT = _current_commit()
 
 client = meilisearch.Client(MEILI_URL, MEILI_KEY)
 idx_conferences = client.index("conferences")
@@ -218,6 +238,17 @@ def topology(
 @app.get("/api/health")
 def health():
     return {"status": "ok", "meilisearch": client.health()}
+
+
+@app.get("/api/version")
+def version():
+    """Version courante de l'app — écran Paramètres de la PWA (web/app/)."""
+    return {
+        "commit": CURRENT_COMMIT,
+        "commit_url": f"{GITHUB_REPO}/commit/{CURRENT_COMMIT}" if CURRENT_COMMIT else None,
+        "repo_url": f"{GITHUB_REPO}/tree/main/exploreConceptsInCar",
+        "docs_url": f"{GITHUB_REPO}/blob/main/exploreConceptsInCar/docs/README.md",
+    }
 
 
 # ---------- signalements collaboratifs ----------

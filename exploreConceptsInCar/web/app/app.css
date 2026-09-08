@@ -66,6 +66,8 @@ input{font-family:inherit}
 .topbar-acct{width:38px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--label)}
 .topbar-acct svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .topbar-acct.connected{color:var(--gold)}
+.topbar-settings{width:38px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--label)}
+.topbar-settings svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* feuille modale (compte) */
 .sheet{position:fixed;inset:0;z-index:60;background:rgba(6,9,12,.72);display:flex;align-items:flex-end}
