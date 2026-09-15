@@ -202,6 +202,23 @@ async function signInGoogle(clientId) {
   return authState;
 }
 
+/* Compte géré par l'API elle-même (alternative à Google) : e-mail + mot de
+ * passe, jeton signé par le serveur. Le jeton est ensuite traité exactement
+ * comme celui de Google partout ailleurs (signalement, Mes annotations) —
+ * seul le "provider" change, revérifié par l'API à chaque usage. */
+async function signInApi(email, password) {
+  const res = await apiPost('/api/auth/login', { email, password });
+  authState = { provider: 'api', idToken: res.id_token, exp: res.exp, profile: res.profile };
+  await idbPut('meta', { k: 'auth', ...authState });
+  return authState;
+}
+async function registerApi(email, password, name) {
+  const res = await apiPost('/api/auth/register', { email, password, name });
+  authState = { provider: 'api', idToken: res.id_token, exp: res.exp, profile: res.profile };
+  await idbPut('meta', { k: 'auth', ...authState });
+  return authState;
+}
+
 async function signOut() {
   await idbDelete('meta', 'auth');
   authState = null;
@@ -1516,21 +1533,73 @@ $('#topTitle').addEventListener('click', () => { location.hash = '#/'; });
 function refreshAcctBadge() {
   $('#btnAcct').classList.toggle('connected', !!(authState && !authState.expired));
 }
+
+const ACCT_PROVIDER_LABELS = { google: 'Google', api: 'compte Flux Conceptuel' };
+let acctMode = 'login'; // 'login' | 'register' — bascule du formulaire de compte maison
+
 async function renderAcct() {
   const provs = await authProviders();
   const c = $('#acctContent');
+
   if (authState && !authState.expired) {
     c.innerHTML = `<div class="acct-name">${esc(authState.profile.name || 'Connecté')}</div>
-      <div class="acct-mail">${esc(authState.profile.email || '')} · via ${esc(authState.provider)}</div>
+      <div class="acct-mail">${esc(authState.profile.email || '')} · via ${esc(ACCT_PROVIDER_LABELS[authState.provider] || authState.provider)}</div>
       <button class="btn btn-outline" id="acctAnno">Mes annotations</button>
       <button class="btn btn-outline" id="acctOut">Se déconnecter</button>`;
     $('#acctAnno').onclick = () => { $('#acctSheet').hidden = true; location.hash = '#/annotations'; };
     $('#acctOut').onclick = async () => { await signOut(); refreshAcctBadge(); Player.refreshReport(); renderAcct(); };
-  } else if (provs.google) {
-    c.innerHTML = `<p class="muted" style="margin-bottom:14px">${authState?.expired
-      ? 'Session expirée — reconnectez-vous.'
-      : 'Connectez-vous pour signaler une correction ou une référence dans une transcription. Votre identité sert à créditer le signalement et à retrouver votre compte lors de l\'import.'}</p>
-      <button class="btn btn-google" id="acctGoogle">Se connecter avec Google</button>`;
+    return;
+  }
+
+  if (!provs.api && !provs.google) {
+    c.innerHTML = `<p class="muted">Aucun fournisseur d'authentification n'est configuré côté serveur.</p>`;
+    return;
+  }
+
+  const parts = [`<p class="muted" style="margin-bottom:14px">${authState?.expired
+    ? 'Session expirée — reconnectez-vous.'
+    : 'Connectez-vous pour signaler une correction ou une référence dans une transcription, ou pour retrouver vos propres annotations.'}</p>`];
+
+  if (provs.api) {
+    parts.push(`
+      <form id="acctApiForm" class="acct-form">
+        ${acctMode === 'register' ? '<input id="acctName" type="text" placeholder="Nom" autocomplete="name">' : ''}
+        <input id="acctEmail" type="email" placeholder="E-mail" autocomplete="username" required>
+        <input id="acctPassword" type="password" placeholder="Mot de passe" autocomplete="${acctMode === 'login' ? 'current-password' : 'new-password'}" required>
+        <div class="pf-report-err" id="acctApiErr" hidden></div>
+        <button type="submit" class="btn btn-primary">${acctMode === 'login' ? 'Se connecter' : 'Créer le compte'}</button>
+      </form>
+      <button class="acct-link" id="acctModeToggle">${acctMode === 'login' ? "Pas de compte ? En créer un" : 'Déjà un compte ? Se connecter'}</button>`);
+  }
+  if (provs.google) {
+    parts.push(`<div style="height:14px"></div><button class="btn btn-google" id="acctGoogle">Se connecter avec Google</button>`);
+  }
+  c.innerHTML = parts.join('');
+
+  if (provs.api) {
+    $('#acctModeToggle').onclick = () => { acctMode = acctMode === 'login' ? 'register' : 'login'; renderAcct(); };
+    $('#acctApiForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#acctEmail').value.trim();
+      const password = $('#acctPassword').value;
+      $('#acctApiErr').hidden = true;
+      try {
+        if (acctMode === 'login') {
+          await signInApi(email, password);
+        } else {
+          const name = $('#acctName').value.trim();
+          await registerApi(email, password, name);
+        }
+        acctMode = 'login';
+        refreshAcctBadge(); Player.refreshReport(); renderAcct();
+        toast('Connecté : ' + (authState.profile.name || authState.profile.email));
+      } catch (err) {
+        $('#acctApiErr').textContent = err.message;
+        $('#acctApiErr').hidden = false;
+      }
+    });
+  }
+  if (provs.google) {
     $('#acctGoogle').onclick = async () => {
       try {
         await signInGoogle(provs.google.client_id);
@@ -1538,13 +1607,11 @@ async function renderAcct() {
         toast('Connecté : ' + (authState.profile.name || authState.profile.email));
       } catch (e) { toast('Connexion : ' + e.message); }
     };
-  } else {
-    c.innerHTML = `<p class="muted">Aucun fournisseur d'authentification n'est configuré côté serveur.</p>`;
   }
 }
 $('#btnAcct').addEventListener('click', () => { $('#acctSheet').hidden = false; renderAcct(); });
-$('#acctClose').addEventListener('click', () => { $('#acctSheet').hidden = true; });
-$('#acctSheet').addEventListener('click', (e) => { if (e.target === $('#acctSheet')) $('#acctSheet').hidden = true; });
+$('#acctClose').addEventListener('click', () => { $('#acctSheet').hidden = true; acctMode = 'login'; });
+$('#acctSheet').addEventListener('click', (e) => { if (e.target === $('#acctSheet')) { $('#acctSheet').hidden = true; acctMode = 'login'; } });
 
 /* ------------------------------------------------------- paramètres */
 let _version;

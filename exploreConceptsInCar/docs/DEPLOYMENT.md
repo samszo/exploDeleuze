@@ -141,6 +141,13 @@ GOOGLE_CLIENT_ID=
 SIGNAL_DIR=/opt/flux-conceptuel-auto/app/signalements
 SIGNAL_EXPORT_KEY=REMPLACER_PAR_UNE_CHAINE_ALEATOIRE
 
+# comptes gérés par l'API elle-même (alternative à Google, toujours activée) —
+# AUTH_SECRET signe les jetons de session : à définir en prod, sinon une clé
+# aléatoire est générée à chaque démarrage et déconnecte tout le monde à
+# chaque redémarrage de flux-api
+AUTH_SECRET=REMPLACER_PAR_UNE_CHAINE_ALEATOIRE
+ACCOUNTS_FILE=/opt/flux-conceptuel-auto/app/accounts.json
+
 # uniquement nécessaire si le pipeline d'export tourne sur CE serveur
 # (voir section 5, option A) — sinon laisser vide ou supprimer ces lignes
 DB_HOST=
@@ -152,7 +159,7 @@ EOF
 sudo chmod 600 .env
 ```
 
-> **Signalements et authentification tierce (PWA `web/app/`)** : `GOOGLE_CLIENT_ID` vient de la console Google Cloud (*Identifiants* → *ID client OAuth 2.0*, type *Application Web*, origine JavaScript autorisée = `https://<domaine>`). `SIGNAL_DIR` reçoit un fichier JSON par signalement (créé au premier signalement, doit appartenir à `fluxconceptuel` — sauvegardez ce dossier, voir [§9](#9-maintenance)). `SIGNAL_EXPORT_KEY` protège `GET /api/signalements/export`. Sans `GOOGLE_CLIENT_ID`, la PWA fonctionne normalement mais n'affiche aucun bouton de connexion.
+> **Signalements et authentification (PWA `web/app/`)** : `GOOGLE_CLIENT_ID` vient de la console Google Cloud (*Identifiants* → *ID client OAuth 2.0*, type *Application Web*, origine JavaScript autorisée = `https://<domaine>`). `SIGNAL_DIR` reçoit un fichier JSON par signalement (créé au premier signalement, doit appartenir à `fluxconceptuel` — sauvegardez ce dossier, voir [§9](#9-maintenance)). `SIGNAL_EXPORT_KEY` protège `GET /api/signalements/export`. Sans `GOOGLE_CLIENT_ID`, la PWA fonctionne normalement mais n'affiche que la connexion par compte e-mail/mot de passe (toujours disponible, gérée par l'API elle-même — `ACCOUNTS_FILE`, un fichier JSON avec un mot de passe salé/haché par compte, jamais en clair). `AUTH_SECRET` doit être une chaîne aléatoire fixe en prod : sans elle, les sessions de ces comptes sont invalidées à chaque redémarrage de `flux-api`. Sauvegardez aussi `ACCOUNTS_FILE`, voir [§9](#9-maintenance).
 
 ## 5. Où vivent les données (source vs diffusion)
 
@@ -319,6 +326,11 @@ sudo tail -f /var/log/apache2/flux-conceptuel-error.log
 - `/var/lib/meilisearch` (ou `meilisearch/data/`) — l'index de recherche
 - `audios/` — les fichiers Opus (3,7 Go)
 - `data/concept_phrases.json` — les concepts composés minés
+
+Deux autres, générés par l'usage de la PWA (`web/app/`) et **non régénérables** (rien côté Omeka S ne permet de les reconstruire) :
+
+- `accounts.json` — les comptes créés via l'API (mots de passe salés/hachés, jamais en clair, mais toujours irremplaçables si perdus)
+- `signalements/` — un fichier JSON par signalement, pas encore réimporté dans Omeka S
 
 ## 10. Sécurité — récapitulatif
 

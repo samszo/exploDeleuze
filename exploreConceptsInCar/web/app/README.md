@@ -19,7 +19,7 @@ orientée *stockage local* plutôt que *voix en voiture*.
 | **Écoutes** | historique d'écoute : la position atteinte dans chaque séance est mémorisée (IndexedDB) ; touche une entrée pour reprendre exactement où on s'était arrêté, ou la retire de l'historique |
 | **Espace** | quota du navigateur, poids par séance, suppression, stockage persistant |
 | **Lecteur** | lecture continue des fragments, enchaînement auto, ±10 s, contrôles écran verrouillé (Media Session), signalements existants sur le fragment affiché |
-| **Compte** | connexion via un fournisseur tiers (Google) — icône compte dans la barre du haut, avec accès à « Mes annotations » une fois connecté |
+| **Compte** | connexion via un compte e-mail/mot de passe géré par l'API elle-même, ou via un fournisseur tiers (Google si configuré) — icône compte dans la barre du haut, avec accès à « Mes annotations » une fois connecté |
 | **Paramètres** | icône engrenage à côté de l'icône compte : numéro de version (commit GitHub courant), lien vers le code source, lien vers la documentation, bouton « Vérifier les mises à jour » |
 | **Signalements** | connecté, 5 boutons dans le lecteur : corriger la transcription, signaler une référence à une personne / œuvre / date / lieu, à l'instant courant du fragment — la création exige de sélectionner d'abord le passage concerné (premier mot puis dernier mot du texte affiché) |
 | **Mes annotations** | tous les signalements créés par l'utilisateur connecté, lus directement depuis les fichiers JSON de signalements ; touche une entrée pour rouvrir la séance correspondante |
@@ -57,11 +57,19 @@ orientée *stockage local* plutôt que *voix en voiture*.
   d'historique, annotation) le contourne.
 - **Recherche hors-ligne** : balayage des fragments d'IndexedDB, repli d'accents
   caractère par caractère (index 1:1 avec le texte, pour un surlignage aligné).
-- **Connexion tierce** : flux OAuth2 *implicit* dans une popup vers le
+- **Connexion tierce (Google)** : flux OAuth2 *implicit* dans une popup vers le
   fournisseur (aucun SDK externe). On récupère l'`id_token` du fragment de
   redirection, on garde `{provider, sub, email, name}` + le jeton dans
   IndexedDB. L'API re-vérifie le jeton à chaque signalement
   (`POST /api/signalements`) auprès du fournisseur.
+- **Compte géré par l'API** : alternative sans dépendance externe — e-mail +
+  mot de passe, `POST /api/auth/register` ou `/login` renvoient un jeton signé
+  par le serveur (`AUTH_SECRET`, HMAC, 30 jours), stocké dans IndexedDB avec
+  `provider: 'api'`. Le mot de passe n'est jamais stocké en clair côté serveur
+  (PBKDF2-HMAC-SHA256 salé, `ACCOUNTS_FILE`). Une fois obtenu, ce jeton est
+  traité exactement comme celui de Google partout ailleurs dans l'app
+  (signalement, Mes annotations) — seul `verify_identity` sait, côté API, le
+  vérifier différemment selon le `provider`.
 - **Sélection d'une séquence de mots** : le texte du fragment affiché devient
   tapotable dès qu'un signalement ou un export Zotero est amorcé — premier mot
   touché, puis dernier (ou le même mot deux fois pour un seul mot). Le

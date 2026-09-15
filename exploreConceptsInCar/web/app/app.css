@@ -80,6 +80,9 @@ input{font-family:inherit}
 .sheet-body .btn{margin-top:4px}
 .btn-google{background:#fff;color:#1f1f1f;border:0}
 .btn-google:active{background:#e8e8e8}
+.acct-form{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+.acct-form input{width:100%;background:var(--panel);border:1px solid var(--line-strong);color:var(--text);font-size:15px;padding:10px 12px}
+.acct-link{display:block;margin-top:10px;font-size:13px;color:var(--label);text-decoration:underline;align-self:flex-start}
 
 /* ---------- zone de contenu ---------- */
 .app{

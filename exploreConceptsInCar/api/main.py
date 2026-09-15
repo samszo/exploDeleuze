@@ -13,9 +13,14 @@ Lancer en dev :
 
 Découverte interactive des endpoints : http://127.0.0.1:8000/docs
 """
+import base64
+import hashlib
+import hmac
 import json
 import os
+import secrets
 import subprocess
+import sys
 import time
 import uuid
 from collections import Counter
@@ -43,6 +48,24 @@ SIGNAL_DIR = Path(os.environ.get("SIGNAL_DIR", "signalements"))
 SIGNAL_EXPORT_KEY = os.environ.get("SIGNAL_EXPORT_KEY") or None
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or None
 SIGNAL_TYPES = {"personne", "oeuvre", "date", "lieu", "correction"}
+
+# --- comptes gérés par l'API elle-même (alternative à la connexion Google) ---
+# Un seul fichier JSON {email: {name, salt, hash, created_at}} — mots de passe
+# stockés en PBKDF2-HMAC-SHA256 salé, jamais en clair. AUTH_SECRET signe les
+# jetons de session (HMAC) ; sans lui, une clé aléatoire est générée au
+# démarrage : les comptes fonctionnent quand même, mais toute session est
+# invalidée au redémarrage du service — à définir dans .env pour la prod.
+ACCOUNTS_FILE = Path(os.environ.get("ACCOUNTS_FILE", "accounts.json"))
+AUTH_SECRET = os.environ.get("AUTH_SECRET")
+if not AUTH_SECRET:
+    AUTH_SECRET = secrets.token_hex(32)
+    print(
+        "AVERTISSEMENT: AUTH_SECRET absent du .env — jetons de session signés avec "
+        "une clé aléatoire générée au démarrage (sessions invalidées à chaque "
+        "redémarrage). Définissez AUTH_SECRET pour des sessions persistantes.",
+        file=sys.stderr,
+    )
+TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30  # 30 jours
 
 GITHUB_REPO = "https://github.com/samszo/exploDeleuze"
 
@@ -261,8 +284,112 @@ def version():
 # conservée pour rattacher/créer le compte Omeka au moment de cet import.
 
 
+def _b64url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+
+def _b64url_decode(s: str) -> bytes:
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def create_local_token(email: str, name: str) -> tuple[str, int]:
+    """Jeton de session pour un compte géré par l'API : payload JSON signé par
+    HMAC-SHA256 (AUTH_SECRET), pas de dépendance JWT externe — on est à la fois
+    émetteur et unique vérificateur, un format maison suffit."""
+    exp = int(time.time()) + TOKEN_TTL_SECONDS
+    payload_b64 = _b64url_encode(json.dumps({"sub": email, "name": name, "exp": exp}, ensure_ascii=False).encode())
+    sig = hmac.new(AUTH_SECRET.encode(), payload_b64.encode(), hashlib.sha256).digest()
+    return f"{payload_b64}.{_b64url_encode(sig)}", exp
+
+
+def verify_local_token(token: str) -> dict:
+    try:
+        payload_b64, sig_b64 = token.split(".", 1)
+    except ValueError:
+        raise HTTPException(401, "jeton invalide")
+    expected_sig = hmac.new(AUTH_SECRET.encode(), payload_b64.encode(), hashlib.sha256).digest()
+    if not hmac.compare_digest(_b64url_encode(expected_sig), sig_b64):
+        raise HTTPException(401, "jeton invalide")
+    try:
+        payload = json.loads(_b64url_decode(payload_b64))
+    except Exception:
+        raise HTTPException(401, "jeton invalide")
+    if payload.get("exp", 0) < time.time():
+        raise HTTPException(401, "jeton expiré")
+    return payload
+
+
+def _load_accounts() -> dict:
+    if not ACCOUNTS_FILE.exists():
+        return {}
+    try:
+        return json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _save_accounts(accounts: dict) -> None:
+    ACCOUNTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ACCOUNTS_FILE.write_text(json.dumps(accounts, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _hash_password(password: str, salt: Optional[bytes] = None) -> tuple[str, str]:
+    salt = salt or secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+    return salt.hex(), digest.hex()
+
+
+class RegisterBody(BaseModel):
+    email: str
+    password: str
+    name: Optional[str] = None
+
+
+class LoginBody(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/register")
+def register(body: RegisterBody):
+    email = body.email.strip().lower()
+    if "@" not in email or len(email) < 5:
+        raise HTTPException(400, "adresse e-mail invalide")
+    if len(body.password) < 8:
+        raise HTTPException(400, "le mot de passe doit faire au moins 8 caractères")
+    accounts = _load_accounts()
+    if email in accounts:
+        raise HTTPException(409, "un compte existe déjà avec cet e-mail")
+    salt_hex, hash_hex = _hash_password(body.password)
+    name = (body.name or email.split("@")[0]).strip()
+    accounts[email] = {
+        "name": name,
+        "salt": salt_hex,
+        "hash": hash_hex,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    _save_accounts(accounts)
+    token, exp = create_local_token(email, name)
+    return {"id_token": token, "provider": "api", "exp": exp, "profile": {"sub": email, "email": email, "name": name}}
+
+
+@app.post("/api/auth/login")
+def login(body: LoginBody):
+    email = body.email.strip().lower()
+    accounts = _load_accounts()
+    account = accounts.get(email)
+    # même message que mot de passe incorrect : ne pas révéler si l'e-mail existe
+    if not account:
+        raise HTTPException(401, "e-mail ou mot de passe incorrect")
+    _, hash_hex = _hash_password(body.password, bytes.fromhex(account["salt"]))
+    if not hmac.compare_digest(hash_hex, account["hash"]):
+        raise HTTPException(401, "e-mail ou mot de passe incorrect")
+    token, exp = create_local_token(email, account["name"])
+    return {"id_token": token, "provider": "api", "exp": exp, "profile": {"sub": email, "email": email, "name": account["name"]}}
+
+
 class Signalement(BaseModel):
-    id_token: str                       # jeton d'identité du fournisseur (Google : id_token)
+    id_token: str                       # jeton d'identité du fournisseur (Google : id_token) ou de l'API (provider="api")
     provider: str = "google"
     idConf: int
     idTrans: int
@@ -279,7 +406,11 @@ class Signalement(BaseModel):
 
 async def verify_identity(provider: str, token: str) -> dict:
     """Valide le jeton auprès du fournisseur et renvoie {provider, sub, email, name}.
-    Google : appel à l'endpoint tokeninfo (validation complète côté Google)."""
+    Google : appel à l'endpoint tokeninfo (validation complète côté Google).
+    "api" : compte géré par cette même API, jeton vérifié localement (HMAC)."""
+    if provider == "api":
+        payload = verify_local_token(token)
+        return {"provider": "api", "sub": payload["sub"], "email": payload["sub"], "name": payload.get("name") or payload["sub"]}
     if provider != "google":
         raise HTTPException(400, f"fournisseur non géré : {provider}")
     if not GOOGLE_CLIENT_ID:
@@ -309,9 +440,10 @@ async def verify_identity(provider: str, token: str) -> dict:
 
 @app.get("/api/auth/providers")
 def auth_providers():
-    """Fournisseurs d'authentification tierce activés (la PWA n'affiche que
-    ceux-là). Renvoie l'ID client public, jamais de secret."""
-    out = {}
+    """Fournisseurs d'authentification activés (la PWA n'affiche que ceux-là).
+    Renvoie l'ID client public, jamais de secret. "api" (comptes maison) est
+    toujours disponible : il ne dépend d'aucune configuration tierce."""
+    out = {"api": {"enabled": True}}
     if GOOGLE_CLIENT_ID:
         out["google"] = {"client_id": GOOGLE_CLIENT_ID}
     return out

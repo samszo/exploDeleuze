@@ -160,16 +160,18 @@ Le classement par fréquence (`occurrence_count:desc` en dernière règle de tri
 
 L'endpoint de topologie interroge `fragments` avec un filtre `concepts = "<label>"`, agrège en Python les autres concepts qui apparaissent dans les mêmes fragments, et retourne les plus fréquents comme voisins pondérés — un calcul en quelques dizaines de millisecondes, jamais stocké.
 
-### Signalements collaboratifs
+### Comptes et signalements collaboratifs
 
-Un jeton d'identité tiers (Google, flux OAuth2 *implicit* côté client — voir
-[Le client web/app](#le-client-webapp-pwa-hors-ligne)) permet à un utilisateur
-connecté de signaler une correction ou une référence à un instant d'un
-fragment, sans jamais toucher Omeka S depuis l'API :
+Un jeton d'identité — soit tiers (Google, flux OAuth2 *implicit* côté client),
+soit émis par l'API elle-même pour un compte e-mail/mot de passe qu'elle gère
+seule (voir [Le client web/app](#le-client-webapp-pwa-hors-ligne)) — permet à
+un utilisateur connecté de signaler une correction ou une référence à un
+instant d'un fragment, sans jamais toucher Omeka S depuis l'API :
 
 | Endpoint | Auth | Rôle |
 |---|---|---|
-| `POST /api/signalements` | jeton (revérifié auprès du fournisseur) | crée un signalement — un fichier JSON dans `SIGNAL_DIR`, à réimporter plus tard dans Omeka S |
+| `POST /api/auth/register`, `/login` | — | comptes gérés par l'API : mot de passe haché (PBKDF2, salé) dans `ACCOUNTS_FILE`, jamais en clair ; renvoie un jeton signé (`AUTH_SECRET`) |
+| `POST /api/signalements` | jeton (revérifié auprès du fournisseur, ou localement pour un compte API) | crée un signalement — un fichier JSON dans `SIGNAL_DIR`, à réimporter plus tard dans Omeka S |
 | `GET /api/signalements/mine?id_token=&provider=` | jeton | signalements de l'utilisateur connecté (écran « Mes annotations ») |
 | `GET /api/signalements/fragment/{id_trans}` | publique | signalements existants sur un fragment (affichés dans le lecteur), sans l'identité du fournisseur — seulement le nom d'affichage |
 | `GET /api/signalements/export?key=` | clé d'export (`SIGNAL_EXPORT_KEY`) | tous les signalements en un tableau JSON, pour l'import Omeka S |
