@@ -2,7 +2,7 @@
 
 Un client web à utiliser en voiture (téléphone en paysage sur le tableau de bord, piloté à la voix) pour explorer les 176 séances de cours de Gilles Deleuze : recherche plein texte dans les transcriptions, lecture audio, et une carte de topologie de concepts calculée à la volée à partir des co-occurrences réelles du corpus. Ce n'est **pas** une application Android Auto native — Android Auto ne projette pas de pages web.
 
-Ce document couvre l'architecture et le pipeline de données. Pour l'installation en production, voir [DEPLOYMENT.md](DEPLOYMENT.md).
+Ce document couvre l'architecture et le pipeline de données. Pour l'installation en production, voir [DEPLOYMENT.md](DEPLOYMENT.md). Pour utiliser la PWA hors-ligne au quotidien (pas la maintenir), voir le [Guide utilisateur](user-guide/GUIDE.md).
 
 ## Sommaire
 
