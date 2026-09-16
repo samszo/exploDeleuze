@@ -324,13 +324,21 @@ def _load_accounts() -> dict:
         return {}
     try:
         return json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))
+    except OSError as e:
+        # droits insuffisants pour LIRE le fichier : à distinguer d'un fichier
+        # simplement absent, sinon un compte existant devient invisible sans
+        # message clair (ex: connexion qui échoue à tort).
+        raise HTTPException(503, f"stockage des comptes inaccessible en lecture ({ACCOUNTS_FILE}) : {e}") from e
     except Exception:
-        return {}
+        return {}  # JSON corrompu : on ne bloque pas — le prochain compte créé réécrit un fichier propre
 
 
 def _save_accounts(accounts: dict) -> None:
-    ACCOUNTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    ACCOUNTS_FILE.write_text(json.dumps(accounts, ensure_ascii=False, indent=2), encoding="utf-8")
+    try:
+        ACCOUNTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        ACCOUNTS_FILE.write_text(json.dumps(accounts, ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError as e:
+        raise HTTPException(503, f"stockage des comptes inaccessible en écriture ({ACCOUNTS_FILE}) : {e}") from e
 
 
 def _hash_password(password: str, salt: Optional[bytes] = None) -> tuple[str, str]:
